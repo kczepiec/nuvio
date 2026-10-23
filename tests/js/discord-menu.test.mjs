@@ -2,6 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
 
 const rd = (p) => readFileSync(new URL(p, import.meta.url), 'utf8');
 const INVITE = 'https://discord.gg/rFG9y2hFMJ';
@@ -21,8 +22,32 @@ test('user menu keeps Profile and Settings and adds Discord after them', () => {
   assert.ok(line.includes("icon: 'mdi:cog-outline'"));
   assert.ok(line.includes("action: { navigate: '/config/dashboard' }"));
   assert.ok(line.includes("icon: 'mdi:discord'"));
+  assert.ok(line.includes("svg: 'discord'"));
   assert.ok(line.includes(`action: { url: '${INVITE}' }`));
   assert.match(line, /menu: \[\.\.\.\(railOff \? V\.slice\(5\)/);
+});
+
+test('user menu draws a Discord mark instead of an empty ha-icon', () => {
+  const page = rd('../../src/parts/hg-page.part.js');
+  const start = page.indexOf('const HG_SVG');
+  const end = page.indexOf('let hgBmUsers');
+  assert.ok(start >= 0 && end > start);
+  const ctx = { H: { icon: (i) => `ICON:${i}` } };
+  vm.createContext(ctx);
+  vm.runInContext(page.slice(start, end) + '\nthis.icon = hgMenuIcon; this.svg = HG_SVG;', ctx);
+  const mark = ctx.icon({ label: 'Discord', icon: 'mdi:discord', svg: 'discord' });
+  assert.match(mark, /^<svg/);
+  assert.match(mark, /fill="currentColor"/);
+  assert.match(mark, /viewBox="0 0 24 24"/);
+  assert.equal(ctx.icon({ icon: 'mdi:discord' }), mark);
+  assert.equal(ctx.icon({ icon: 'mdi:account-circle-outline' }), 'ICON:mdi:account-circle-outline');
+  assert.equal(ctx.icon({ icon: 'mdi:cog-outline' }), 'ICON:mdi:cog-outline');
+  assert.equal(ctx.icon({}), 'ICON:mdi:circle-small');
+  assert.equal(ctx.svg.discord, mark);
+  const paint = page.slice(page.indexOf('_paintMenu() {'), page.indexOf('_openSheet(open)'));
+  assert.match(paint, /hgMenuIcon\(m\)/);
+  assert.doesNotMatch(paint, /H\.icon\(m\.icon/);
+  assert.match(page, /\.menu ha-icon, \.menu button > svg\{ width:18px; height:18px; flex:none; \}/);
 });
 
 test('About page links to the same Discord invite', () => {

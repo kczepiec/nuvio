@@ -20,7 +20,7 @@ const HGUsers = window.__hgUsers || (window.__hgUsers = {
       const st = self ? hgT('users.you_set_up_the') : on ? hgT('users.sees_the_shared_dashboard') : hgT('users.own_layout_edits_it');
       const nm = H.esc(u.name || u.username || '?');
       return `<button type="button" class="wl-sw us-r" role="switch" data-hge="us-t" data-u="${H.esc(u.id)}" aria-checked="${on}" ${self || this.saving ? 'disabled' : ''}>
-        <span class="us-av" aria-hidden="true">${H.esc(Array.from(String(u.name || u.username || '?').trim())[0] || '?').toUpperCase()}</span>
+        ${hgUserAv(p._hass, u, this.list)}
         <span>${nm}${tags ? `<em class="us-tg">${H.esc(tags)}</em>` : ''}<small>${st}</small></span><i aria-hidden="true"></i></button>`; }).join('');
     return sec(`<div class="us-sum">${H.icon('mdi:monitor-dashboard')}<span>${hgT('users.shared_count', { count: n, total: this.list.length })}</span></div><div class="us-l">${rows}</div>`); },
   async act(p, b, a) { if (!this.admin(p) || a !== 'us-t' || this.saving) return;
@@ -38,6 +38,7 @@ const HG_US_CSS = `
 .us-l{ display:flex; flex-direction:column; gap:6px; }
 .us-r{ padding-left:8px; } .us-r[disabled]{ cursor:default; } .us-r[disabled] i{ opacity:.55; }
 .wl-sw.us-r > .us-av{ flex:none; width:34px; height:34px; border-radius:50%; display:grid; place-items:center; font-weight:700; font-size:14px; color:var(--hg-on-accent, #fff); background:linear-gradient(140deg, var(--hg-accent), color-mix(in srgb, var(--hg-accent) 55%, #000)); box-shadow:inset 0 0 0 1px rgba(255,255,255,.18); }
+.wl-sw.us-r > .us-av.pic{ background:center / cover no-repeat color-mix(in srgb, var(--hg-accent) 18%, transparent); }
 .us-tg{ font-style:normal; font-weight:500; font-size:11.5px; opacity:.6; margin-left:6px; }
 .us-sum{ display:flex; align-items:center; gap:8px; font-size:13px; opacity:.8; margin:2px 0 4px; } .us-sum ha-icon, .us-warn ha-icon{ --mdc-icon-size:18px; width:18px; height:18px; flex:none; }
 .us-warn{ display:flex; gap:8px; align-items:flex-start; font-size:13px; line-height:1.4; padding:10px 12px; border-radius:14px; background:color-mix(in srgb, var(--hg-accent) 12%, transparent); }

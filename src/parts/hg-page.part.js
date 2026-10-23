@@ -9,6 +9,13 @@ const hgClockFill = window.hgClockFill = (s, h, now = new Date()) => {
 };
 const HG_SVG = {
   figma: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 2.8h3.5v6.1H8.5a3.05 3.05 0 0 1 0-6.1Z"/><path d="M12 2.8h3.5a3.05 3.05 0 0 1 0 6.1H12Z"/><path d="M8.5 8.9H12V15H8.5a3.05 3.05 0 0 1 0-6.1Z"/><circle cx="15.5" cy="11.95" r="3.05"/><path d="M8.5 15H12v3.05a3.05 3.05 0 1 1-3.5-3.05Z"/></svg>`,
+  /* MDI v7 usunęło znaki marek: ha-icon z mdi:discord jest pusty. Ścieżka: Simple Icons (CC0). */
+  discord: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>`,
+};
+/* menu użytkownika: svg (Discord) albo ha-icon. mdi:discord zawsze rysuje znak, także w zapisanej konfiguracji bez pola svg. */
+const hgMenuIcon = (m) => {
+  const svg = m && ((m.svg && HG_SVG[m.svg]) || (m.icon === 'mdi:discord' && HG_SVG.discord));
+  return svg || H.icon((m && m.icon) || 'mdi:circle-small');
 };
 /* browser_mod (zarejestrowana przeglądarka) kładzie na cały ekran niewidoczną warstwę .browser-mod-require-interaction (z-index 99999),
    która połyka dotknięcia, dopóki nie odblokuje odtwarzania wideo. Na tym dashboardzie przepuszczamy dotyk do przycisków,
@@ -765,7 +772,7 @@ class HGPage extends HTMLElement {
     if (!this._menuOpen || !this._menuEl) { L.innerHTML = ''; L.removeAttribute('open'); document.removeEventListener('keydown', this._menuKey, true); return; }
     const c = this._config, b = this._menuEl.getBoundingClientRect();
     L.setAttribute('open', '');
-    L.innerHTML = `<div class="menu" role="menu" style="top:${Math.round(b.bottom + 6)}px;right:${Math.max(8, Math.round(innerWidth - b.right))}px">${c.menu.map((m, i) => `<button role="menuitem" data-act="menuitem" data-i="${i}">${H.icon(m.icon || 'mdi:circle-small')}<span>${H.esc(m.label)}</span></button>`).join('')}${this._langItem()}${this._lockItem()}${this._kmItem()}${this._updFoot()}</div>`;
+    L.innerHTML = `<div class="menu" role="menu" style="top:${Math.round(b.bottom + 6)}px;right:${Math.max(8, Math.round(innerWidth - b.right))}px">${c.menu.map((m, i) => `<button role="menuitem" data-act="menuitem" data-i="${i}">${hgMenuIcon(m)}<span>${H.esc(m.label)}</span></button>`).join('')}${this._langItem()}${this._lockItem()}${this._kmItem()}${this._updFoot()}</div>`;
     this._menuKey = this._menuKey || ((e) => { if (e.key === 'Escape' && this._menuOpen && !hgsOpen.size) { e.preventDefault(); this._menuOpen = false; this._paintTop(true); } });
     document.addEventListener('keydown', this._menuKey, true);
   }
@@ -1039,7 +1046,7 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 .menu-l .menu{ position:fixed; z-index:1000; }
 .menu{ position:absolute; right:0; top:calc(100% + 6px); min-width:200px; padding:6px; border-radius:16px; z-index:20; color:#1F2125; }
 .menu button{ display:flex; align-items:center; gap:10px; width:100%; min-height:44px; padding:0 12px; border-radius:10px; font-size:14px; text-align:left; }
-.menu button:hover{ background:rgba(0,0,0,.06); } .menu ha-icon{ width:18px; height:18px; }
+.menu button:hover{ background:rgba(0,0,0,.06); } .menu ha-icon, .menu button > svg{ width:18px; height:18px; flex:none; }
 .mfoot{ display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin:6px -6px -6px; padding:9px 14px 11px; border-top:1px solid rgba(127,127,127,.18); font-size:11.5px; }
 .mver{ opacity:.55; font-variant-numeric:tabular-nums; letter-spacing:.01em; }
 .menu button.mupd{ width:auto; min-height:28px; height:28px; padding:0 11px 0 8px; gap:6px; border-radius:14px; background:var(--hg-accent); color:var(--hg-on-accent, #111); font-size:12px; font-weight:600; }

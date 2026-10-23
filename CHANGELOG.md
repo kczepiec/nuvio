@@ -4,6 +4,10 @@
 
 All notable changes to Nuvio are listed here, newest first. Versions follow [semantic versioning](https://semver.org). The Polish changelog is in [CHANGELOG.pl.md](CHANGELOG.pl.md).
 
+### Unreleased
+- Fixed: the **Discord** row in the user menu shows the Discord mark next to the label, the same way Profile and Settings show an icon. Home Assistant no longer includes that brand icon, so the menu draws it itself.
+- Fixed: **Settings → Users** shows a person's photo when that Home Assistant user is linked to a person who has one. Rows without a photo keep the letter.
+
 ### 2.22.2
 - Fixed: a **Cover / gate** tile (open, stop, close) on a phone was cut off on the right when it sat on the panel by itself. On a narrow tile the buttons were stretched to a full row, but that row never wrapped, so they drew past the card. They now move under the name and stay inside the tile. The media tile uses the same layout. On a wider screen the buttons stay on the right ([#53](https://github.com/kczepiec/nuvio/issues/53)).
 - Added: Discord in the user menu, after Profile and Settings, and on the About Nuvio page. The English, Polish and French READMEs have a Community section and a Discord badge.
