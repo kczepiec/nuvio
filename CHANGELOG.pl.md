@@ -4,6 +4,9 @@
 
 Tutaj zapisane są wszystkie istotne zmiany w Nuvio, od najnowszych. Wersje zgodne z [semantycznym wersjonowaniem](https://semver.org). Angielska lista zmian jest w [CHANGELOG.md](CHANGELOG.md).
 
+### Unreleased
+- Dodane: Discord w menu użytkownika, po Profilu i Ustawieniach, oraz na stronie O Nuvio. Angielski, polski i francuski README mają sekcję społeczności i plakietkę Discord.
+
 ### 2.22.1
 - Poprawione: na telefonach i wąskich tabletach ustawienia **Widoki i nawigacja** były ucięte z lewej i ściśnięte do połowy szerokości, a strona przewijała się w bok. Szeroka lista wyboru (pasek na telefonie) i dwukolumnowe karty widoków były szersze niż ekran, a po ukryciu paska bocznego strona trafiała do złego wiersza siatki. Ustawienia mają teraz jedną kolumnę na pełną szerokość, tabela widoków to karty jedna pod drugą ze wszystkimi polami, nic nie przewija się w bok, a pasek **Przywróć domyślne** / **Gotowe** jest nad dolną nawigacją i paskiem iPhone’a. Nowy `tools/mobile_check.py` sprawdza każdą stronę ustawień na iPhonie (WebKit), Androidzie (360 px) i tablecie 768 px przed każdym wydaniem.
 

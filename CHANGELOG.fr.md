@@ -4,6 +4,9 @@
 
 Toutes les modifications notables de Nuvio sont listées ici, des plus récentes aux plus anciennes. Les versions suivent le [versionnage sémantique](https://semver.org). Le journal des modifications en anglais se trouve dans [CHANGELOG.md](CHANGELOG.md), celui en polonais dans [CHANGELOG.pl.md](CHANGELOG.pl.md).
 
+### Unreleased
+- Ajouté : Discord dans le menu utilisateur, après Profil et Paramètres, et sur la page À propos de Nuvio. Les README anglais, polonais et français ont une section communauté et un badge Discord.
+
 ### 2.22.1
 - Corrigé : sur téléphone et tablette étroite, les paramètres **Vues et navigation** étaient coupés à gauche et réduits à la moitié de la largeur, et la page défilait sur le côté. Un sélecteur large (barre du téléphone) et les cartes de vues sur deux colonnes dépassaient l’écran, et la page se plaçait dans la mauvaise rangée de la grille une fois la barre latérale masquée. Les paramètres utilisent maintenant une seule colonne pleine largeur, le tableau des vues devient des cartes empilées avec tous les champs visibles, rien ne défile sur le côté et la barre **Restaurer les valeurs par défaut** / **Terminé** reste au-dessus de la navigation du bas et de l’indicateur d’accueil. Le nouveau `tools/mobile_check.py` vérifie chaque page des paramètres sur iPhone (WebKit), Android (360 px) et tablette 768 px avant chaque version.
 

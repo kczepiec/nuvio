@@ -4,6 +4,9 @@
 
 All notable changes to Nuvio are listed here, newest first. Versions follow [semantic versioning](https://semver.org). The Polish changelog is in [CHANGELOG.pl.md](CHANGELOG.pl.md).
 
+### Unreleased
+- Added: Discord in the user menu, after Profile and Settings, and on the About Nuvio page. The English, Polish and French READMEs have a Community section and a Discord badge.
+
 ### 2.22.1
 - Fixed: on phones and narrow tablets the **Views and navigation** settings were cut off on the left and squeezed into half the width, and the page could scroll sideways. A wide picker (phone tab bar) and the two-column views cards were wider than the screen, and the page was placed in the wrong grid row after the sidebar was hidden. Settings now use one full-width column, the views table is stacked cards with every field visible, nothing scrolls sideways, and the **Restore defaults** / **Done** bar sits above the bottom navigation and the home indicator. New `tools/mobile_check.py` checks every settings page on iPhone (WebKit), Android (360 px) and a 768 px tablet before each release.
 
