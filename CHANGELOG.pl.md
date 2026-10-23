@@ -4,7 +4,7 @@
 
 Tutaj zapisane są wszystkie istotne zmiany w Nuvio, od najnowszych. Wersje zgodne z [semantycznym wersjonowaniem](https://semver.org). Angielska lista zmian jest w [CHANGELOG.md](CHANGELOG.md).
 
-### Unreleased
+### 2.22.3
 - Poprawione: wygaszacz Szkło Minimal nadal pokazywał kółko z inicjałem w prawym górnym rogu, gdy przełącznik **Górny pasek → Awatar** był wyłączony — na wygaszaczu i w podglądzie ([#52](https://github.com/kczepiec/nuvio/issues/52)).
 - Poprawione: wiersz **Discord** w menu użytkownika pokazuje znak Discord obok nazwy, tak jak Profil i Ustawienia pokazują ikonę. Home Assistant nie ma już tej ikony marki, więc menu rysuje ją samo.
 - Poprawione: **Ustawienia → Użytkownicy** pokazują zdjęcie osoby, gdy to konto Home Assistant jest powiązane z osobą, która ma zdjęcie. Bez zdjęcia zostaje litera.
