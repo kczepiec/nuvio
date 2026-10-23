@@ -5,6 +5,7 @@
 Toutes les modifications notables de Nuvio sont listées ici, des plus récentes aux plus anciennes. Les versions suivent le [versionnage sémantique](https://semver.org). Le journal des modifications en anglais se trouve dans [CHANGELOG.md](CHANGELOG.md), celui en polonais dans [CHANGELOG.pl.md](CHANGELOG.pl.md).
 
 ### Unreleased
+- Corrigé : l’écran de veille Glass Minimal affichait encore le cercle avec l’initiale en haut à droite lorsque **Barre supérieure → Avatar** était désactivé, sur l’écran de veille et dans l’aperçu ([#52](https://github.com/kczepiec/nuvio/issues/52)).
 - Corrigé : la ligne **Discord** du menu utilisateur affiche le symbole Discord à côté du libellé, comme Profil et Paramètres affichent une icône. Home Assistant ne fournit plus cette icône de marque, le menu la dessine donc lui-même.
 - Corrigé : **Paramètres → Utilisateurs** affiche la photo de la personne lorsque ce compte Home Assistant est lié à une personne qui en a une. Sans photo, la lettre reste.
 

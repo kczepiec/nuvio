@@ -5,6 +5,7 @@
 All notable changes to Nuvio are listed here, newest first. Versions follow [semantic versioning](https://semver.org). The Polish changelog is in [CHANGELOG.pl.md](CHANGELOG.pl.md).
 
 ### Unreleased
+- Fixed: the Glass Minimal screensaver still showed the avatar circle in the top-right corner when **Top bar → Avatar** was off, in the live screensaver and in the preview ([#52](https://github.com/kczepiec/nuvio/issues/52)).
 - Fixed: the **Discord** row in the user menu shows the Discord mark next to the label, the same way Profile and Settings show an icon. Home Assistant no longer includes that brand icon, so the menu draws it itself.
 - Fixed: **Settings → Users** shows a person's photo when that Home Assistant user is linked to a person who has one. Rows without a photo keep the letter.
 

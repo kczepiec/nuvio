@@ -23,7 +23,7 @@ const HG_GL_SS = `
 .ng-top{ position:absolute; left:0; right:0; top:0; height:calc(124 * var(--u)); pointer-events:none; text-shadow:0 1px 3px ${K(0,0,0,.45)}, 0 2px 18px ${K(0,0,0,.35)}; z-index:1; }
 .ng-dt{ position:absolute; left:calc(44 * var(--u)); top:calc(46 * var(--u)); font-size:calc(25 * var(--u)); font-weight:400; letter-spacing:.005em; white-space:nowrap; }
 .ng-dt::first-letter{ text-transform:uppercase; }
-.ng-av{ display:grid; place-items:center; font-style:normal; font-size:calc(17 * var(--u)); font-weight:600; position:absolute; right:calc(48 * var(--u)); top:calc(42 * var(--u)); width:calc(40 * var(--u)); height:calc(40 * var(--u)); border-radius:50%; background:center/cover ${K(255,255,255,.18)}; box-shadow:0 2px 10px ${K(0,0,0,.3)}; }
+.ng-av{ display:grid; place-items:center; font-style:normal; font-size:calc(17 * var(--u)); font-weight:600; position:absolute; right:calc(48 * var(--u)); top:calc(42 * var(--u)); width:calc(40 * var(--u)); height:calc(40 * var(--u)); border-radius:50%; background:center/cover ${K(255,255,255,.18)}; box-shadow:0 2px 10px ${K(0,0,0,.3)}; } .ng-av[hidden]{ display:none; }
 .ng-fam{ position:absolute; right:calc(48 * var(--u)); bottom:calc(32 * var(--u)); display:flex; align-items:center; gap:calc(24 * var(--u)); font-size:calc(20 * var(--u)); font-weight:500; text-shadow:0 1px 3px ${K(0,0,0,.5)}, 0 2px 14px ${K(0,0,0,.4)}; }
 .ng-fam > span{ display:flex; gap:calc(15 * var(--u)); }
 .ng-fam i{ width:calc(40 * var(--u)); height:calc(40 * var(--u)); border-radius:50%; background:center/cover ${K(255,255,255,.2)}; box-shadow:0 0 0 calc(2 * var(--u)) ${K(255,255,255,.75)}; display:grid; place-items:center; font-style:normal; font-size:calc(15 * var(--u)); font-weight:600; transition:filter .6s ease; }
