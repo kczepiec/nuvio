@@ -4,7 +4,7 @@
 
 Toutes les modifications notables de Nuvio sont listées ici, des plus récentes aux plus anciennes. Les versions suivent le [versionnage sémantique](https://semver.org). Le journal des modifications en anglais se trouve dans [CHANGELOG.md](CHANGELOG.md), celui en polonais dans [CHANGELOG.pl.md](CHANGELOG.pl.md).
 
-### Non publié
+### 2.22.2
 - Corrigé : la tuile **Volet / portail** (ouvrir, arrêter, fermer) était coupée à droite sur un téléphone lorsqu’elle était seule sur le panneau. Sur une tuile étroite les boutons s’étiraient sur toute une rangée, mais cette rangée ne passait pas à la ligne, donc ils dépassaient de la carte. Ils passent maintenant sous le nom et restent dans la tuile. La tuile média utilise la même disposition. Sur un écran plus large, les boutons restent à droite ([#53](https://github.com/kczepiec/nuvio/issues/53)).
 - Ajouté : Discord dans le menu utilisateur, après Profil et Paramètres, et sur la page À propos de Nuvio. Les README anglais, polonais et français ont une section communauté et un badge Discord.
 

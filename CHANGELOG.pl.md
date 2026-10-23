@@ -4,7 +4,7 @@
 
 Tutaj zapisane są wszystkie istotne zmiany w Nuvio, od najnowszych. Wersje zgodne z [semantycznym wersjonowaniem](https://semver.org). Angielska lista zmian jest w [CHANGELOG.md](CHANGELOG.md).
 
-### Niewydane
+### 2.22.2
 - Poprawione: kafel **Roleta / brama** (otwórz, stop, zamknij) na telefonie był ucięty z prawej, gdy leżał na panelu osobno. Na wąskim kaflu przyciski rozciągały się na cały rząd, ale ten rząd się nie zawijał, więc wychodziły poza kartę. Teraz schodzą pod nazwę i mieszczą się w kaflu. Kafel mediów korzysta z tego samego układu. Na szerszym ekranie przyciski zostają po prawej ([#53](https://github.com/kczepiec/nuvio/issues/53)).
 - Dodane: Discord w menu użytkownika, po Profilu i Ustawieniach, oraz na stronie O Nuvio. Angielski, polski i francuski README mają sekcję społeczności i plakietkę Discord.
 

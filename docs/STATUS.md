@@ -52,6 +52,7 @@ Done: (a) no house-specific ids in dist (tools/guard.py, CI); (b) dashboard stra
 
 (av) 2.22.1 (PR #54): mobile Settings regression from 2.22.0: after hiding .lk-side the page fell into the auto grid row and the footer into the 1fr row; rows now auto/minmax(0,1fr)/auto with side and page on row 2; .rx-vx 1fr 1fr -> repeat(2, minmax(0,1fr)); .rx-fu hgs-t capped (all:unset reset min-width); .lk-sc overflow-x hidden; footer safe-area. tools/mobile_check.py (WebKit iPhone 13, Chromium 360x780, WebKit 768 tablet) run before each release; tests/js/settings-mobile.test.mjs.
 (aw) Discord community link (no bot): README.md, README.pl.md, README.fr.md (Community section and shields.io badge, guild 1563057427367075850). User menu in hg-oss c.menu after Profile and Settings (nav.discord, mdi:discord, action url https://discord.gg/rFG9y2hFMJ). About page link in _eAboutHtml. Test: tests/js/discord-menu.test.mjs.
+(ax) 2.22.2 (PR #58, #59): Discord community link in the READMEs, user menu and About. #53 cover and media tiles wrap open/stop/close (and media controls) under the name on a narrow phone tile (flex-wrap and row-gap on .hgtl.k-cover and .k-media outside the container query). tests/js/discord-menu.test.mjs, tests/js/cover-tile-layout.test.mjs.
 
 ## Planned (source of truth for README roadmap)
 
