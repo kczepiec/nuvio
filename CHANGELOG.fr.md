@@ -4,6 +4,9 @@
 
 Toutes les modifications notables de Nuvio sont listées ici, des plus récentes aux plus anciennes. Les versions suivent le [versionnage sémantique](https://semver.org). Le journal des modifications en anglais se trouve dans [CHANGELOG.md](CHANGELOG.md), celui en polonais dans [CHANGELOG.pl.md](CHANGELOG.pl.md).
 
+### Non publié
+- Corrigé : la tuile **Volet / portail** (ouvrir, arrêter, fermer) était coupée à droite sur un téléphone lorsqu’elle était seule sur le panneau. Sur une tuile étroite les boutons s’étiraient sur toute une rangée, mais cette rangée ne passait pas à la ligne, donc ils dépassaient de la carte. Ils passent maintenant sous le nom et restent dans la tuile. La tuile média utilise la même disposition. Sur un écran plus large, les boutons restent à droite ([#53](https://github.com/kczepiec/nuvio/issues/53)).
+
 ### 2.22.1
 - Corrigé : sur téléphone et tablette étroite, les paramètres **Vues et navigation** étaient coupés à gauche et réduits à la moitié de la largeur, et la page défilait sur le côté. Un sélecteur large (barre du téléphone) et les cartes de vues sur deux colonnes dépassaient l’écran, et la page se plaçait dans la mauvaise rangée de la grille une fois la barre latérale masquée. Les paramètres utilisent maintenant une seule colonne pleine largeur, le tableau des vues devient des cartes empilées avec tous les champs visibles, rien ne défile sur le côté et la barre **Restaurer les valeurs par défaut** / **Terminé** reste au-dessus de la navigation du bas et de l’indicateur d’accueil. Le nouveau `tools/mobile_check.py` vérifie chaque page des paramètres sur iPhone (WebKit), Android (360 px) et tablette 768 px avant chaque version.
 

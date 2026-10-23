@@ -288,8 +288,10 @@ const HG_TILE_CSS = `
 .hgtl .cv button, .hgtl .mc button, .hgtl .rb{ width:40px; height:40px; border-radius:50%; border:0; display:flex; align-items:center; justify-content:center; background:var(--hg-tile-bg); color:inherit; cursor:pointer; }
 .hgtl .mc .pw.on{ background:var(--hg-accent); color:var(--hg-on-accent); } .hgtl .cv em{ font-style:normal; font-size:12px; opacity:.66; }
 .hgtl .ma{ width:44px; height:44px; border-radius:12px; object-fit:cover; flex:none; }
-/* wąski kafel (S): przyciski rolety i odtwarzacza pod nazwą zamiast ją zasłaniać */
-@container (max-width: 330px){ .hgtl.k-cover, .hgtl.k-media{ flex-wrap:wrap; row-gap:8px; } .hgtl.k-cover .hgtb, .hgtl.k-media .hgtb{ flex:1 0 100%; }
+/* wąski kafel: przyciski rolety i odtwarzacza schodzą pod nazwę. flex-wrap jest poza @container,
+   bo zapytanie nie styluje samego kontenera (.hgtl), a potomkowie z flex-basis 100% bez zawijania wychodzą poza kafel (#53). */
+.hgtl.k-cover, .hgtl.k-media{ flex-wrap:wrap; row-gap:8px; }
+@container (max-width: 330px){ .hgtl.k-cover .hgtb, .hgtl.k-media .hgtb{ flex:1 0 100%; }
   .hgtl.k-cover .cv{ flex:1 0 100%; justify-content:space-between; } .hgtl.k-media .mc{ flex:1 0 100%; justify-content:flex-end; } }
 /* wąski kafel z wartością: mniejsza liczba i bez ikony, żeby nazwa się mieściła */
 @container (max-width: 210px){ .hgtl:has(.tv) .ti{ display:none; } .hgtl .tv{ font-size:22px; } .hgtl .tv em{ font-size:11px; } }
