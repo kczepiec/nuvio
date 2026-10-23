@@ -9,6 +9,7 @@
   <img src="https://img.shields.io/badge/Home%20Assistant-2024.8.0%2B-18BCF2?style=flat-square&logo=homeassistant&logoColor=white" alt="Home Assistant 2024.8.0+">
   <img src="https://img.shields.io/badge/version-v2.22.1-a3e635?style=flat-square" alt="v2.22.1">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT"></a>
+  <a href="https://discord.gg/rFG9y2hFMJ"><img src="https://img.shields.io/discord/1563057427367075850?style=flat-square&logo=discord&label=Discord&color=a3e635" alt="Discord"></a>
 </p>
 
 <p align="center"><a href="README.md">English</a> · <a href="README.pl.md">Polski</a> · <b>Français</b></p>
@@ -91,6 +92,11 @@ Plus de détails dans [docs/fr/configuration.md](docs/fr/configuration.md).
 | [Contribuer](CONTRIBUTING.md) | Signaler un bogue et proposer des modifications (en anglais) |
 | [Règles de conception](DESIGN.md) | Les règles d’interface que suit chaque fonctionnalité (en anglais) |
 | [Guide d’utilisation de la marque](assets/brand/guide/usage-guide.md) | Comment placer le logo Nuvio (en anglais) |
+
+## Communauté
+
+- Discord : [rejoindre](https://discord.gg/rFG9y2hFMJ) (aide, idées, journal des versions)
+- Issues : [github.com/kczepiec/nuvio/issues](https://github.com/kczepiec/nuvio/issues)
 
 ## Licence et crédits
 

@@ -1762,7 +1762,7 @@ const HG_EDIT = {
   _eAboutHtml() { const v = typeof HG_BUILD === 'string' && !HG_BUILD.startsWith('__') ? HG_BUILD : '', R = 'https://github.com/kczepiec/nuvio';
     return `<section class="lk-g lk-ab" data-tab="about" data-pg="about"><h4>${H.icon('mdi:information-outline')}${hgT('settings.about_title')}</h4><small class="lk-hn">${hgT('settings.about_hint')}</small>
       <span>${hgT('settings.version')}: <code>${H.esc(v.split('+')[0] || '?')}</code>${v.includes('+') ? ` <code>${H.esc(v.split('+')[1])}</code>` : ''}</span>
-      <a href="${R}#readme" target="_blank" rel="noopener">${hgT('settings.docs')}</a><a href="${R}/releases" target="_blank" rel="noopener">${hgT('settings.changelog')}</a><a href="${R}/issues/new/choose" target="_blank" rel="noopener">${hgT('settings.report')}</a></section>`; },
+      <a href="${R}#readme" target="_blank" rel="noopener">${hgT('settings.docs')}</a><a href="${R}/releases" target="_blank" rel="noopener">${hgT('settings.changelog')}</a><a href="${R}/issues/new/choose" target="_blank" rel="noopener">${hgT('settings.report')}</a><a href="https://discord.gg/rFG9y2hFMJ" target="_blank" rel="noopener">${hgT('nav.discord')}</a></section>`; },
   _eLook() {
     /* zachowaj przewinięcie i fokus między przerysowaniami (bez skoku na górę) */
     { const S0 = this._eSheetEl, sc0 = S0 && S0.querySelector('.hge-sheet.lk .hs-sc'); if (sc0) { const fe = S0.querySelector(':focus') || (S0.getRootNode && S0.getRootNode().activeElement), key = fe && fe.dataset ? ['hge', 'v', 'k', 'c'].map((x) => fe.dataset[x] || '').join('|') : ''; const top = sc0.scrollTop;
