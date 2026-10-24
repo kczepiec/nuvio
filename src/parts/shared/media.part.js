@@ -8,7 +8,9 @@ const hgMpActive = (s) => !!s && (['playing', 'paused', 'buffering'].includes(s.
    i skokami); wygasa 2,5 s po ostatnim kroku albo gdy stan HA ją osiągnie */
 const HG_NP_VOL = new Map();
 const hgNpPend = (e, cur) => { const p = HG_NP_VOL.get(e); if (!p) return null; if (Date.now() - p.t > 2500 || (cur != null && Math.abs(cur - p.v) < 0.005 && Date.now() - p.t > 300)) { HG_NP_VOL.delete(e); return null; } return p.v; };
-const HG_NP_COL = new Map();   // kolor okładki (średni) wg adresu obrazu: wpisywany w style przy renderze, więc łatanie DOM go nie gubi
+const HG_NP_COL = new Map(), HG_NP_COL_MAX = 200;
+/* pamięć podręczna z limitem (LRU): przez dzień przewijają się setki okładek, bez limitu mapa rosłaby przez całą sesję */
+const hgNpColSet = (u, v) => { HG_NP_COL.delete(u); HG_NP_COL.set(u, v); while (HG_NP_COL.size > HG_NP_COL_MAX) HG_NP_COL.delete(HG_NP_COL.keys().next().value); };   // kolor okładki (średni) wg adresu obrazu: wpisywany w style przy renderze, więc łatanie DOM go nie gubi
 const HG_NP_W = '#' + 'fff', HG_NP_K = '#' + '16181B';   /* stałe kolory (tło z okładki jest zawsze ciemne): poza zamianą kolorów motywu ciemnego */
 const HG_NP_CSS = `
 ha-card.np{ position:relative; overflow:hidden; display:flex; flex-direction:column; gap:12px; padding:16px 18px 16px; min-height:300px; container-type:inline-size; color:${HG_NP_W};
@@ -124,10 +126,10 @@ const hgNP = {
         for (const k of ['pointerup', 'pointercancel']) window.addEventListener(k, stop, true); }); }
     if (R.querySelector('.npg[data-pl="1"]')) card._npT = setInterval(() => { if (document.hidden || card._off) return; for (const g of R.querySelectorAll('.npg[data-pl="1"]')) { const d = +g.dataset.dur, p = Math.min(d, +g.dataset.pos + (Date.now() - +g.dataset.t) / 1000);
       g.querySelector('i').style.setProperty('--p', (p / d).toFixed(4)); const n = g.querySelectorAll('.npn span'); n[0].textContent = hgNP.tm(p); n[1].textContent = '-' + hgNP.tm(d - p); } }, 1000);
-    for (const bg of R.querySelectorAll('.npbg[data-pic]')) { const u = bg.dataset.pic; if (HG_NP_COL.has(u)) continue; HG_NP_COL.set(u, '');
+    for (const bg of R.querySelectorAll('.npbg[data-pic]')) { const u = bg.dataset.pic; if (HG_NP_COL.has(u)) continue; hgNpColSet(u, '');
       const im = new Image(); if (/^\/(?!\/)/.test(u)) im.crossOrigin = 'anonymous';
       im.onload = () => { try { const c = document.createElement('canvas'); c.width = c.height = 8; const x = c.getContext('2d'); x.drawImage(im, 0, 0, 8, 8); const d = x.getImageData(0, 0, 8, 8).data; let r = 0, g = 0, b = 0; for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i + 1]; b += d[i + 2]; }
-        const n = d.length / 4, v = `rgb(${Math.round(r / n)} ${Math.round(g / n)} ${Math.round(b / n)})`; HG_NP_COL.set(u, v); for (const k of R.querySelectorAll('.npbg[data-pic]')) if (k.dataset.pic === u) k.parentNode.style.setProperty('--mt', v); } catch (_) { /* obraz z innej domeny */ } };
+        const n = d.length / 4, v = `rgb(${Math.round(r / n)} ${Math.round(g / n)} ${Math.round(b / n)})`; hgNpColSet(u, v); for (const k of R.querySelectorAll('.npbg[data-pic]')) if (k.dataset.pic === u) k.parentNode.style.setProperty('--mt', v); } catch (_) { /* obraz z innej domeny */ } };
       im.src = u; }
   },
   /* akcje; zwraca true, gdy obsłużone */
