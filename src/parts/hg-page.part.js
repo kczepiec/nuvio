@@ -705,7 +705,10 @@ class HGPage extends HTMLElement {
     const nCount = Object.keys(this._notif).length;
     const badgeOf = (t) => !t.badge ? 0 : t.badge.chips ? t.badge.chips.reduce((n, c) => n + this._bdgN(c), 0) : this._bdgN(t.badge);
     const tabs = c.tabs.map((t) => ({ ...t, act: path === t.path || (t.match && hgMatch(t.match, path)), b: badgeOf(t) }));
-    const sig = JSON.stringify([!!this._editing, this._canEdit(), tabs.map((t) => [t.act, t.b]), nCount, ui, this._menuOpen, ui.person && H.st(this._hass, ui.person) ? H.st(this._hass, ui.person).attributes.entity_picture : '', !!(window.HGAssistUI && HGAssistUI.get().button)]);
+    /* cheap signature: primitives compared with === instead of JSON.stringify over the whole user object, which ran on every state update */
+    const ps0 = ui.person && H.st(this._hass, ui.person), sig = [!!this._editing, this._canEdit(), nCount, ui.person || '', ui.first || '', this._menuOpen,
+      ps0 ? ps0.attributes.entity_picture || '' : '', !!(window.HGAssistUI && HGAssistUI.get().button), tabs.map((t) => (t.act ? 'a' : '_') + t.b).join('|')];
+    if (!force && sig.length === this._sigTop.length && sig.every((v, i) => v === this._sigTop[i])) return; this._sigTop = sig;
     if (!force && sig === this._sigTop) return; this._sigTop = sig;
     const ps = ui.person && H.st(this._hass, ui.person);
     const av = ps && ps.attributes.entity_picture ? hgAvatar(this._hass, ui.person, 'uav') : `<span class="uav ini">${H.esc(ui.first[0] || '?')}</span>`;
