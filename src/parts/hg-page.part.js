@@ -755,8 +755,18 @@ class HGPage extends HTMLElement {
       const use = (tag) => { U.v = tag && cmp(tag, run) > 0 ? String(tag).replace(/^v/, '') : null; done(); };
       if (c && Date.now() - c.ts < 6 * 3600e3) use(c.tag);
       else fetch('https://api.github.com/repos/kczepiec/nuvio/releases/latest', { headers: { Accept: 'application/vnd.github+json' } }).then((r) => (r.ok ? r.json() : null)).then((j) => { const tag = j && j.tag_name; try { localStorage.setItem('nuvio:upd', JSON.stringify({ ts: Date.now(), tag })); } catch (e) { /* tryb prywatny */ } use(tag); }).catch(() => {}); }
-    if (typeof HG_ASSET === 'string' && !String(HG_BUILD).startsWith('__')) fetch(HG_ASSET + 'nuvio.js?nocache=' + Date.now(), { cache: 'no-store' }).then((r) => (r.ok ? r.text() : '')).then((t) => {
-      const m = new RegExp('HG_BUILD = ' + "'" + "([^']+)'").exec(t || ''); U.stale = m && m[1] !== HG_BUILD ? m[1].split('+')[0] : null; done(); }).catch(() => {});
+    /* the stale-bundle check no longer downloads the whole ~1.4 MB bundle on every page load to read one line: an If-None-Match
+       request with the bundle hash reads the first bytes only, and the server answers 304 when the file did not change. */
+    if (typeof HG_ASSET === 'string' && !String(HG_BUILD).startsWith('__')) {
+      const url = HG_ASSET + 'nuvio.js', key = 'nuvio:jsETag:' + HG_BUILD, rd = () => { try { return localStorage.getItem(key) || ''; } catch (e) { return ''; } };
+      fetch(url, { cache: 'no-cache', headers: rd() ? { 'If-None-Match': rd() } : {} }).then((r) => {
+        if (r.status === 304) { U.stale = null; return; }   /* done() would paint the header again with nothing changed */
+        if (!r.ok) return done();
+        const et = r.headers.get('etag');
+        return r.text().then((t) => { const m = new RegExp('HG_BUILD = ' + "'" + "([^']+)'").exec((t || '').slice(0, 400));
+          try { if (et && m) localStorage.setItem('nuvio:jsETag:' + m[1], et); } catch (e) { /* tryb prywatny */ }
+          U.stale = m && m[1] !== HG_BUILD ? m[1].split('+')[0] : null; done(); });
+      }).catch(() => {}); }
     done(); }
   _vEmpty() { clearTimeout(this._veT); this._veT = setTimeout(() => { const P = this._panelEl; if (!P || !P.isConnected) return;
     const vis = [...P.children].some((c) => c.classList.contains('cw') && c.dataset.hgk && !c.hidden && c.style.display !== 'none' && getComputedStyle(c).display !== 'none');
