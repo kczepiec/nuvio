@@ -4,7 +4,7 @@
 
 Tutaj zapisane są wszystkie istotne zmiany w Nuvio, od najnowszych. Wersje zgodne z [semantycznym wersjonowaniem](https://semver.org). Angielska lista zmian jest w [CHANGELOG.md](CHANGELOG.md).
 
-### Unreleased
+### 2.29.2
 - Dodano: każda lista wyboru (select) ma **wyszukiwarkę**, a długie listy ładują się po 10 pozycji z przewijaniem bez końca. Szukanie nie rozróżnia wielkości liter ani polskich znaków, więc „lazienka” znajdzie „Łazienka”. Listy czujników z tysiącami pozycji otwierają się szybciej.
 - Dodano: **pigułka obecności** w nagłówku pokoju można dotknąć (administrator), żeby wybrać czujnik obecności lub ruchu dla tego pokoju, tak jak przy temperaturze i wilgotności. Można wybrać „Automatycznie”, „Nie pokazuj” albo dodać czujnik, gdy pokój go nie ma.
 
