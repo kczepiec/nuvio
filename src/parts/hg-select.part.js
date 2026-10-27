@@ -28,12 +28,21 @@ const HGS_CSS = `
 .hgs-o svg{ flex:none; width:18px; height:18px; opacity:0; transform:scale(.6); transition:opacity .15s ease, transform .2s cubic-bezier(.2,.8,.2,1); }
 .hgs-o[aria-selected=true] svg{ opacity:1; transform:none; }
 .hgs-o[aria-disabled=true]{ opacity:.4 !important; cursor:default; }
-@media (pointer:coarse){ .hgs-t{ min-height:44px; font-size:16px; } .hgs-o{ min-height:46px; font-size:16px; } }
+.hgs-q{ position:sticky; top:-6px; z-index:1; list-style:none; margin:-6px -6px 4px; padding:6px; background:rgba(28,32,38,.92); }
+.hgs-si{ all:unset; box-sizing:border-box; width:100%; height:36px; padding:0 12px; border-radius:10px; font:inherit; font-size:14px; color:inherit; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.16); }
+.hgs-si:focus-visible{ border-color:var(--hg-accent, #a3e635); box-shadow:0 0 0 3px color-mix(in srgb, var(--hg-accent, #a3e635) 28%, transparent); }
+.hgs-em{ list-style:none; padding:10px 12px; opacity:.6; }
+@media (pointer:coarse){ .hgs-t{ min-height:44px; font-size:16px; } .hgs-o{ min-height:46px; font-size:16px; } .hgs-si{ height:42px; font-size:16px; } }
 @media (prefers-reduced-motion:reduce){ .hgs-l, .hgs-o, .hgs-c, .hgs-o svg{ transition:none !important; } }
 @media (prefers-color-scheme:light){ :host(:not([dark])) .hgs-l.lt{ background:rgba(255,255,255,.72); color:#1F2125; border-color:rgba(0,0,0,.08); } }
 `;
 const HGS_CHEV = '<svg class="hgs-c" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7.41 8.58 12 13.17l4.59-4.59L18 10l-6 6-6-6z"/></svg>';
 const HGS_TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
+const HGS_PAGE = 10;   /* ile opcji dopisujemy naraz (infinite scroll) */
+/* czysta logika wyszukiwarki i stronicowania (bez DOM, testowana w tests/js) */
+const hgsNorm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ł/g, 'l');
+const hgsFilter = (texts, q) => { const k = hgsNorm(q).trim(); return texts.map((t, i) => i).filter((i) => !k || hgsNorm(texts[i]).includes(k)); };
+const hgsNextPage = (shown, total, size = HGS_PAGE) => Math.min(total, shown + size);
 let hgsN = 0; const hgsOpen = new Set();   /* inne handlery Escape (arkusz, menu) ustępują, dopóki lista jest otwarta */   /* otwarte listy: zamykane, gdy ich przycisk zniknie z DOM (przerysowanie arkusza) */
 const hgsEsc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 function hgSelUp(sel) {
@@ -45,10 +54,18 @@ function hgSelUp(sel) {
   const lab = sel.getAttribute('aria-label') || (sel.closest('label') && (sel.closest('label').querySelector('span') || {}).textContent) || '';
   if (lab) t.setAttribute('aria-label', lab.trim());
   sel.after(t);
-  let L = null, act = -1, ta = '', taT = 0;
+  let L = null, act = -1, q = '', fl = [], shown = 0, Q = null;   /* act: pozycja w przefiltrowanej liście fl (indeksy opcji); shown: ile opcji dopisano do listy */
   const opts = () => [...sel.options];
+  const norm = hgsNorm;
+  const filt = () => { fl = hgsFilter(opts().map((o) => o.text), q); return fl; };
   const paint = () => { const o = sel.options[sel.selectedIndex]; t.innerHTML = `<span class="hgs-v">${hgsEsc(o ? o.text : '')}</span>${HGS_CHEV}`; t.disabled = sel.disabled; };
-  const mark = (i) => { act = i; if (!L) return; L.querySelectorAll('.hgs-o').forEach((n, k) => n.classList.toggle('on', k === i)); const n = L.children[i]; if (n) { L.setAttribute('aria-activedescendant', n.id); n.scrollIntoView({ block: 'nearest' }); } };
+  const row = (i) => { const o = sel.options[i]; return `<li class="hgs-o" role="option" id="${id}o${i}" data-i="${i}" aria-selected="${i === sel.selectedIndex}"${o.disabled ? ' aria-disabled="true"' : ''}>${HGS_TICK}<span>${hgsEsc(o.text)}</span></li>`; };
+  const more = () => { if (!L || shown >= fl.length) return; const f = shown; shown = hgsNextPage(shown, fl.length); L.insertAdjacentHTML('beforeend', fl.slice(f, shown).map(row).join('')); };   /* dopisz kolejną porcję (HGS_PAGE) */
+  const check = () => { while (L && shown < fl.length && L.scrollTop + L.clientHeight >= L.scrollHeight - 48) more(); };   /* infinite scroll: dopisz, gdy użytkownik dojdzie do dołu */
+  const mark = (p) => { act = p; if (!L) return; while (p >= shown && shown < fl.length) more(); const rs = L.querySelectorAll('.hgs-o'); rs.forEach((n, k) => n.classList.toggle('on', k === p)); const n = rs[p]; if (n) { L.setAttribute('aria-activedescendant', n.id); n.scrollIntoView({ block: 'nearest' }); } };
+  const renderRows = () => { if (!L) return; L.querySelectorAll('.hgs-o, .hgs-em').forEach((n) => n.remove()); filt(); shown = 0; more();
+    if (!fl.length) L.insertAdjacentHTML('beforeend', `<li class="hgs-em" role="presentation">${hgsEsc(hgT('roomx.no_results'))}</li>`); else mark(0);
+    check(); place(); };
   const pick = (i) => { const o = sel.options[i]; if (!o || o.disabled) return; if (sel.selectedIndex !== i) { sel.selectedIndex = i; sel.dispatchEvent(new Event('input', { bubbles: true, composed: true })); sel.dispatchEvent(new Event('change', { bubbles: true, composed: true })); } paint(); close(true); };
   const place = () => { if (!L) return; const r = t.getBoundingClientRect(), vh = innerHeight, vw = innerWidth, gap = 6;
     const want = Math.min(L.scrollHeight, 320), below = vh - r.bottom - gap - 8, above = r.top - gap - 8, up = below < Math.min(want, 200) && above > below;
@@ -67,28 +84,33 @@ function hgSelUp(sel) {
   function open() { if (L || sel.disabled) return; if (typeof sel._hgsFill === 'function') { sel._hgsFill(); paint(); }   /* pełna lista opcji dopiero przy otwarciu (np. tysiące czujników) */
     L = document.createElement('ul'); L.className = 'hgs-l'; L.id = id + 'l'; L.setAttribute('role', 'listbox'); L.tabIndex = -1;
     if (lab) L.setAttribute('aria-label', lab.trim());
-    L.innerHTML = opts().map((o, i) => `<li class="hgs-o" role="option" id="${id}o${i}" aria-selected="${i === sel.selectedIndex}"${o.disabled ? ' aria-disabled="true"' : ''} style="transition-delay:${Math.min(i, 8) * 18}ms">${HGS_TICK}<span>${hgsEsc(o.text)}</span></li>`).join('');
-    root.appendChild(L); hgsOpen.add(gone); if (t.getRootNode().activeElement !== t) t.focus({ preventScroll: true }); t.setAttribute('aria-expanded', 'true'); t.setAttribute('aria-controls', L.id); place(); mark(Math.max(0, sel.selectedIndex));
-    L.addEventListener('pointerdown', (e) => e.preventDefault());   // fokus zostaje na przycisku
-    L.addEventListener('click', (e) => { const li = e.target.closest('.hgs-o'); if (li) pick([...L.children].indexOf(li)); });
-    L.addEventListener('pointermove', (e) => { const li = e.target.closest('.hgs-o'); if (li) { const i = [...L.children].indexOf(li); if (i !== act) mark(i); } });
+    const ph = hgsEsc(hgT('common.search'));
+    L.innerHTML = `<li class="hgs-q" role="presentation"><input type="search" class="hgs-si" autocomplete="off" placeholder="${ph}" aria-label="${ph}"></li>`;
+    Q = L.querySelector('input'); q = ''; filt(); shown = 0;
+    root.appendChild(L); hgsOpen.add(gone); if (t.getRootNode().activeElement !== t) t.focus({ preventScroll: true }); t.setAttribute('aria-expanded', 'true'); t.setAttribute('aria-controls', L.id);
+    more(); const si = fl.indexOf(sel.selectedIndex); mark(si >= 0 ? si : 0); place(); check();
+    L.addEventListener('scroll', check);
+    Q.addEventListener('input', () => { q = Q.value; renderRows(); }); Q.addEventListener('keydown', key);
+    L.addEventListener('pointerdown', (e) => { if (!e.target.closest('input')) e.preventDefault(); });   // fokus zostaje na przycisku, chyba że klikasz w wyszukiwarkę
+    L.addEventListener('click', (e) => { const li = e.target.closest('.hgs-o'); if (li) pick(+li.dataset.i); });
+    L.addEventListener('pointermove', (e) => { const li = e.target.closest('.hgs-o'); if (li) { const p = [...L.querySelectorAll('.hgs-o')].indexOf(li); if (p !== act) mark(p); } });
     requestAnimationFrame(() => L && L.classList.add('in'));
     document.addEventListener('pointerdown', out, true); addEventListener('resize', rep); addEventListener('scroll', rep, true); }
   function close(focus) { if (!L) return; const l = L; L = null; hgsOpen.delete(gone); t.setAttribute('aria-expanded', 'false'); t.removeAttribute('aria-controls');
     l.classList.remove('in'); l.style.pointerEvents = 'none'; setTimeout(() => l.remove(), 240);
     document.removeEventListener('pointerdown', out, true); removeEventListener('resize', rep); removeEventListener('scroll', rep, true); if (focus && t.isConnected) t.focus(); }
-  const step = (d) => { const o = opts(); let i = act; for (let k = 0; k < o.length; k++) { i = (i + d + o.length) % o.length; if (!o[i].disabled) break; } mark(i); };
-  t.addEventListener('click', () => (L ? close(true) : open()));
-  t.addEventListener('keydown', (e) => { const k = e.key;
-    if (!L && ['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(k)) { e.preventDefault(); open(); return; }
-    if (!L) { if (k.length === 1) { e.preventDefault(); open(); } else return; }
+  const step = (d) => { const n = fl.length; if (!n) return; let p = act < 0 ? (d > 0 ? -1 : 0) : act; for (let k = 0; k < n; k++) { p = (p + d + n) % n; if (!sel.options[fl[p]].disabled) break; } mark(p); };
+  /* klawisze działają na przycisku i w wyszukiwarce; litera otwartej listy trafia do wyszukiwarki */
+  const key = (e) => { const k = e.key, typing = !!Q && e.target === Q;
+    if (!L) { if (['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(k)) { e.preventDefault(); open(); } return; }
     if (k === 'ArrowDown') { e.preventDefault(); step(1); } else if (k === 'ArrowUp') { e.preventDefault(); step(-1); }
-    else if (k === 'Home') { e.preventDefault(); mark(0); } else if (k === 'End') { e.preventDefault(); mark(sel.options.length - 1); }
-    else if (k === 'Enter' || k === ' ') { if (k === ' ' && ta) { ta += ' '; e.preventDefault(); return; } e.preventDefault(); pick(act); }
+    else if (k === 'Home' && !typing) { e.preventDefault(); mark(0); } else if (k === 'End' && !typing) { e.preventDefault(); mark(fl.length - 1); }
+    else if (k === 'Enter' || (k === ' ' && !typing)) { e.preventDefault(); if (act >= 0 && fl[act] != null) pick(fl[act]); }
     else if (k === 'Escape') { e.preventDefault(); e.stopPropagation(); close(true); }
     else if (k === 'Tab') close(false);
-    if (k.length === 1 && k !== ' ' || (k === ' ' && ta)) { clearTimeout(taT); ta += k.toLowerCase(); taT = setTimeout(() => { ta = ''; }, 600);
-      const o = opts(), n = o.length; for (let s = 0; s < n; s++) { const i = (act + (ta.length === 1 ? 1 : 0) + s) % n; if (o[i].text.toLowerCase().startsWith(ta)) { mark(i); break; } } } });
+    else if (!typing && k.length === 1) { e.preventDefault(); Q.value += k; q = Q.value; Q.focus(); renderRows(); } };
+  t.addEventListener('click', () => (L ? close(true) : open()));
+  t.addEventListener('keydown', key);
   sel.addEventListener('change', paint);
   new MutationObserver(paint).observe(sel, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled'] });
   paint();
