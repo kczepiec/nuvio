@@ -5,6 +5,7 @@
 All notable changes to Nuvio are listed here, newest first. Versions follow [semantic versioning](https://semver.org). The Polish changelog is in [CHANGELOG.pl.md](CHANGELOG.pl.md).
 
 ### Unreleased
+- Added: every dropdown (select) has a **search box**, and long lists load 10 options at a time with infinite scroll. Searching ignores case and Polish letters, so "lazienka" finds "Łazienka". Sensor pickers with thousands of entries open fast.
 - Added: the **presence** pill in the room header can be tapped (admins) to pick the presence or motion sensor for that room, like the temperature and humidity. Choose "Automatic", "Do not show" or add a sensor when the room has none.
 - Added: **title size** for the view header per device (phone, tablet, wide): Small, Medium (default, the current look), Large and XL. XL is clock-sized, so `{time}` can be read across a room. Set in the header editor, with a live preview.
 - Added: **Show weather in the header** switch on the Look page. Turn it off when a Weather card already shows the forecast (default on).
