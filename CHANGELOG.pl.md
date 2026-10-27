@@ -4,6 +4,9 @@
 
 Tutaj zapisane są wszystkie istotne zmiany w Nuvio, od najnowszych. Wersje zgodne z [semantycznym wersjonowaniem](https://semver.org). Angielska lista zmian jest w [CHANGELOG.md](CHANGELOG.md).
 
+### Unreleased
+- Dodano: **pigułka obecności** w nagłówku pokoju można dotknąć (administrator), żeby wybrać czujnik obecności lub ruchu dla tego pokoju, tak jak przy temperaturze i wilgotności. Można wybrać „Automatycznie”, „Nie pokazuj” albo dodać czujnik, gdy pokój go nie ma.
+
 ### 2.27.0
 - Dodano: **wygląd zegara** na wygaszaczu tabletu ściennego (zgłoszenie #41). Wygląd → Tryb tabletu ściennego ma podgląd na żywo i opcje: czcionkę (systemowa, szeryfowa, monospace, zaokrąglona albo własna z adresu `/local/…` lub `https://…`), rozmiar, grubość, kolor (biały, akcent albo własny), cień i przezroczystość. Ustawienia działają na zegarze na zdjęciu, Nocnym, Zorzy, Klapkowym i Minimal (szkło). Domyślne wartości zachowują obecny wygląd, a **Przywróć domyślne** je przywraca.
 
