@@ -4,6 +4,9 @@
 
 All notable changes to Nuvio are listed here, newest first. Versions follow [semantic versioning](https://semver.org). The Polish changelog is in [CHANGELOG.pl.md](CHANGELOG.pl.md).
 
+### Unreleased
+- Fixed: the **"Wykrywanie pracy"** (climate detection) header in room settings no longer shows an oversized icon.
+
 ### 2.29.2
 - Added: every dropdown (select) has a **search box**, and long lists load 10 options at a time with infinite scroll. Searching ignores case and Polish letters, so "lazienka" finds "Łazienka". Sensor pickers with thousands of entries open fast.
 - Added: the **presence** pill in the room header can be tapped (admins) to pick the presence or motion sensor for that room, like the temperature and humidity. Choose "Automatic", "Do not show" or add a sensor when the room has none.
