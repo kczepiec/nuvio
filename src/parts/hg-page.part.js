@@ -600,23 +600,33 @@ class HGPage extends HTMLElement {
     const hum = env.u != null ? sb('humidity', 'ru', `${H.icon('mdi:water-percent')}${H.pct(H.fmt(env.u, 0))}`, `${hgT('common.humidity')} ${H.pct(H.fmt(env.u, 0))}`) : '';
     const add = (k, ic, l) => (adm && ov[k] !== '-' && HGAreas.cands(h, a, k).length ? `<button type="button" class="rp rsadd" data-act="roomsens" data-k="${k}" aria-haspopup="menu">${H.icon(ic)}${l}</button>` : '');
     const adds = (env.t == null ? add('temperature', 'mdi:thermometer-plus', hgT('page.temperature')) : '') + (env.u == null ? add('humidity', 'mdi:water-plus', hgT('common.humidity')) : '');
-    const occ = (S.mot || []).filter(okS), occOn = occ.some((e) => h.states[e].state === 'on');
+    /* obecność: wybór z nagłówka trafia do wiz.areas.sensors[pokój].presence (encja, '-' = nie pokazuj). Bez wyboru używane są czujniki ruchu i obecności z pokoju. */
+    const pOv = ov.presence, occ = pOv === '-' ? [] : pOv && h.states[pOv] ? [pOv] : (S.mot || []).filter(okS), occOn = occ.some((e) => h.states[e].state === 'on');
+    const occTxt = `<i></i>${occOn ? hgT('page.occupied') : hgT('page.clear')}`;
     const lOn = (S.light || []).filter((e) => okS(e) && h.states[e].state === 'on').length;
     const opn = (S.door || []).filter((e) => okS(e) && h.states[e].state === 'on').length;
-    const pills = [occ.length ? `<span class="rp ${occOn ? 'on' : ''}"><i></i>${occOn ? hgT('page.occupied') : hgT('page.clear')}</span>` : '',
+    const occLbl = H.lv(hgT('cards.room.title_presence'), occOn ? hgT('page.occupied') : hgT('page.clear'));
+    const occPill = occ.length ? (adm ? sb('presence', `rp ${occOn ? 'on' : ''}`, occTxt, occLbl) : `<span class="rp ${occOn ? 'on' : ''}">${occTxt}</span>`) : '';
+    const occAdd = !occ.length && adm && pOv !== '-' && this._presCands(h, a).length ? `<button type="button" class="rp rsadd" data-act="roomsens" data-k="presence" aria-haspopup="menu">${H.icon('mdi:account-plus-outline')}${hgT('cards.room.title_presence')}</button>` : '';
+    const pills = [occPill,
       lOn ? `<span class="rp lt">${H.icon('mdi:lightbulb-on')}${hgT('page.lights_on_count', { count: lOn })}</span>` : '',
-      opn ? `<span class="rp op">${H.icon('mdi:door-open')}${hgT('page.open_count', { count: opn })}</span>` : '', adds].join('');
+      opn ? `<span class="rp op">${H.icon('mdi:door-open')}${hgT('page.open_count', { count: opn })}</span>` : '', occAdd, adds].join('');
     const sub = big || hum || pills ? `${big}${hum}${pills ? `<span class="rps">${pills}</span>` : ''}` : `<span>${a.devN ? hgT('page.devices_count', { count: a.devN }) : hgT('page.no_devices')}</span>`;
     const ttl = this._headPick(hd, 't', a.name, a.name), ic = /^mdi:[a-z0-9-]+$/.test(hd.i || '') ? hd.i : a.icon, st = this._headPick(hd, 's', '', a.name);
     return `${back}<h1 class="rh" title="${H.esc(ttl)}">${H.icon(ic, 'rhi')}<span>${H.esc(ttl)}</span></h1>${hd.nos ? '' : `<p class="renv">${st ? `<span>${H.esc(st)}</span>` : sub}</p>`}`;
   }
-  /* wybór czujnika temperatury / wilgotności pokoju z nagłówka; zapis w wiz.areas.sensors (to samo co Wygląd → Pokoje, więc eksport i import działają bez zmian) */
+  /* czujniki obecności / ruchu do wyboru dla pokoju: najpierw z pokoju, potem pozostałe (bez ukrytych i niedostępnych) */
+  _presCands(h, a) { const reg = h.entities || {}, inR = new Set(a.ents || []);
+    const all = Object.keys(h.states).filter((e) => e.startsWith('binary_sensor.') && ['occupancy', 'presence', 'motion'].includes(h.states[e].attributes.device_class) && h.states[e].state !== 'unavailable' && !(reg[e] && reg[e].hidden));
+    return [...all.filter((e) => inR.has(e)), ...all.filter((e) => !inR.has(e))]; }
+  /* wybór czujnika temperatury / wilgotności / obecności pokoju z nagłówka; zapis w wiz.areas.sensors (to samo co Wygląd → Pokoje, więc eksport i import działają bez zmian) */
   async _roomSens(t) {
     const h = this._hass, k = t.dataset.k, a = HGAreas.model(h, this._config.areas || HG_NO_AREAS).byId[HGAreas.areaFromUrl()]; if (!a || !h) return;
     const cur = (((((HGL.data || {}).wiz || {}).areas || {}).sensors || {})[a.id] || {})[k] || '', inR = new Set(a.ents || []), T = k === 'temperature';
-    const fmt = (e) => { const v = parseFloat(h.states[e].state); return isFinite(v) ? (T ? `${H.fmt(v, 1)}°` : H.pct(H.fmt(v, 0))) : hgT('common.state_unavailable_masc'); };
-    const cs = HGAreas.cands(h, a, k), shown = cs.filter((e) => inR.has(e) || e === cur).concat(cs.filter((e) => !inR.has(e) && e !== cur).slice(0, 8));
-    const ic = T ? 'mdi:thermometer' : 'mdi:water-percent';
+    const P = k === 'presence';
+    const fmt = (e) => { if (P) return H.stateLabel ? H.stateLabel(h.states[e].state) : h.states[e].state; const v = parseFloat(h.states[e].state); return isFinite(v) ? (T ? `${H.fmt(v, 1)}°` : H.pct(H.fmt(v, 0))) : hgT('common.state_unavailable_masc'); };
+    const cs = P ? this._presCands(h, a) : HGAreas.cands(h, a, k), shown = cs.filter((e) => inR.has(e) || e === cur).concat(cs.filter((e) => !inR.has(e) && e !== cur).slice(0, 8));
+    const ic = P ? 'mdi:account-outline' : T ? 'mdi:thermometer' : 'mdi:water-percent';
     const items = [{ label: hgT('common.automatic'), icon: 'mdi:auto-fix', value: '', checked: !cur }, '-',
       ...shown.map((e) => ({ label: `${inR.has(e) ? HGAreas.name(h, e, a) : H.name(h, e)} · ${fmt(e)}`, icon: ic, value: e, checked: e === cur })), '-',
       { label: hgT('page.do_not_show'), icon: 'mdi:eye-off-outline', value: '-', checked: cur === '-' },
@@ -1117,6 +1127,7 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 .head .renv .rsens .pen{ flex:none; display:inline-grid; place-items:center; width:max(16px, .52em); height:max(16px, .52em); margin-left:.3em; font-size:inherit; border-radius:50%; background:color-mix(in srgb, currentColor 14%, transparent); opacity:.55; transition:opacity var(--hg-t-fast) var(--hg-ease-out), background-color var(--hg-t-fast) var(--hg-ease-out), color var(--hg-t-fast) var(--hg-ease-out), transform var(--hg-t-fast) var(--hg-ease-out); }
 .head .renv .rsens .pen ha-icon{ width:62%; height:62%; --mdc-icon-size:100%; opacity:1; } .head .renv .ru.rsens .pen{ width:max(16px, .9em); height:max(16px, .9em); margin-left:.3em; }
 @media (hover:hover) and (pointer:fine){ .head .rsens:hover .pen{ opacity:1; background:var(--hg-accent); color:var(--hg-on-accent, #111); transform:scale(1.08); } }
+.head .rp.rsens{ height:30px; padding:0 12px; border-radius:15px; font-size:13.5px; font-weight:600; color:#fff; background:rgba(0,0,0,.28); gap:6px; } .head .rp.rsens .pen{ width:16px; height:16px; margin-left:2px; }
 .head .rsens:active .pen{ transform:scale(.92); } .head .rsens:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:4px; } .head .rsens:focus-visible .pen{ opacity:1; } .head .rsadd:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 @media (prefers-reduced-motion:reduce){ .head .renv .rsens .pen{ transition:none; } .head .rsens:hover .pen, .head .rsens:active .pen{ transform:none; } }
 .head .rsadd{ font:inherit; font-size:13.5px; font-weight:600; border:0; cursor:pointer; opacity:.85; } .head .rsadd:hover{ opacity:1; } .head .renv .rt, .head .renv .ru{ flex:none; white-space:nowrap; } .head .rp{ white-space:nowrap; }
