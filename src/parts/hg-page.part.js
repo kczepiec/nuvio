@@ -632,10 +632,10 @@ class HGPage extends HTMLElement {
       { label: hgT('page.do_not_show'), icon: 'mdi:eye-off-outline', value: '-', checked: cur === '-' },
       { label: hgT('page.all_room_settings'), icon: 'mdi:cog-outline', value: '@set' }];
     const v = await hgOverlay.menu(t, items); if (v == null || v === cur) return;
-    if (v === '@set') { if (window.HGRoomsX) { HGRoomsX.open = a.id; } this._lkTab = 'rooms'; this._lkDD = 'page'; return this._eLook && this._eLook(); }
+    if (v === '@set') { if (window.HGRoomsX) { HGRoomsX.open = a.id; } this._lkTab = 'rooms'; this._lkDD = 'page'; if (!this._editing && this._editEnter) this._editEnter(); /* bez trybu edycji klik nie jest podpięty (_eWire), więc Zapisz i edycja pokoju nie działają */ return this._editing && this._eLook ? this._eLook() : undefined; }
     const W = HGL.data.wiz = Object.assign({}, HGL.data.wiz || {}), A = W.areas = JSON.parse(JSON.stringify(W.areas || {})), S = A.sensors = A.sensors || {}, o = Object.assign({}, S[a.id]);
     if (v) o[k] = v; else delete o[k]; if (Object.keys(o).length) S[a.id] = o; else delete S[a.id]; W.ts = Date.now();
-    if (window.HGRoomsX && !HGRoomsX.dirty) HGRoomsX.draft = null;
+    if (window.HGRoomsX) { if (!HGRoomsX.dirty) HGRoomsX.draft = null; else if (HGRoomsX.draft) { const D = HGRoomsX.draft, DS = D.sensors = Object.assign({}, D.sensors); if (S[a.id]) DS[a.id] = Object.assign({}, S[a.id]); else delete DS[a.id]; } }
     this._paintHead(); for (const el of this._cards || []) if (el._update) { el._entsC = null; el._update(true); }
     const r = await HGL.save(h); if (r !== 'ha' && !window.__hgDryRun && hgOverlay.toast) hgOverlay.toast(hgT('page.saved_on_this_device'));
   }
