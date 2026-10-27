@@ -5,6 +5,7 @@
 All notable changes to Nuvio are listed here, newest first. Versions follow [semantic versioning](https://semver.org). The Polish changelog is in [CHANGELOG.pl.md](CHANGELOG.pl.md).
 
 ### Unreleased
+- Fixed: **room settings** opened from the room header (sensor menu, "All room settings") now enter edit mode first, so the Save buttons and whole-room editing work. A sensor picked in the header is no longer overwritten by a later Save.
 - Fixed: the **"Wykrywanie pracy"** (climate detection) header in room settings no longer shows an oversized icon.
 
 ### 2.29.2

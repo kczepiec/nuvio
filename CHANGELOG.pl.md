@@ -5,6 +5,7 @@
 Tutaj zapisane są wszystkie istotne zmiany w Nuvio, od najnowszych. Wersje zgodne z [semantycznym wersjonowaniem](https://semver.org). Angielska lista zmian jest w [CHANGELOG.md](CHANGELOG.md).
 
 ### Unreleased
+- Naprawiono: **ustawienia pokoju** otwierane z nagłówka pokoju (menu czujnika, „Wszystkie ustawienia pokoju”) wchodzą najpierw w tryb edycji, więc przyciski Zapisz i edycja całego pokoju działają. Czujnik wybrany w nagłówku nie jest już nadpisywany przez późniejszy zapis.
 - Naprawiono: nagłówek **„Wykrywanie pracy”** (wykrywanie pracy klimatyzacji) w ustawieniach pokoju nie pokazuje już za dużej ikony.
 
 ### 2.29.2
