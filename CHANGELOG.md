@@ -4,6 +4,9 @@
 
 All notable changes to Nuvio are listed here, newest first. Versions follow [semantic versioning](https://semver.org). The Polish changelog is in [CHANGELOG.pl.md](CHANGELOG.pl.md).
 
+### 2.30.1
+- Fixed: the **Look** settings dialog opened empty or not at all after the night schedule was added. It works again.
+
 ### 2.30.0
 - Added: **night schedule** for the wall tablet screensaver. Turn it on under Wall tablet mode and the screensaver switches to its own style and dimming during the night, either from sunset to sunrise (sun entity) or between two set hours, which can cross midnight. Off by default; daytime settings stay as they were.
 - Added: the screensaver can **wake from a list of sensors** instead of one. Pick several motion, occupancy or presence binary sensors; any of them turning on wakes the screensaver. Existing single-sensor setups migrate automatically.

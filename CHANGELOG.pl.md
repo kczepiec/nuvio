@@ -4,6 +4,9 @@
 
 Tutaj zapisane są wszystkie istotne zmiany w Nuvio, od najnowszych. Wersje zgodne z [semantycznym wersjonowaniem](https://semver.org). Angielska lista zmian jest w [CHANGELOG.md](CHANGELOG.md).
 
+### 2.30.1
+- Naprawiono: okno ustawień **Wygląd** nie otwierało się po dodaniu harmonogramu nocnego. Znów działa.
+
 ### 2.30.0
 - Dodano: **harmonogram nocny** wygaszacza w trybie tabletu ściennego. Po włączeniu w Tryb tabletu ściennego wygaszacz w nocy przyjmuje własny styl i przyciemnienie, od zachodu do wschodu słońca (encja sun) albo między dwiema ustawionymi godzinami, także przez północ. Domyślnie wyłączony, ustawienia dzienne zostają bez zmian.
 - Dodano: wygaszacz może **wybudzać się z listy czujników** zamiast z jednego. Wybierz kilka czujników ruchu, zajętości lub obecności; włączenie dowolnego z nich wybudza wygaszacz. Dotychczasowe ustawienie z jednym czujnikiem przenosi się automatycznie.
