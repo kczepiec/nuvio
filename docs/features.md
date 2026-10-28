@@ -2,7 +2,7 @@
 
 # Features guide
 
-How the shared dashboard, wall tablet mode and layout backup work. Back to the [README](../README.md).
+How the shared dashboard, wall tablet mode, layout backup and the voice assistant work. Back to the [README](../README.md).
 
 ## Shared dashboard
 
@@ -62,6 +62,23 @@ Admins can export and import the whole Nuvio layout from **Appearance → Layout
 - **Import** accepts a file (picker or drag and drop) or pasted JSON. The file is validated and a summary shows the number of views, widgets, sections and entities, with entities missing on this instance highlighted. Pick the parts to import and **Replace** or **Merge**.
 - Before importing, the current layout is kept as a backup; **Restore previous** in the notification (or in the Layout backup section) undoes the import with one click.
 - The file is versioned (`format`, `schema`, `nuvio`, `exported`). Older raw layout data is converted automatically; files from a newer schema or damaged files are rejected with a clear message.
+
+## Voice assistant
+
+Talk to the Home Assistant assistant (Assist) without leaving the dashboard. Open it with the microphone button in the header or the **A** key when you are not typing in a field.
+
+<p align="center">
+  <img src="screenshots/demo_assist_bar_dark_1440.png" alt="Voice bar on a desktop: what it heard in quotes and the reply below" width="74%">
+  <img src="screenshots/demo_assist_bar_dark_390.png" alt="Voice bar on a phone" width="18%">
+</p>
+
+- **Voice bar** (default): a glass bar slides in at the top of the screen and listens right away. Green bars follow your voice, then the bar shows what it heard in quotes and the reply below. With **Read replies aloud** the reply is spoken.
+- **Hides by itself**: 2 seconds after a spoken reply, otherwise after enough time to read it (2.5 to 8 seconds), also after an error. Escape or a click next to the bar closes it sooner. Tap the bars to stop listening, to interrupt a spoken reply or to speak again.
+- **Speech recognition**: the sound goes to the speech-to-text engine of the assistant (for example Whisper or Home Assistant Cloud), the same as in the Home Assistant app. This needs Home Assistant opened over HTTPS (or `localhost`) and an assistant with a speech-to-text engine. Otherwise Nuvio uses speech recognition in the browser (Chrome, Edge, Safari), and if there is none, a text field opens.
+- **Follow-up questions**: when the assistant asks back (for example "Which room?"), the bar listens again in the same conversation.
+- **When something goes wrong**: no access to the microphone, no microphone, a microphone in use by another app or nothing heard each show a short message, and a text field opens where it helps. When the page goes to the background (another tab, a locked phone), the bar closes and the microphone turns off.
+- **Settings**: **Settings > System > Assist**, saved for the Home Assistant user: header button, keyboard shortcut A, default assistant, **Style** (*Voice bar* or *Chat window*, the earlier dialog with bubbles), **Listen on open**, **Keep the conversation going**, **Read replies aloud** (on by default in the voice bar), microphone and suggestions (chat window).
+- Settings from earlier versions keep working: with no style saved you get the voice bar, and a saved **Read replies aloud** stays as it was.
 
 ## Nuvio TV
 

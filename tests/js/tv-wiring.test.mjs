@@ -39,7 +39,7 @@ test('hg-tv: każda akcja data-hge ma prefiks tv- i jest obsłużona w act()', (
 
 test('build.py: części logiki i strony są w PAGE po hg-users, przed hg-assist', () => {
   const page = rd('tools/build.py').split('\n').find((l) => l.startsWith('PAGE = '));
-  assert.ok(page.includes("'hg-users.part.js', 'hg-tvlogic.part.js', 'hg-tv.part.js', 'hg-assist.part.js'"));
+  assert.ok(page.includes("'hg-users.part.js', 'hg-tvlogic.part.js', 'hg-tv.part.js', 'hg-voice.part.js', 'hg-assist.part.js'"));
 });
 
 test('katalogi: strona tv i przestrzeń tv.* mają te same klucze w en, pl i fr', () => {

@@ -4,6 +4,9 @@
 
 Toutes les modifications notables de Nuvio sont listées ici, des plus récentes aux plus anciennes. Les versions suivent le [versionnage sémantique](https://semver.org). Le journal des modifications en anglais se trouve dans [CHANGELOG.md](CHANGELOG.md), celui en polonais dans [CHANGELOG.pl.md](CHANGELOG.pl.md).
 
+### Unreleased
+- Ajouté : **assistant vocal** à la place de la fenêtre de discussion Assist. Une barre en verre descend en haut de l’écran, écoute aussitôt, affiche entre guillemets ce qu’elle a entendu avec la réponse en dessous, lit la réponse à voix haute et se masque seule. La voix est envoyée au moteur de reconnaissance vocale de l’assistant Home Assistant (HTTPS requis), avec la reconnaissance vocale du navigateur et un champ de texte en secours. Elle écoute à nouveau quand l’assistant pose une question. Nouveaux réglages dans **Paramètres > Système > Assist** : **Apparence** (barre vocale ou ancienne fenêtre de discussion), **Écouter à l’ouverture** et **Conversation continue**. Voir [Assistant vocal](docs/fr/features.md#assistant-vocal).
+
 ### 2.26.1
 - Corrigé : **pièce** — les chips présence/mouvement et portes/fenêtres forment des sections distinctes, qu’on peut supprimer ou masquer dans l’éditeur de pièce, comme les autres sections.
 - Corrigé : **contenu TV** ne conserve plus une tuile de composant d’édition séparée lorsque les mêmes entités sont déjà couvertes par un profil d’appareil (une seule tuile purificateur/serrure).
