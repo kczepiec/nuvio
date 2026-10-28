@@ -235,7 +235,7 @@ Object.assign(HGWall, {
     else if (id === 'cal') this.set({ calX: tog(B.calX) });
     else if (id === 'room') this.set({ roomX: tog(B.roomX) });
     else if (id === 'wx') { this._fc = null; this.set({ wxE: add ? k : '' }); }
-    else if (id === 'sens') { this._ms = undefined; this.set({ sensor: add ? k : '' }); }
+    else if (id === 'sens') { this._ms = undefined; const cur = this.get().sensors; this.set({ sensors: add ? [...new Set([...cur, k])] : cur.filter((x) => x !== k) }); }
     else return false; return true; },
   bdHtml(c, h) { const B = this.bget(), seg = (a, list, cur) => `<div class="wl-seg" style="--n:${list.length}">${list.map(([k, t]) => `<button type="button" data-hge="${a}" data-v="${k}" aria-pressed="${cur === k}">${t}</button>`).join('')}</div>`;
     const style = `<div class="wl-f" role="group" aria-labelledby="wl-st"><span id="wl-st">${hgT('wallboard.screensavers')}</span>${this.galHtml ? this.galHtml(B.style) : seg('wl-style', [['photo', hgT('wallboard.style_photo')], ['board', hgT('wallboard.style_board')], ['glass', hgT('wallboard.style_glass')]], B.style)}</div>`;
