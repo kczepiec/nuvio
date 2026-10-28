@@ -2,7 +2,7 @@
 
 # Guide des fonctionnalités
 
-Fonctionnement du tableau de bord partagé, du mode tablette murale et de la sauvegarde de la disposition. Retour au [README](../../README.fr.md).
+Fonctionnement du tableau de bord partagé, du mode tablette murale, de la sauvegarde de la disposition et de l’assistant vocal. Retour au [README](../../README.fr.md).
 
 ## Tableau de bord partagé
 
@@ -58,3 +58,20 @@ Les administrateurs peuvent exporter et importer toute la disposition de Nuvio d
 - **Importer** accepte un fichier (sélecteur ou glisser-déposer) ou du JSON collé. Le fichier est validé et un résumé indique le nombre de vues, de widgets, de sections et d’entités, en signalant les entités absentes de cette instance. Choisissez les parties à importer, puis **Remplacer** ou **Fusionner**.
 - Avant l’import, la disposition actuelle est conservée comme sauvegarde ; **Restaurer la précédente** dans la notification (ou dans la section Sauvegarde de la disposition) annule l’import en un clic.
 - Le fichier est versionné (`format`, `schema`, `nuvio`, `exported`). Les anciennes données de disposition brutes sont converties automatiquement ; les fichiers d’un schéma plus récent ou endommagés sont refusés avec un message clair.
+
+## Assistant vocal
+
+Parlez à l’assistant Home Assistant (Assist) sans quitter le tableau de bord. Ouvrez-le avec le bouton micro de l’en-tête ou la touche **A** quand vous n’écrivez pas dans un champ.
+
+<p align="center">
+  <img src="../screenshots/demo_assist_bar_dark_1440.png" alt="Barre vocale sur ordinateur : ce qu’elle a entendu entre guillemets et la réponse en dessous" width="74%">
+  <img src="../screenshots/demo_assist_bar_dark_390.png" alt="Barre vocale sur téléphone" width="18%">
+</p>
+
+- **Barre vocale** (par défaut) : une barre en verre descend en haut de l’écran et écoute aussitôt. Des barres vertes suivent votre voix, puis la barre affiche entre guillemets ce qu’elle a entendu et la réponse en dessous. Avec **Lire les réponses à voix haute**, la réponse est prononcée.
+- **Se masque seule** : 2 secondes après une réponse lue, sinon après le temps de la lire (2,5 à 8 secondes), aussi après une erreur. Échap ou un clic à côté de la barre la ferme plus tôt. Touchez les barres pour arrêter l’écoute, interrompre la lecture ou parler à nouveau.
+- **Reconnaissance vocale** : le son est envoyé au moteur de reconnaissance vocale de l’assistant (par exemple Whisper ou Home Assistant Cloud), comme dans l’application Home Assistant. Il faut Home Assistant ouvert en HTTPS (ou `localhost`) et un assistant avec un moteur de reconnaissance vocale. Sinon Nuvio utilise la reconnaissance vocale du navigateur (Chrome, Edge, Safari) et, à défaut, ouvre un champ de texte.
+- **Questions de suivi** : quand l’assistant pose une question (par exemple « Dans quelle pièce ? »), la barre écoute à nouveau dans la même conversation.
+- **En cas de problème** : pas d’accès au micro, pas de micro, micro utilisé par une autre application ou rien entendu affichent un court message, et un champ de texte s’ouvre quand c’est utile. Quand la page passe en arrière-plan (autre onglet, téléphone verrouillé), la barre se ferme et coupe le micro.
+- **Réglages** : **Paramètres > Système > Assist**, enregistrés pour l’utilisateur Home Assistant : bouton dans l’en-tête, raccourci clavier A, assistant par défaut, **Apparence** (*Barre vocale* ou *Fenêtre de discussion*, l’ancienne fenêtre avec des bulles), **Écouter à l’ouverture**, **Conversation continue**, **Lire les réponses à voix haute** (activé par défaut dans la barre vocale), micro et suggestions (fenêtre de discussion).
+- Les réglages des versions précédentes restent valables : sans apparence enregistrée, c’est la barre vocale, et **Lire les réponses à voix haute** garde sa valeur enregistrée.

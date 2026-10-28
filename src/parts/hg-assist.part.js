@@ -1,6 +1,7 @@
 /* Assist jako okno dialogowe (0.11.0): szklane okno na komputerze, arkusz od dołu na telefonie.
    Jedna instancja na stronę, nigdy nie montowana ponownie: rozmowa (i conversation_id) trwa przez całą sesję.
-   Ustawienia w panelu Ustawienia, karta „Nagłówek i nawigacja”; zapis w danych użytkownika (HGL.data.assist). */
+   Ustawienia w panelu Ustawienia, karta „Nagłówek i nawigacja”; zapis w danych użytkownika (HGL.data.assist).
+   Tryb głosowy (mode: 'voice', domyślny): zamiast okna pasek u góry, słucha od razu po otwarciu (listen), dalej przy dopytaniu (continue). */
 const HG_ASSIST_CSS = `
 .as-l{ position:fixed; inset:0; z-index:1002; visibility:hidden; pointer-events:none; }
 .as-l.open{ visibility:visible; pointer-events:auto; }
@@ -26,6 +27,16 @@ const HG_ASSIST_CSS = `
   .as-l.in .as-d{ transform:none; transition:transform var(--hg-t-slow, 320ms) var(--hg-spring, cubic-bezier(.2,.8,.2,1)); }
   .as-l .grab{ display:block; flex:none; width:40px; height:5px; border-radius:3px; margin:8px auto 0; background:currentColor; opacity:.25; }
 }
+/* tryb głosowy: zamiast okna pasek u góry ekranu, jak powiadomienie (wjeżdża z góry, tylko transform); bez przyciemnienia, kliknięcie obok nadal zamyka */
+.as-l.vm .as-scrim{ background:transparent; }
+/* wejście: zjazd z góry ze sprężystym dojściem i lekkim powiększeniem; wyjście: krótko i szybko w górę */
+.as-l.vm .as-d{ inset:calc(env(safe-area-inset-top, 0px) + 84px) 0 auto 0; margin:0 auto; width:min(1040px, calc(100vw - 32px)); height:auto; max-height:calc(100dvh - 120px);
+  border-radius:calc(var(--hg-radius, 24px) + 4px); padding-bottom:0; transform:translateY(calc(-100% - 120px)) scale(.94); transform-origin:50% 0;
+  transition:transform 240ms cubic-bezier(.4, 0, 1, 1); }
+.as-l.vm.in .as-d{ transform:none; transition:transform 560ms cubic-bezier(.16, 1.24, .3, 1); }
+.as-l.vm .grab{ display:none !important; }
+@media (max-width: 600px){ .as-l.vm .as-d{ inset:calc(env(safe-area-inset-top, 0px) + 12px) 0 auto 0; width:calc(100vw - 24px); border-radius:var(--hg-radius, 24px); transform:translateY(calc(-100% - 40px)); }
+  .as-l.vm.in .as-d{ transform:none; transition:transform 560ms cubic-bezier(.16, 1.24, .3, 1); } }
 @media (prefers-reduced-motion: reduce){ .as-l .as-scrim, .as-l .as-d{ transition:none !important; } }
 .cir.as.on{ background:var(--hg-accent) !important; color:var(--hg-on-accent) !important; }
 `;
@@ -33,16 +44,22 @@ const HGAssistUI = window.__hgAssistUI || (window.__hgAssistUI = {
   page: null, hass: null, L: null, card: null, opener: null, isOpen: false, _t: null, _pl: null, _plL: false, _sv: null, _key: null,
   get() { const a = (window.__hgL && window.__hgL.data && window.__hgL.data.assist) || {};
     const sg = Array.isArray(a.suggestions) ? a.suggestions.filter((x) => typeof x === 'string' && x.trim()).slice(0, 12) : null;
-    return { button: a.button !== false, key: a.key !== false, pipeline: typeof a.pipeline === 'string' ? a.pipeline : '', tts: a.tts === true, mic: a.mic !== false, suggestions: sg && sg.length ? sg : null }; },
-  set(p) { HGL.data.assist = Object.assign({}, this.get(), p); HGL._ls(); this.apply();
+    /* mode: 'voice' (domyślnie) albo 'text' (dawny czat); w trybie głosowym odczyt odpowiedzi domyślnie włączony, zapisane tts: false zostaje */
+    const mode = a.mode === 'text' ? 'text' : 'voice';
+    return { button: a.button !== false, key: a.key !== false, pipeline: typeof a.pipeline === 'string' ? a.pipeline : '', mode, tts: typeof a.tts === 'boolean' ? a.tts : mode === 'voice', mic: a.mic !== false,
+      listen: a.listen !== false, continue: a.continue !== false, suggestions: sg && sg.length ? sg : null }; },
+  /* zapis surowych pól plus zmiana: wartości wyliczone w get() (np. domyślny odczyt w trybie głosowym) nie trafiają do zapisu */
+  set(p) { HGL.data.assist = Object.assign({}, HGL.data.assist || {}, p); HGL._ls(); this.apply();
     if (this.page && this.page._paintTop) { this.page._sigTop = null; this.page._paintTop(); }
     /* w trybie edycji: tylko szkic, zapis przy Gotowe */
     if (HGL.editing) return; clearTimeout(this._sv); this._sv = setTimeout(() => { this._sv = null; HGL.save(this.hass || window.__hgHass).catch(() => {}); }, 400); },
-  cfg() { const c = this.get(); return { type: 'custom:hg-assist-card', embedded: true, title: 'Assist', pipeline: c.pipeline || null, tts: c.tts, mic: c.mic, show_pipeline: true, suggestions: c.suggestions }; },
-  apply() { if (this.card) { const m = this.card._msgs, id = this.card._cid; this.card.setConfig(this.cfg()); this.card._msgs = m; this.card._cid = id; } },
+  cfg() { const c = this.get(); return { type: 'custom:hg-assist-card', embedded: true, title: 'Assist', pipeline: c.pipeline || null, mode: c.mode, tts: c.tts, mic: c.mic, continue: c.continue, show_pipeline: true, suggestions: c.suggestions }; },
+  apply() { if (this.L) this.L.classList.toggle('vm', this.get().mode === 'voice'); if (this.card) { const m = this.card._msgs, id = this.card._cid; this.card.setConfig(this.cfg()); this.card._msgs = m; this.card._cid = id; } },
   bind(h, page) { this.hass = h; if (this.page !== page) { this.page = page; if (this.L && page.shadowRoot && this.L.getRootNode() !== page.shadowRoot) page.shadowRoot.appendChild(this.L); }
     if (this.card) this.card.hass = h;
-    if (!this._key) { this._key = (e) => this.onKey(e); window.addEventListener('keydown', this._key, true); } },
+    if (!this._key) { this._key = (e) => this.onKey(e); window.addEventListener('keydown', this._key, true); }
+    /* karta w tle (inna karta, zablokowany telefon): pasek zamyka się i wyłącza mikrofon; okno czatu zostaje */
+    if (!this._vis) { this._vis = () => { if (document.hidden && this.isOpen && this.get().mode === 'voice') this.close(); }; document.addEventListener('visibilitychange', this._vis); } },
   /* klawisz A otwiera (gdy fokus nie jest w polu tekstowym); Escape zamyka */
   onKey(e) { const p = this.page; if (!p || !p.isConnected || !p.getBoundingClientRect().width) return;
     if (this.isOpen) { if (e.key === 'Escape' && !(typeof hgsOpen !== 'undefined' && hgsOpen.size)) { e.preventDefault(); e.stopPropagation(); this.close(); } else if (e.key === 'Tab') this.trap(e); return; }
@@ -64,15 +81,17 @@ const HGAssistUI = window.__hgAssistUI || (window.__hgAssistUI = {
     g.addEventListener('pointermove', (e) => { if (y0 == null) return; const dy = e.clientY - y0; if (dy > 0) d.style.transform = `translateY(${dy}px)`; });
     const end = (e) => { if (y0 == null) return; const dy = e.clientY - y0; y0 = null; d.style.transform = ''; if (dy > 80) this.close(); };
     g.addEventListener('pointerup', end); g.addEventListener('pointercancel', () => { y0 = null; d.style.transform = ''; });
-    p.shadowRoot.appendChild(L); this.L = L; this.card = c; return true; },
+    L.classList.toggle('vm', this.get().mode === 'voice'); p.shadowRoot.appendChild(L); this.L = L; this.card = c; return true; },
   open(p, from) { if (p) this.page = p; if (!this.mount()) return; if (this.isOpen) return this.focus();
     this.opener = from || (this.page.shadowRoot && this.page.shadowRoot.activeElement) || null; this.isOpen = true; clearTimeout(this._t);
     const L = this.L; L.classList.add('open'); this.btn(true);
     if (typeof hgReduced !== 'undefined' && hgReduced()) L.classList.add('in'); else requestAnimationFrame(() => requestAnimationFrame(() => this.isOpen && L.classList.add('in')));
+    /* od razu słucha: synchronicznie, jeszcze w geście (kliknięcie, klawisz A), bo AudioContext i dźwięk na iOS ruszają tylko wtedy */
+    const c = this.get(); if (c.mode === 'voice' && c.listen && this.card && this.card._listen) this.card._listen();
     let n = 0; const tf = () => { if (!this.isOpen) return; this.focus(); const r = this.card && this.card.shadowRoot; if (++n < 12 && (!r || !r.activeElement || n < 6)) setTimeout(tf, 80); }; setTimeout(tf, 30); },
-  focus() { if (this.card) this.card._focusQ = true; const q = this.card && this.card.shadowRoot && this.card.shadowRoot.querySelector('[data-k=q]'); if (q) q.focus({ preventScroll: true }); },
+  focus() { if (this.card) this.card._focusQ = true; const q = this.card && this.card.shadowRoot && this.card.shadowRoot.querySelector('[data-k=q], [data-k=orb]'); if (q) q.focus({ preventScroll: true }); },
   close() { if (!this.isOpen || !this.L) return; this.isOpen = false; const L = this.L; L.classList.remove('in'); this.btn(false);
-    if (this.card && this.card._rec) try { this.card._rec.stop(); } catch (e) {}
+    if (this.card && this.card._vstop) this.card._vstop(true);
     this._t = setTimeout(() => { if (!this.isOpen) L.classList.remove('open'); }, typeof hgReduced !== 'undefined' && hgReduced() ? 0 : 280);
     const o = this.opener; this.opener = null; if (o && o.isConnected && o.focus) o.focus({ preventScroll: true }); },
   btn(on) { const b = this.page && this.page.shadowRoot && this.page.shadowRoot.querySelector('.cir.as'); if (b) { b.classList.toggle('on', on); b.setAttribute('aria-expanded', String(on)); } },
@@ -88,11 +107,14 @@ const HGAssistUI = window.__hgAssistUI || (window.__hgAssistUI = {
       ${this.sw('button', hgT('assist.header_button'), hgT('assist.microphone_icon_next_to'), c.button)}
       ${this.sw('key', hgT('assist.keyboard_shortcut_a'), hgT('assist.opens_the_dialog_when'), c.key)}
       <label class="wl-f"><span>${hgT('assist.default_assistant')}</span><select class="hs-in" name="as-pipe"><option value="">${H.esc(pref ? hgT('assist.preferred_named', { name: pref.name }) : hgT('assist.preferred'))}</option>${[...cur, ...pl].map((x) => `<option value="${H.esc(x.id)}"${x.id === c.pipeline ? ' selected' : ''}>${H.esc(x.name)}</option>`).join('')}</select></label>
+      <label class="wl-f"><span>${hgT('assist.mode')}</span><select class="hs-in" name="as-mode"><option value="voice"${c.mode === 'voice' ? ' selected' : ''}>${hgT('assist.mode_voice')}</option><option value="text"${c.mode === 'text' ? ' selected' : ''}>${hgT('assist.mode_text')}</option></select></label>
+      ${c.mode === 'voice' ? this.sw('listen', hgT('assist.listen_on_open'), hgT('assist.starts_listening_when'), c.listen) + this.sw('continue', hgT('assist.continue_conversation'), hgT('assist.listens_again_when'), c.continue) : ''}
       ${this.sw('tts', hgT('assist.read_replies_aloud'), hgT('assist.the_voice_set_in'), c.tts)}
-      ${this.sw('mic', hgT('assist.microphone'), hgT('assist.dictation_in_the_browser'), c.mic)}
+      ${c.mode === 'voice' ? this.sw('mic', hgT('assist.microphone'), hgT('assist.mic_voice'), c.mic) : this.sw('mic', hgT('assist.microphone'), hgT('assist.dictation_in_the_browser'), c.mic)}
       <label class="wl-f"><span>${hgT('assist.suggestions_comma_separated')}</span><span class="hs-s lk-url">${H.icon('mdi:lightbulb-on-outline')}<input class="hs-in" name="as-sug" placeholder="${hgT('assist.empty_default_suggestions')}" value="${H.esc((c.suggestions || []).join(', '))}" autocomplete="off" aria-label="${hgT('assist.suggestions')}"></span></label>
       <button type="button" class="wl-tb" data-hge="as-open">${H.icon('mdi:microphone-message')}<span>${hgT('common.open_assist')}</span></button></section>`; },
   wire(p, S) { const s = S.querySelector('[name=as-pipe]'); if (s) s.addEventListener('change', () => this.set({ pipeline: s.value }));
+    const m = S.querySelector('[name=as-mode]'); if (m) m.addEventListener('change', () => { this.set({ mode: m.value === 'text' ? 'text' : 'voice' }); p._eLook(); });
     const u = S.querySelector('[name=as-sug]'); if (u) u.addEventListener('change', () => this.set({ suggestions: u.value.split(',').map((x) => x.trim()).filter(Boolean) })); },
   act(p, b, a) { if (a === 'as-tg') { const k = b.dataset.k; this.set({ [k]: !this.get()[k] }); return p._eLook(); }
     if (a === 'as-open') { if (p._eSheetClose) p._eSheetClose(); else { const x = p._eSheetEl && p._eSheetEl.querySelector('[data-hge=sheetclose]'); if (x) x.click(); } setTimeout(() => this.open(p), 260); } },

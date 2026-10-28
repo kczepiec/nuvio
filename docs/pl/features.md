@@ -2,7 +2,7 @@
 
 # Przewodnik po funkcjach
 
-Jak działają wspólny dashboard, tryb tabletu ściennego i kopia układu. Wróć do [README](../../README.pl.md).
+Jak działają wspólny dashboard, tryb tabletu ściennego, kopia układu i asystent głosowy. Wróć do [README](../../README.pl.md).
 
 ## Wspólny dashboard
 
@@ -62,6 +62,23 @@ Administrator może wyeksportować i zaimportować cały układ Nuvio w **Wyglą
 - **Importuj** przyjmuje plik (wybór lub przeciągnięcie) albo wklejony JSON. Plik jest sprawdzany, a podsumowanie pokazuje liczbę widoków, widżetów, sekcji i encji oraz wyróżnia encje, których brak na tej instancji. Wybierz części do importu oraz **Zastąp** albo **Połącz**.
 - Przed importem bieżący układ jest zapisywany jako kopia; **Przywróć poprzedni** w powiadomieniu (albo w sekcji Kopia układu) cofa import jednym kliknięciem.
 - Plik ma wersję (`format`, `schema`, `nuvio`, `exported`). Starsze surowe dane układu są konwertowane automatycznie, a pliki z nowszego schematu lub uszkodzone są odrzucane z jasnym komunikatem.
+
+## Asystent głosowy
+
+Rozmowa z asystentem Home Assistant (Assist) bez wychodzenia z pulpitu. Otwiera go przycisk mikrofonu w nagłówku albo klawisz **A**, gdy nie piszesz w polu.
+
+<p align="center">
+  <img src="../screenshots/demo_assist_bar_dark_1440.png" alt="Pasek głosowy na komputerze: w cudzysłowie to, co usłyszał, pod spodem odpowiedź" width="74%">
+  <img src="../screenshots/demo_assist_bar_dark_390.png" alt="Pasek głosowy na telefonie" width="18%">
+</p>
+
+- **Pasek głosowy** (domyślnie): szklany pasek wjeżdża u góry ekranu i od razu słucha. Zielone fale idą za głosem, potem pasek pokazuje w cudzysłowie, co usłyszał, a pod spodem odpowiedź. Z **Czytaj odpowiedzi na głos** odpowiedź jest odczytana.
+- **Znika sam**: 2 sekundy po odczytanej odpowiedzi, a bez odczytu po czasie potrzebnym na przeczytanie (2,5 do 8 sekund), także po błędzie. Escape albo kliknięcie obok zamyka go wcześniej. Dotknięcie fal kończy słuchanie, przerywa odczyt albo zaczyna słuchać od nowa.
+- **Rozpoznawanie mowy**: dźwięk trafia do silnika zamiany mowy na tekst w asystencie (np. Whisper albo Home Assistant Cloud), tak jak w aplikacji Home Assistant. Wymaga Home Assistant otwartego przez HTTPS (albo `localhost`) i asystenta z silnikiem mowy. W przeciwnym razie Nuvio używa rozpoznawania mowy w przeglądarce (Chrome, Edge, Safari), a gdy go nie ma, otwiera pole tekstowe.
+- **Dopytanie**: gdy asystent pyta z powrotem (np. „W którym pokoju?”), pasek słucha dalej w tej samej rozmowie.
+- **Gdy coś nie działa**: brak dostępu do mikrofonu, brak mikrofonu, mikrofon zajęty przez inną aplikację albo cisza dają krótki komunikat, a tam, gdzie to pomaga, otwiera się pole tekstowe. Gdy strona przechodzi w tło (inna karta, zablokowany telefon), pasek się zamyka i wyłącza mikrofon.
+- **Ustawienia**: **Ustawienia > System > Assist**, zapisywane dla użytkownika Home Assistant: przycisk w nagłówku, skrót klawiszowy A, domyślny asystent, **Wygląd** (*Pasek głosowy* albo *Okno czatu*, dawne okno z dymkami), **Słuchaj po otwarciu**, **Ciągła rozmowa**, **Czytaj odpowiedzi na głos** (w pasku domyślnie włączone), mikrofon i podpowiedzi (okno czatu).
+- Ustawienia z wcześniejszych wersji działają dalej: bez zapisanego wyglądu jest pasek głosowy, a zapisane **Czytaj odpowiedzi na głos** zostaje bez zmian.
 
 ## Nuvio TV
 
