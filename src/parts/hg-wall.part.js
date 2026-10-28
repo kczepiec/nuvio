@@ -139,7 +139,7 @@ const HGWall = window.__hgWall || (window.__hgWall = {
     const nt = this.ntGet(), dim = n(w.dim, 0, 0.9, 0.5);   /* raw = ustawienia dzienne (UI i zapis); domyślnie efektywne (noc: przyciemnienie nocne) */
     return { on: w.on === true, idle: n(w.idle, 15, 7200, 120), dim: !raw && this.ntNight() ? nt.dim : dim, nt, src: this.SRCS.some((s) => s[0] === w.src) ? w.src : 'bg',
       url: typeof w.url === 'string' && /^(\/|https?:\/\/)/.test(w.url) && !/[\s"'()<>\\]/.test(w.url) ? w.url : '',
-      sensor: typeof w.sensor === 'string' && /^binary_sensor\.[a-z0-9_]+$/.test(w.sensor) ? w.sensor : '',
+      sensors: [...new Set((Array.isArray(w.sensors) ? w.sensors : (typeof w.sensor === 'string' ? [w.sensor] : [])).filter((e) => typeof e === 'string' && /^binary_sensor\.[a-z0-9_]+$/.test(e)))].slice(0, 20),
       lock: w.lock === true, pinH: typeof w.pinH === 'string' && /^[0-9a-z]{6,40}$/.test(w.pinH) ? w.pinH : '', pinN: n(w.pinN, 4, 8, 4), lockAfter: this.LOCKS.includes(Number(w.lockAfter)) ? Number(w.lockAfter) : 0, lk: w.lk !== false,
       home: typeof w.home === 'string' && /^[a-z0-9_-]{1,40}$/.test(w.home) ? w.home : '',
       qa: typeof HGWallQA !== 'undefined' ? HGWallQA.norm(w.qa) : [] }; },
@@ -241,10 +241,10 @@ const HGWall = window.__hgWall || (window.__hgWall = {
     if (left > 500) return this.arm(left);
     if (!this.canShow()) { this.last = Date.now(); return this.arm(); }
     this.show(); },
-  motion(h) { const c = this.run(); if (!c.on || !c.sensor) { this._ms = undefined; return; }
-    const s = h && h.states ? h.states[c.sensor] : null, st = s ? s.state : null;
-    if (this._ms !== undefined && st === 'on' && this._ms !== 'on' && this.active && !this.locked) this.wake('motion');
-    this._ms = st; },
+  motion(h) { const c = this.run(); if (!c.on || !c.sensors.length) { this._ms = undefined; return; }
+    const p = this._ms || (this._ms = {}), nx = {}; let up = false;
+    for (const e of c.sensors) { const s = h && h.states ? h.states[e] : null, st = s ? s.state : null; if (e in p && st === 'on' && p[e] !== 'on') up = true; nx[e] = st; }
+    this._ms = nx; if (up && this.active && !this.locked) this.wake('motion'); },
   /* ---- zdjęcia ---- */
   imgs() { const c = this.get(), A = HGApp.get(), port = window.innerHeight > window.innerWidth, one = (b) => { if (!b) return null; const u = port && b.v2p ? HGApp.bgImg({ kind: 'image', v: b.v2p }) : HGApp.bgImg(b); return u; };
     if (c.src === 'url' && c.url) return [HGApp.bgImg({ kind: 'image', v: c.url })];
@@ -397,8 +397,8 @@ const HGWall = window.__hgWall || (window.__hgWall = {
       ${this.homeHtml(c)}
       ${pic ? `<div class="wl-f" role="group" aria-labelledby="wl-s"><span id="wl-s">${hgT('wall.photo')}</span><div class="wl-seg" style="--n:3">${this.SRCS.map(([k, t]) => `<button type="button" data-hge="wl-src" data-v="${k}" aria-pressed="${c.src === k}">${t}</button>`).join('')}</div>
         ${c.src === 'url' ? `<span class="hs-s lk-url">${H.icon('mdi:link-variant')}<input class="hs-in" name="wl-url" placeholder="${hgT('wall.image_url_hint')}" value="${H.esc(c.url)}" autocomplete="off" aria-label="${hgT('wall.screensaver_image_url')}"></span>` : ''}</div>` : ''}
-      <div class="wl-f" role="group" aria-labelledby="wl-ms"><span id="wl-ms">${hgT('wall.motion_sensor_wake')}</span>${this.pk('sens', [c.sensor ? { k: c.sensor, l: (h.states[c.sensor] && H.name(h, c.sensor, c.sensor)) || c.sensor, s: c.sensor } : { k: '', l: hgT('wall.none_touch_only'), ic: 'mdi:gesture-tap', fix: true }],
-        sens.filter(([e]) => e !== c.sensor).map(([e, n]) => ({ k: e, l: n, s: e })), { one: true, add: c.sensor ? hgT('common.change') : hgT('wall.choose_sensor'), ic: 'mdi:motion-sensor' })}</div>
+      <div class="wl-f" role="group" aria-labelledby="wl-ms"><span id="wl-ms">${hgT('wall.motion_sensor_wake')}</span>${this.pk('sens', c.sensors.length ? c.sensors.map((e) => ({ k: e, l: (h.states[e] && H.name(h, e, e)) || e, s: e })) : [{ k: '', l: hgT('wall.none_touch_only'), ic: 'mdi:gesture-tap', fix: true }],
+        sens.filter(([e]) => !c.sensors.includes(e)).map(([e, n]) => ({ k: e, l: n, s: e })), { add: c.sensors.length ? hgT('common.add') : hgT('wall.choose_sensor'), ic: 'mdi:motion-sensor' })}</div>
       ${this.ckHtml ? this.ckHtml(c) : ''}
       ${this.kidHtml(c, h)}
       ${typeof HGWallQA !== 'undefined' ? HGWallQA.html(p) : ''}
@@ -442,7 +442,6 @@ const HGWall = window.__hgWall || (window.__hgWall = {
     if (typeof HGWallQA !== 'undefined') HGWallQA.wire(p, S);
     if (this.ckWire) this.ckWire(p, S);
     const hv = S.querySelector('[name=wl-home]'); if (hv) hv.addEventListener('change', () => this.set({ home: hv.value }));
-    const se = S.querySelector('[name=wl-sensor]'); if (se) se.addEventListener('change', () => { this._ms = undefined; this.set({ sensor: se.value }); });
     const u = S.querySelector('[name=wl-url]'); if (u) u.addEventListener('change', () => { const v = u.value.trim();
       if (v && !/^(\/|https?:\/\/)/.test(v)) return p._eToast(hgT('wall.image_url_invalid'));
       this.set({ url: v }); }); },
