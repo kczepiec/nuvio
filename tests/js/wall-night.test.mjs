@@ -55,3 +55,10 @@ test('disabled schedule changes nothing', () => {
   W.hass = sun('below_horizon');
   assert.equal(W.ntNight(), false); assert.equal(W.styleNow(), 'analog'); assert.equal(W.get().dim, 0.3); assert.equal(W.xs(), 'analog');
 });
+
+test('night block is not shadowed by other parts (hg-wallnotify defines ntHtml)', () => {
+  const win = { __hgL: { data: { wall: { on: true, nt: { on: true } } } } };
+  const g = { window: win, hgT, hgTLazy, H: { esc: String, pct: String, icon: noop, fmt: String }, HG_ASSET: '/', HG_LOC: () => 'en', HGL: {} };
+  const { HGWall: W } = loadParts(['hg-wall.part.js', 'hg-wallnotify.part.js', 'hg-wallboard.part.js', 'hg-wallglass.part.js', 'hg-wallx.part.js'], g, ['HGWall']);
+  assert.match(W.html({ _hass: { user: { is_admin: true }, states: {} } }), /wl-nt-on/);
+});

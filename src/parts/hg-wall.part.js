@@ -393,7 +393,7 @@ const HGWall = window.__hgWall || (window.__hgWall = {
       ${BD.top}${BD.board}
       <div class="wl-f" role="group" aria-labelledby="wl-i"><span id="wl-i">${hgT('wall.start_after_inactivity')}</span><div class="wl-seg six" style="--n:${idles.length}">${idles.map((s) => `<button type="button" data-hge="wl-idle" data-v="${s}" aria-pressed="${c.idle === s}">${this.fmt(s)}</button>`).join('')}</div></div>
       <div class="wl-f"><span>${hgT('wall.dimming')}<em class="wl-dv">${H.pct(dv)}</em></span><input class="lk-rg" type="range" min="0" max="90" step="5" name="wl-dim" value="${Math.round(dv / 5) * 5}" style="--v:${dv / 0.9}%" aria-label="${hgT('wall.screensaver_dimming')}"></div>
-      ${this.ntHtml(c)}
+      ${this.nightHtml(c)}
       ${this.homeHtml(c)}
       ${pic ? `<div class="wl-f" role="group" aria-labelledby="wl-s"><span id="wl-s">${hgT('wall.photo')}</span><div class="wl-seg" style="--n:3">${this.SRCS.map(([k, t]) => `<button type="button" data-hge="wl-src" data-v="${k}" aria-pressed="${c.src === k}">${t}</button>`).join('')}</div>
         ${c.src === 'url' ? `<span class="hs-s lk-url">${H.icon('mdi:link-variant')}<input class="hs-in" name="wl-url" placeholder="${hgT('wall.image_url_hint')}" value="${H.esc(c.url)}" autocomplete="off" aria-label="${hgT('wall.screensaver_image_url')}"></span>` : ''}</div>` : ''}
@@ -409,7 +409,7 @@ const HGWall = window.__hgWall || (window.__hgWall = {
       <section class="lk-g wl" data-tab="wall" data-pg="security" aria-labelledby="wls-h"><h4 id="wls-h">${H.icon('mdi:shield-lock-outline')}${hgT('settings.pin_and_locks')}</h4><small class="lk-hn">${hgT('settings.pin_and_locks_hint')}</small>
       ${c.on ? this.lockHtml(c) : `<small class="wl-warn">${hgT('settings.pin_needs_screensaver')}</small>`}${window.HGVLock ? HGVLock.html(HGVLock.views()) : ''}</section>`; },
   /* blok „Nocą”: przełącznik, tryb (zachód/wschód lub godziny), styl nocny i przyciemnienie nocne */
-  ntHtml(c) { const t = c.nt, dv = Math.round(t.dim * 100), seg = (a, list, cur) => `<div class="wl-seg" style="--n:${list.length}">${list.map(([k, n]) => `<button type="button" data-hge="${a}" data-v="${k}" aria-pressed="${cur === k}">${n}</button>`).join('')}</div>`;
+  nightHtml(c) { const t = c.nt, dv = Math.round(t.dim * 100), seg = (a, list, cur) => `<div class="wl-seg" style="--n:${list.length}">${list.map(([k, n]) => `<button type="button" data-hge="${a}" data-v="${k}" aria-pressed="${cur === k}">${n}</button>`).join('')}</div>`;
     const body = !t.on ? '' : `
       <div class="wl-f" role="group" aria-labelledby="wl-ntm"><span id="wl-ntm">${hgT('wall.night_schedule')}</span>${seg('wl-nt-mode', [['sun', hgT('wall.night_sun')], ['hours', hgT('wall.night_hours')]], t.mode)}</div>
       ${t.mode === 'hours' ? `<div class="wl-f"><span>${hgT('wall.night_from')} / ${hgT('wall.night_to')}</span><div class="wl-pin"><span class="hs-s"><input class="hs-in" type="time" name="wl-nt-from" value="${H.esc(t.from)}" aria-label="${hgT('wall.night_from')}"></span><span class="hs-s"><input class="hs-in" type="time" name="wl-nt-to" value="${H.esc(t.to)}" aria-label="${hgT('wall.night_to')}"></span></div></div>` : ''}
