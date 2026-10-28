@@ -4,7 +4,9 @@
 
 Tutaj zapisane są wszystkie istotne zmiany w Nuvio, od najnowszych. Wersje zgodne z [semantycznym wersjonowaniem](https://semver.org). Angielska lista zmian jest w [CHANGELOG.md](CHANGELOG.md).
 
-### Unreleased
+### 2.30.0
+- Dodano: **harmonogram nocny** wygaszacza w trybie tabletu ściennego. Po włączeniu w Tryb tabletu ściennego wygaszacz w nocy przyjmuje własny styl i przyciemnienie, od zachodu do wschodu słońca (encja sun) albo między dwiema ustawionymi godzinami, także przez północ. Domyślnie wyłączony, ustawienia dzienne zostają bez zmian.
+- Dodano: wygaszacz może **wybudzać się z listy czujników** zamiast z jednego. Wybierz kilka czujników ruchu, zajętości lub obecności; włączenie dowolnego z nich wybudza wygaszacz. Dotychczasowe ustawienie z jednym czujnikiem przenosi się automatycznie.
 - Dodano: **asystent głosowy** zamiast okna czatu Assist. Szklany pasek wjeżdża u góry ekranu, od razu słucha, pokazuje w cudzysłowie, co usłyszał, a pod spodem odpowiedź, czyta ją na głos i sam znika. Mowa trafia do silnika zamiany mowy na tekst w asystencie Home Assistant (wymaga HTTPS), w zapasie jest rozpoznawanie mowy w przeglądarce i pole tekstowe. Słucha dalej, gdy asystent dopytuje. Nowe ustawienia w **Ustawienia > System > Assist**: **Wygląd** (pasek głosowy albo dawne okno czatu), **Słuchaj po otwarciu** i **Ciągła rozmowa**. Zobacz [Asystent głosowy](docs/pl/features.md#asystent-głosowy).
 - Naprawiono: **ustawienia pokoju** otwierane z nagłówka pokoju (menu czujnika, „Wszystkie ustawienia pokoju”) wchodzą najpierw w tryb edycji, więc przyciski Zapisz i edycja całego pokoju działają. Czujnik wybrany w nagłówku nie jest już nadpisywany przez późniejszy zapis.
 - Naprawiono: nagłówek **„Wykrywanie pracy”** (wykrywanie pracy klimatyzacji) w ustawieniach pokoju nie pokazuje już za dużej ikony.
