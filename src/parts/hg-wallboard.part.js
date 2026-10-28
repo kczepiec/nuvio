@@ -117,13 +117,14 @@ const HG_WB_CSS = `
 `;
 Object.assign(HGWall, {
   /* ---- ustawienia tablicy ---- */
-  bget() { const w = (window.__hgL && window.__hgL.data && window.__hgL.data.wall) || {}, bk0 = w.bk && typeof w.bk === 'object' ? w.bk : {}, ids = HG_WB_CARDS.map((x) => x[0]);
+  bget(raw) { const w = (window.__hgL && window.__hgL.data && window.__hgL.data.wall) || {}, bk0 = w.bk && typeof w.bk === 'object' ? w.bk : {}, ids = HG_WB_CARDS.map((x) => x[0]);
     const bk = {}; for (const k of HG_WB_BK) bk[k] = bk0[k] !== false;
     const ord = [...new Set(Array.isArray(w.ord) ? w.ord.filter((k) => ids.includes(k)) : [])]; ord.unshift(...ids.filter((k) => !ord.includes(k)));   /* starsza kolejność (cal, np, tmp): brakujące widżety na początek */
     const L = (v) => (Array.isArray(v) ? v.filter((x) => typeof x === 'string' && /^[a-z0-9_.]+$/.test(x)) : []);
-    return { style: w.style === 'board' || w.style === 'glass' || (this.XS && this.XS.some((x) => x[0] === w.style)) ? w.style : 'photo', bt: ['auto', 'light', 'dark'].includes(w.bt) ? w.bt : 'auto', hd: w.hd === 'day' ? 'day' : 'time', bk, ord: [...new Set(ord)],
+    const st = this.styleNow(raw);
+    return { style: st === 'board' || st === 'glass' || (this.XS && this.XS.some((x) => x[0] === st)) ? st : 'photo', bt: ['auto', 'light', 'dark'].includes(w.bt) ? w.bt : 'auto', hd: w.hd === 'day' ? 'day' : 'time', bk, ord: [...new Set(ord)],
       wxE: typeof w.wxE === 'string' && /^weather\.[a-z0-9_]+$/.test(w.wxE) ? w.wxE : '', calX: L(w.calX), roomX: L(w.roomX) }; },
-  board() { return this.bget().style === 'board'; },
+  board(raw) { return this.bget(raw).style === 'board'; },
   /* ---- nakładka ---- */
   bdShell() { return `<style>${HG_WALL_SS}${HG_WB_SS}</style><div class="nw-bg" aria-hidden="true"></div><div class="nw-bg" aria-hidden="true"></div><div class="nw-sh" aria-hidden="true"></div>
       <div class="nwb"><header class="nb-top"><div class="nb-h2"></div><h1 class="nb-h1"></h1><div class="nb-row"></div></header><div class="nb-bot"><section class="nb-kid" hidden></section><section class="nb-np" hidden></section></div></div>
@@ -237,7 +238,7 @@ Object.assign(HGWall, {
     else if (id === 'wx') { this._fc = null; this.set({ wxE: add ? k : '' }); }
     else if (id === 'sens') { this._ms = undefined; this.set({ sensor: add ? k : '' }); }
     else return false; return true; },
-  bdHtml(c, h) { const B = this.bget(), seg = (a, list, cur) => `<div class="wl-seg" style="--n:${list.length}">${list.map(([k, t]) => `<button type="button" data-hge="${a}" data-v="${k}" aria-pressed="${cur === k}">${t}</button>`).join('')}</div>`;
+  bdHtml(c, h) { const B = this.bget(true), seg = (a, list, cur) => `<div class="wl-seg" style="--n:${list.length}">${list.map(([k, t]) => `<button type="button" data-hge="${a}" data-v="${k}" aria-pressed="${cur === k}">${t}</button>`).join('')}</div>`;
     const style = `<div class="wl-f" role="group" aria-labelledby="wl-st"><span id="wl-st">${hgT('wallboard.screensavers')}</span>${this.galHtml ? this.galHtml(B.style) : seg('wl-style', [['photo', hgT('wallboard.style_photo')], ['board', hgT('wallboard.style_board')], ['glass', hgT('wallboard.style_glass')]], B.style)}</div>`;
     if (B.style === 'glass' && this.glHtml) return { top: style, board: this.glHtml(c, h) };
     if (B.style !== 'board') return { top: style, board: '' };

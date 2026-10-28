@@ -1,5 +1,5 @@
 /* ===== Tryb tabletu ściennego: po bezczynności wygaszacz z zegarem i zdjęciem, przyciemnienie, wybudzanie dotykiem albo czujnikiem ruchu.
-   Ustawienia: HGL.data.wall = { on, style ('photo' | 'board': tablica w hg-wallboard.part.js | 'glass': karty w hg-wallglass.part.js), idle (s), dim (0–0.9), src: 'bg' | 'slides' | 'url', url, sensor (binary_sensor), lock, pinH (skrót PIN-u, nie sam PIN), pinN (długość), lockAfter (s) } – dane użytkownika HA jak „app”,
+   Ustawienia: HGL.data.wall = { on, style ('photo' | 'board': tablica w hg-wallboard.part.js | 'glass': karty w hg-wallglass.part.js), idle (s), dim (0–0.9), src: 'bg' | 'slides' | 'url', url, sensor (binary_sensor), lock, pinH (skrót PIN-u, nie sam PIN), pinN (długość), lockAfter (s), nt (harmonogram nocny: { on, mode 'sun' | 'hours', from, to ('HH:MM'), style, dim }; w nocy inny styl i przyciemnienie, patrz ntGet / styleNow) } – dane użytkownika HA jak „app”,
    zapisywane razem z układem. Domyślnie wyłączone. Sekcja w arkuszu Wygląd (HGWall.html), wygaszacz to nakładka na <body> (Popover API → nad dialogami HA). */
 const HG_WALL_CSS = `
 .wl ha-icon{ --mdc-icon-size:20px; width:20px; height:20px; flex:none; }
@@ -135,13 +135,29 @@ const HGWall = window.__hgWall || (window.__hgWall = {
   SRCS: [['bg', hgTLazy('wall.photo_sources.bg')], ['slides', hgTLazy('wall.photo_sources.slides')], ['url', hgTLazy('wall.photo_sources.url')]],
   last: Date.now(), active: false, page: null, hass: null, el: null, _t: null, _ck: null, _sl: null, _dr: null, _wl: null, _wired: false, _ms: undefined, _foc: null, _sv: null, _ev: null, _evt: 0, _evk: '', _fc: null, _fcb: false,
   /* ---- ustawienia ---- */
-  get() { const w = (window.__hgL && window.__hgL.data && window.__hgL.data.wall) || {}, n = (v, a, b, d) => { v = Number(v); return isFinite(v) ? Math.max(a, Math.min(b, v)) : d; };
-    return { on: w.on === true, idle: n(w.idle, 15, 7200, 120), dim: n(w.dim, 0, 0.9, 0.5), src: this.SRCS.some((s) => s[0] === w.src) ? w.src : 'bg',
+  get(raw) { const w = (window.__hgL && window.__hgL.data && window.__hgL.data.wall) || {}, n = (v, a, b, d) => { v = Number(v); return isFinite(v) ? Math.max(a, Math.min(b, v)) : d; };
+    const nt = this.ntGet(), dim = n(w.dim, 0, 0.9, 0.5);   /* raw = ustawienia dzienne (UI i zapis); domyślnie efektywne (noc: przyciemnienie nocne) */
+    return { on: w.on === true, idle: n(w.idle, 15, 7200, 120), dim: !raw && this.ntNight() ? nt.dim : dim, nt, src: this.SRCS.some((s) => s[0] === w.src) ? w.src : 'bg',
       url: typeof w.url === 'string' && /^(\/|https?:\/\/)/.test(w.url) && !/[\s"'()<>\\]/.test(w.url) ? w.url : '',
       sensor: typeof w.sensor === 'string' && /^binary_sensor\.[a-z0-9_]+$/.test(w.sensor) ? w.sensor : '',
       lock: w.lock === true, pinH: typeof w.pinH === 'string' && /^[0-9a-z]{6,40}$/.test(w.pinH) ? w.pinH : '', pinN: n(w.pinN, 4, 8, 4), lockAfter: this.LOCKS.includes(Number(w.lockAfter)) ? Number(w.lockAfter) : 0, lk: w.lk !== false,
       home: typeof w.home === 'string' && /^[a-z0-9_-]{1,40}$/.test(w.home) ? w.home : '',
       qa: typeof HGWallQA !== 'undefined' ? HGWallQA.norm(w.qa) : [] }; },
+  /* ---- harmonogram nocny (#46): w nocy inny styl i przyciemnienie; domyślnie wyłączony ---- */
+  ntGet() { const w = (window.__hgL && window.__hgL.data && window.__hgL.data.wall) || {}, t = (w.nt && typeof w.nt === 'object' ? w.nt : {}), hm = (v, d) => (typeof v === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(v) ? v : d), dm = Number(t.dim);
+    return { on: t.on === true, mode: t.mode === 'hours' ? 'hours' : 'sun', from: hm(t.from, '22:00'), to: hm(t.to, '06:00'),
+      style: (this.XS || []).some((x) => x[0] === t.style) ? t.style : 'night', dim: t.dim != null && t.dim !== '' && isFinite(dm) ? Math.max(0, Math.min(0.9, dm)) : 0.8 }; },
+  /* czy teraz noc wg harmonogramu: 'sun' = sun.sun below_horizon (bez encji: godziny od-do), 'hours' = przedział od-do, także przez północ; od = do nigdy */
+  ntNight(h, d) { const t = this.ntGet(); if (!t.on) return false; h = h || this.hass || window.__hgHass;
+    const s = t.mode === 'sun' && h && h.states ? h.states['sun.sun'] : null; if (s && s.state) return s.state === 'below_horizon';
+    d = d || new Date(); const m = d.getHours() * 60 + d.getMinutes(), f = Number(t.from.slice(0, 2)) * 60 + Number(t.from.slice(3)), e = Number(t.to.slice(0, 2)) * 60 + Number(t.to.slice(3));
+    return f === e ? false : f < e ? m >= f && m < e : m >= f || m < e; },
+  /* efektywny styl: nocny w nocy, inaczej wybrany; raw = styl dzienny (UI) */
+  styleNow(raw) { const w = (window.__hgL && window.__hgL.data && window.__hgL.data.wall) || {}; return !raw && this.ntNight() ? this.ntGet().style : w.style; },
+  /* zmiana dzień/noc w trakcie wyświetlania: inny styl = ponowne wybudzenie i pokaz, sam dim = zmienna CSS; zwraca true, gdy przełączono */
+  ntSwitch() { if (!this.active || !this.el || this._tst) return false; const s = this.styleNow();
+    if (this._sty !== undefined && s !== this._sty && !this.locked) { this.wake('night'); this.show(); return true; }
+    if (this.el) this.el.style.setProperty('--nw-dim', this.get().dim); return false; },
   /* ---- widok po starcie wygaszacza: przejście pod zasłoną, po wybudzeniu dashboard jest już na wybranym widoku ---- */
   goHome() { const v = this.get().home;
     if (!v || !this.active || !this.canShow() || this.page._config.view === v || !window.HGVLock || !HGVLock.views(true).some(([k]) => k === v)) return;
@@ -200,7 +216,7 @@ const HGWall = window.__hgWall || (window.__hgWall = {
     if (this._bad >= 5) { const s = 30 * Math.pow(2, Math.min(4, Math.floor(this._bad / 5) - 1)); this._ban = Date.now() + s * 1000; this.msg(hgT('wall.too_many_attempts', { seconds: s }), true); }
     else this.msg(hgT('wall.wrong_pin'), true); },
   /* zapis do HA (frontend/set_user_data) z opóźnieniem – suwak przyciemnienia strzela wieloma zdarzeniami; bez tego load() po przeładowaniu nadpisywał lokalną zmianę danymi z serwera */
-  set(p) { HGL.data.wall = Object.assign({}, (HGL.data && HGL.data.wall) || {}, this.get(), p); HGL._ls(); this.sync();
+  set(p) { HGL.data.wall = Object.assign({}, (HGL.data && HGL.data.wall) || {}, this.get(true), p); HGL._ls(); this.sync();
     /* w trybie edycji: tylko szkic, zapis przy Gotowe */
     if (HGL.editing) return; clearTimeout(this._sv); this._sv = setTimeout(() => { this._sv = null; HGL.save(this.hass || window.__hgHass).catch(() => {}); }, 400); },
   /* ---- silnik bezczynności ---- */
@@ -214,6 +230,7 @@ const HGWall = window.__hgWall || (window.__hgWall = {
       document.addEventListener('visibilitychange', () => { if (!document.hidden) { this.last = Date.now(); this.arm(); if (this.active) this.wakeLock(); } }); }
     if (!c.on) { clearTimeout(this._t); this._t = null; if (this.active) this.hide(); return; }
     if (!this._t && !this.active) this.arm();
+    else if (this.active && this.el && this.ntSwitch()) return;
     else if (this.active && this.el) { this.el.style.setProperty('--nw-dim', c.dim); if (this.el.classList.contains('gl')) this.gl(); else if (this.el.classList.contains('bd')) this.bd(); else if (this.el.classList.contains('xs')) this.xsDraw(); else { this.wx(); this.kid(); } if (typeof HGWallQA !== 'undefined') HGWallQA.paint(this); } },
   arm(ms) { clearTimeout(this._t); const c = this.run(); if (!c.on) { this._t = null; return; }
     this._t = setTimeout(() => this.check(), Math.max(1000, ms != null ? ms : c.idle * 1000 - (Date.now() - this.last))); },
@@ -240,6 +257,7 @@ const HGWall = window.__hgWall || (window.__hgWall = {
   show(test) { if (this.active) return; const c = this.get(), h = this.hass, rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
     /* #35: wygaszacz zamyka widoki odblokowane PIN-em (poza podglądem z ustawień); po wybudzeniu bieżący widok znów pyta o PIN */
     if (!test && window.HGVLock) HGVLock.mark();
+    this._sty = this.styleNow(); this._tst = !!test;
     this.active = true; clearTimeout(this._t); this._t = null; this._foc = document.activeElement;
     const el = this.el = document.createElement('div'); el.className = 'nw'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', hgT('wall.screensaver')); el.tabIndex = -1;
     el.style.setProperty('--nw-dim', c.dim);
@@ -268,7 +286,7 @@ const HGWall = window.__hgWall || (window.__hgWall = {
     try { if (!navigator.wakeLock || !navigator.wakeLock.request) return; this._wlq = true;
       navigator.wakeLock.request('screen').then((l) => { this._wlq = false; if (!this.active) { l.release(); return; } this._wl = l; try { l.addEventListener('release', () => { if (this._wl === l) this._wl = null; }); } catch (e) { /* bez zdarzenia: sprawdzamy released */ } }, () => { this._wlq = false; });
     } catch (e) { this._wlq = false; /* ekran może zgasnąć wg systemu */ } },
-  clock() { clearTimeout(this._ck); const el = this.el; if (!el) return;
+  clock() { clearTimeout(this._ck); const el = this.el; if (!el) return; if (this.ntSwitch()) return;
     if (el.classList.contains('gl')) { this.gl(true); this._ck = setTimeout(() => this.clock(), 60000 - (Date.now() % 60000) + 50); return; }
     if (el.classList.contains('xs')) { this.xsDraw(); this._ck = setTimeout(() => this.clock(), 60000 - (Date.now() % 60000) + 50); return; }
     if (el.classList.contains('bd')) { this.bd(true); this._ck = setTimeout(() => this.clock(), 60000 - (Date.now() % 60000) + 50); return; }
@@ -368,13 +386,14 @@ const HGWall = window.__hgWall || (window.__hgWall = {
     /* tylko czujniki ruchu, zajętości i obecności (przy tysiącach binary_sensor lista była ogromna); gdy takich nie ma, wszystkie binary_sensor */
     const M = R.filter((e) => !pri(e)), L = M.length ? M : R;
     return L.sort((a, b) => nm(a).localeCompare(nm(b), HG_LOC())).map((e) => [e, nm(e)]); },
-  html(p) { if (!this.admin(p)) return ''; const c = this.get(), h = p._hass, dv = Math.round(c.dim * 100), idles = this.IDLES.includes(c.idle) ? this.IDLES : [...this.IDLES, c.idle].sort((a, b) => a - b);
+  html(p) { if (!this.admin(p)) return ''; const c = this.get(true), h = p._hass, dv = Math.round(c.dim * 100), idles = this.IDLES.includes(c.idle) ? this.IDLES : [...this.IDLES, c.idle].sort((a, b) => a - b);
     const sens = this.sensors(h);
-    const BD = this.bdHtml ? this.bdHtml(c, h) : { top: '', board: '' }, xk = this.xs ? this.xs() : '', pic = !(this.glass && this.glass()) && (!xk || this.xsPic(xk));   /* zdjęcie jest tłem zegara na zdjęciu, tablicy i zegara analogowego */
+    const BD = this.bdHtml ? this.bdHtml(c, h) : { top: '', board: '' }, xk = this.xs ? this.xs(true) : '', pic = !(this.glass && this.glass(true)) && (!xk || this.xsPic(xk));   /* zdjęcie jest tłem zegara na zdjęciu, tablicy i zegara analogowego */
     const body = !c.on ? '' : `
       ${BD.top}${BD.board}
       <div class="wl-f" role="group" aria-labelledby="wl-i"><span id="wl-i">${hgT('wall.start_after_inactivity')}</span><div class="wl-seg six" style="--n:${idles.length}">${idles.map((s) => `<button type="button" data-hge="wl-idle" data-v="${s}" aria-pressed="${c.idle === s}">${this.fmt(s)}</button>`).join('')}</div></div>
       <div class="wl-f"><span>${hgT('wall.dimming')}<em class="wl-dv">${H.pct(dv)}</em></span><input class="lk-rg" type="range" min="0" max="90" step="5" name="wl-dim" value="${Math.round(dv / 5) * 5}" style="--v:${dv / 0.9}%" aria-label="${hgT('wall.screensaver_dimming')}"></div>
+      ${this.ntHtml(c)}
       ${this.homeHtml(c)}
       ${pic ? `<div class="wl-f" role="group" aria-labelledby="wl-s"><span id="wl-s">${hgT('wall.photo')}</span><div class="wl-seg" style="--n:3">${this.SRCS.map(([k, t]) => `<button type="button" data-hge="wl-src" data-v="${k}" aria-pressed="${c.src === k}">${t}</button>`).join('')}</div>
         ${c.src === 'url' ? `<span class="hs-s lk-url">${H.icon('mdi:link-variant')}<input class="hs-in" name="wl-url" placeholder="${hgT('wall.image_url_hint')}" value="${H.esc(c.url)}" autocomplete="off" aria-label="${hgT('wall.screensaver_image_url')}"></span>` : ''}</div>` : ''}
@@ -389,6 +408,14 @@ const HGWall = window.__hgWall || (window.__hgWall = {
       <button type="button" class="wl-sw" role="switch" data-hge="wl-on" aria-checked="${c.on}"><span>${hgT('wall.screensaver_switch')}<small>${c.on ? hgT('common.on_masc') : hgT('common.off_masc')}</small></span><i aria-hidden="true"></i></button>${c.on ? this.hereHtml() : ''}${body}</section>
       <section class="lk-g wl" data-tab="wall" data-pg="security" aria-labelledby="wls-h"><h4 id="wls-h">${H.icon('mdi:shield-lock-outline')}${hgT('settings.pin_and_locks')}</h4><small class="lk-hn">${hgT('settings.pin_and_locks_hint')}</small>
       ${c.on ? this.lockHtml(c) : `<small class="wl-warn">${hgT('settings.pin_needs_screensaver')}</small>`}${window.HGVLock ? HGVLock.html(HGVLock.views()) : ''}</section>`; },
+  /* blok „Nocą”: przełącznik, tryb (zachód/wschód lub godziny), styl nocny i przyciemnienie nocne */
+  ntHtml(c) { const t = c.nt, dv = Math.round(t.dim * 100), seg = (a, list, cur) => `<div class="wl-seg" style="--n:${list.length}">${list.map(([k, n]) => `<button type="button" data-hge="${a}" data-v="${k}" aria-pressed="${cur === k}">${n}</button>`).join('')}</div>`;
+    const body = !t.on ? '' : `
+      <div class="wl-f" role="group" aria-labelledby="wl-ntm"><span id="wl-ntm">${hgT('wall.night_schedule')}</span>${seg('wl-nt-mode', [['sun', hgT('wall.night_sun')], ['hours', hgT('wall.night_hours')]], t.mode)}</div>
+      ${t.mode === 'hours' ? `<div class="wl-f"><span>${hgT('wall.night_from')} / ${hgT('wall.night_to')}</span><div class="wl-pin"><span class="hs-s"><input class="hs-in" type="time" name="wl-nt-from" value="${H.esc(t.from)}" aria-label="${hgT('wall.night_from')}"></span><span class="hs-s"><input class="hs-in" type="time" name="wl-nt-to" value="${H.esc(t.to)}" aria-label="${hgT('wall.night_to')}"></span></div></div>` : ''}
+      <div class="wl-f" role="group" aria-labelledby="wl-nts"><span id="wl-nts">${hgT('wall.night_style')}</span><div class="wl-seg" style="--n:${this.XS.length}">${this.XS.map(([k, n]) => `<button type="button" data-hge="wl-nt-style" data-v="${k}" aria-pressed="${t.style === k}">${n}</button>`).join('')}</div></div>
+      <div class="wl-f"><span>${hgT('wall.night_dimming')}<em class="wl-ntv">${H.pct(dv)}</em></span><input class="lk-rg" type="range" min="0" max="90" step="5" name="wl-nt-dim" value="${Math.round(dv / 5) * 5}" style="--v:${dv / 0.9}%" aria-label="${hgT('wall.night_dimming')}"></div>`;
+    return `<button type="button" class="wl-sw" role="switch" data-hge="wl-nt-on" aria-checked="${t.on}"><span>${hgT('wall.night_schedule')}<small>${t.on && t.mode === 'sun' ? hgT('wall.night_sun') : ''}</small></span><i aria-hidden="true"></i></button>${body}`; },
   homeHtml(c) { const L = window.HGVLock ? HGVLock.views(true) : [];
     return `<label class="wl-f"><span>${hgT('wall.wake_view')}</span><select name="wl-home"><option value="">${hgT('wall.wake_view_last')}</option>${L.map(([k, n]) => `<option value="${H.esc(k)}"${k === c.home ? ' selected' : ''}>${H.esc(n)}</option>`).join('')}</select><small class="lk-hn">${hgT('wall.wake_view_hint')}</small></label>`; },
   hereHtml() { const v = this.here();
@@ -407,6 +434,8 @@ const HGWall = window.__hgWall || (window.__hgWall = {
   wire(p, S) { if (!this.admin(p)) return;
     for (const pi of S.querySelectorAll('[name=wl-pin]')) { pi.addEventListener('input', () => { pi.value = pi.value.replace(/[^0-9]/g, '').slice(0, 8); }); pi.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); this.savePin(p, pi.closest('.wl-pin') || S); } }); }
     const rg = S.querySelector('[name=wl-dim]'); if (rg) rg.addEventListener('input', () => { rg.style.setProperty('--v', rg.value / 0.9 + '%'); S.querySelector('.wl-dv').textContent = H.pct(rg.value); this.set({ dim: rg.value / 100 }); });
+    const nr = S.querySelector('[name=wl-nt-dim]'); if (nr) nr.addEventListener('input', () => { nr.style.setProperty('--v', nr.value / 0.9 + '%'); const e = S.querySelector('.wl-ntv'); if (e) e.textContent = H.pct(nr.value); this.set({ nt: Object.assign({}, this.ntGet(), { dim: nr.value / 100 }) }); });
+    for (const k of ['from', 'to']) { const ti = S.querySelector('[name=wl-nt-' + k + ']'); if (ti) ti.addEventListener('change', () => { if (/^([01]\d|2[0-3]):[0-5]\d$/.test(ti.value)) this.set({ nt: Object.assign({}, this.ntGet(), { [k]: ti.value }) }); }); }
     if (this.pkWire) this.pkWire(p, S);
     if (this.glWire) this.glWire(p, S);
     if (typeof HGDeviceCmd !== 'undefined') HGDeviceCmd.wire(p, S);
@@ -426,6 +455,9 @@ const HGWall = window.__hgWall || (window.__hgWall = {
     /* blokada widoku: akcja musi zaczynać się od wl-, bo tylko takie trafiają tutaj z arkusza (beta.1: vl-t nie docierało nigdzie) */
     if (a === 'wl-vlock') { if (!window.HGVLock) return; if (!HGVLock.pinH()) { p._eToast(hgT('vlock.needs_pin')); const i = (b.closest('section') || p._eSheetEl).querySelector('.vl-pin [name=wl-pin]'); if (i) i.focus(); return; }
       HGVLock.toggle(b.dataset.v); return p._eLook(); }
+    if (a === 'wl-nt-on') { this.set({ nt: Object.assign({}, this.ntGet(), { on: !this.ntGet().on }) }); return p._eLook(); }
+    if (a === 'wl-nt-mode') { this.set({ nt: Object.assign({}, this.ntGet(), { mode: b.dataset.v === 'hours' ? 'hours' : 'sun' }) }); return p._eLook(); }
+    if (a === 'wl-nt-style') { this.set({ nt: Object.assign({}, this.ntGet(), { style: b.dataset.v }) }); return p._eLook(); }
     if (a === 'wl-here') { this.last = Date.now(); const v = !this.here(); this.here(v); if (!v) this.flag(false); this.sync(); return p._eLook(); }
     if (a === 'wl-idle') { this.last = Date.now(); this.set({ idle: Number(b.dataset.v) }); return p._eLook(); }
     if (a === 'wl-lk') { if (b.disabled) return; this.set({ lk: !this.get().lk }); return p._eLook(); }
