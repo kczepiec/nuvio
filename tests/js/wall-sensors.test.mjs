@@ -4,9 +4,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 const src = readFileSync(new URL('../../src/parts/hg-wall.part.js', import.meta.url), 'utf8');
 const cut = (a, b) => { const i = src.indexOf(a); return src.slice(i, src.indexOf(b, i) + b.length).trim().replace(/,$/, ''); };
-const getB = cut('  get() {', '}; },');
+const getB = cut('  get(', '}; },');
 const motB = cut('  motion(h) {', 'this.wake(\'motion\'); },');
-const make = (w, on = true) => new Function('window', `return { active: true, locked: false, _ms: undefined, SRCS: [['bg']], LOCKS: [0], woke: 0, wake() { this.woke++; }, ${getB}, run() { return this.get(); }, ${motB} };`)({ __hgL: { data: { wall: Object.assign({ on }, w) } } });
+const make = (w, on = true) => new Function('window', `return { active: true, locked: false, _ms: undefined, SRCS: [['bg']], LOCKS: [0], woke: 0, wake() { this.woke++; }, ${getB}, run() { return this.get(); }, ntGet() { return { on: false, dim: 0.8, style: 'night' }; }, ntNight() { return false; }, ${motB} };`)({ __hgL: { data: { wall: Object.assign({ on }, w) } } });
 const H = (o) => ({ states: Object.fromEntries(Object.entries(o).map(([k, v]) => [k, { state: v }])) });
 test('legacy sensor migrates to sensors, invalid ids dropped, deduped', () => {
   assert.deepEqual(make({ sensor: 'binary_sensor.a' }).get().sensors, ['binary_sensor.a']);
