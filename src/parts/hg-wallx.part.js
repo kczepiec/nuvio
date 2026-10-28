@@ -69,7 +69,7 @@ const HG_WX_SS = `
 Object.assign(HGWall, {
   /* [klucz, nazwa, tło ze zdjęcia] */
   XS: [['analog', hgTLazy('wallx.styles.analog'), true], ['flip', hgTLazy('wallx.styles.flip'), false], ['aurora', hgTLazy('wallx.styles.aurora'), false], ['night', hgTLazy('wallx.styles.night'), false]],
-  xs() { const s = ((window.__hgL && window.__hgL.data && window.__hgL.data.wall) || {}).style; return this.XS.some((x) => x[0] === s) ? s : ''; },
+  xs(raw) { const s = this.styleNow(raw); return this.XS.some((x) => x[0] === s) ? s : ''; },
   xsPic(k) { const x = this.XS.find((y) => y[0] === k); return !!(x && x[2]); },
   /* rejestr stylów dodanych w osobnych plikach: xsDef(klucz, nazwa, tło ze zdjęcia, { cls, css, body(), draw(root, T, d, rm), start?(el, rm) }) */
   XSDef: {},

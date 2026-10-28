@@ -73,7 +73,7 @@ Object.assign(HGWall, {
   gset(p) { const G = this.gget(), w = (HGL.data && HGL.data.wall) || {}, raw = w.gl && typeof w.gl === 'object' ? w.gl : {};
     const nx = Object.assign({}, raw, { v: G.v }); for (const k of Object.keys(p)) nx[k] = p[k] && typeof p[k] === 'object' && !Array.isArray(p[k]) ? Object.assign({}, G[k], p[k]) : p[k];
     this.set({ gl: nx }); if (this.active && this.el && this.el.classList.contains('gl')) this.gl(true); },
-  glass() { const w = (window.__hgL && window.__hgL.data && window.__hgL.data.wall) || {}; return w.style === 'glass'; },
+  glass(raw) { return this.styleNow(raw) === 'glass'; },
   gimg(k) { return k && k !== '-' ? (HG_GL_IMG.includes(k) ? HG_ASSET + 'nuvio-3d-' + k + '.webp' : k) : ''; },
   gtf(G) { const l = G.min.h12 !== 'auto' ? G.min.h12 : this.hass && this.hass.locale ? this.hass.locale.time_format : null; return new Intl.DateTimeFormat(HG_LOC(), Object.assign({ hour: '2-digit', minute: '2-digit' }, l === '12' ? { hour12: true } : l === '24' ? { hour12: false } : {})); },
   gdate(G, d) { return new Intl.DateTimeFormat(HG_LOC(), G.top.df === 'num' ? { weekday: 'short', day: '2-digit', month: '2-digit' } : G.top.df === 'short' ? { weekday: 'short', day: 'numeric', month: 'short' } : { weekday: 'long', day: 'numeric', month: 'long' }).format(d || new Date()); },
