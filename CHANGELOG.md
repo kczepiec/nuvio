@@ -1,4 +1,4 @@
-<p align="center"><b>English</b> · <a href="CHANGELOG.pl.md">Polski</a> · <a href="CHANGELOG.fr.md">Français</a></p>
+<p align="center"><b>English</b> · <a href="CHANGELOG.pl.md">Polski</a> · <a href="CHANGELOG.fr.md">Français</a> · <a href="CHANGELOG.nl.md">Nederlands</a></p>
 
 # Changelog
 
