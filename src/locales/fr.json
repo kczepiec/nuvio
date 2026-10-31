@@ -2802,7 +2802,6 @@
     "zoom_out": "Zoom arrière",
     "studio_wifi": "Wi-Fi",
     "studio_bluetooth": "Bluetooth",
-    "studio_battery": "Batterie {value} %",
     "studio_theme": "Basculer entre thème clair et sombre"
   },
   "roomx": {
