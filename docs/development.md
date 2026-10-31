@@ -70,12 +70,16 @@ Keys passed to `hgT`, `hgTLazy` and `hgTO` are string literals. Only `hgTD` buil
 
 **Checks.** `python3 tools/i18n_check.py` fails (exit code 1) when a key is not a literal, a used key is missing from `en.json`, a key of `en.json` is unused, a visible text is written in the code, a catalog has invalid JSON, a duplicate key, incomplete `_meta`, different variables or missing plural forms, or a required language (`en`, `pl`, `fr`) is incomplete. Catalog text is inserted into the page as HTML, so it also refuses markup in a text (`<b>`, `</…`, `<!--`; a lowercase placeholder such as `<id>` that is not an HTML element name is allowed), an `on…=` event handler, a straight double quote `"` outside English, and a catalog file name that is not a lowercase language code (`fr`, `pt-br`). Other languages may be partial and only get a coverage warning. Options: `--lang <code>` lists the missing and obsolete keys of one language, `--list` prints every error, `--json` prints the result as JSON. `tools/guard.py` runs it as part of its checks.
 
-There is no CI/CD: releases and tags are built locally. `tools/release.sh X.Y.Z` bumps the version (`package.json`, README), builds, checks `dist/nuvio.js` (`node --check`) and runs the hardcode guard, commits `chore: release X.Y.Z`, creates the annotated tag `vX.Y.Z`, pushes `main` and the tag, and creates a GitHub release without attached files (HACS then installs the full flat `dist/`):
+There is no CI/CD, so releases are made locally by the maintainer. Feature pull requests do not bump the version: they add their changelog entry under `### Unreleased`. A release is two steps:
+
+1. `./tools/cut-release.sh X.Y.Z` creates branch `release/X.Y.Z`, renames `### Unreleased` to `### X.Y.Z` in all four changelogs, bumps the version (`package.json`, README badges), rebuilds `dist/`, runs `node --check`, the hardcode guard and `npm test`, commits `chore: release X.Y.Z` and opens a pull request to `main`.
+2. After the pull request is merged, `./tools/tag-release.sh X.Y.Z` tags `main` as `vX.Y.Z`, pushes the tag, creates the GitHub release without attached files (HACS then installs the flat `dist/`) and checks the tag.
 
 ```bash
-./tools/release.sh 0.3.21   # needs a clean tree, gh CLI logged in
+./tools/cut-release.sh 2.31.0   # clean tree, gh CLI logged in, run from main
+./tools/tag-release.sh 2.31.0   # after the release pull request is merged
 ```
 
-Add the changelog entry to `CHANGELOG.md`, `CHANGELOG.pl.md`, `CHANGELOG.fr.md` and `CHANGELOG.nl.md` before you release (see [CONTRIBUTING.md](../CONTRIBUTING.md)): the script only updates the version in `package.json` and the version badge in the README files.
+Every change adds its entry to `CHANGELOG.md`, `CHANGELOG.pl.md`, `CHANGELOG.fr.md` and `CHANGELOG.nl.md` under `### Unreleased` (see [CONTRIBUTING.md](../CONTRIBUTING.md)).
 
 Only tagging by hand: `git fetch origin && git tag -a v2.12.0 origin/main -m "Nuvio 2.12.0" && git push origin v2.12.0`.

@@ -70,12 +70,16 @@ Klucze w `hgT`, `hgTLazy` i `hgTO` to literały tekstowe. Tylko `hgTD` składa k
 
 **Kontrola.** `python3 tools/i18n_check.py` kończy się błędem (kod wyjścia 1), gdy klucz nie jest literałem, użytego klucza brak w `en.json`, klucz z `en.json` nie jest używany, widoczny tekst jest wpisany w kodzie, katalog ma niepoprawny JSON, zdublowany klucz, niepełne `_meta`, inne zmienne albo brakujące formy liczby mnogiej, albo gdy wymagany język (`en`, `pl`, `fr`) jest niekompletny. Tekst katalogu trafia na stronę jako HTML, więc odrzuca też znaczniki w tekście (`<b>`, `</…`, `<!--`; dozwolony jest symbol zastępczy małymi literami, np. `<id>`, który nie jest nazwą elementu HTML), atrybut zdarzenia `on…=`, prosty cudzysłów `"` poza angielskim i nazwę pliku katalogu, która nie jest kodem języka małymi literami (`fr`, `pt-br`). Inne języki mogą być niepełne i dostają tylko ostrzeżenie z pokryciem. Opcje: `--lang <kod>` wypisuje brakujące i przestarzałe klucze jednego języka, `--list` pokazuje wszystkie błędy, `--json` zwraca wynik jako JSON. `tools/guard.py` uruchamia ją w ramach swoich kontroli.
 
-Nie ma CI/CD: wydania i tagi buduje się lokalnie. `tools/release.sh X.Y.Z` podbija wersję (`package.json`, README), buduje, sprawdza `dist/nuvio.js` (`node --check`) i guard, robi commit `chore: release X.Y.Z`, tworzy adnotowany tag `vX.Y.Z`, wypycha `main` i tag oraz tworzy wydanie GitHub bez załączników (HACS instaluje wtedy płaski `dist/`):
+Nie ma CI/CD, więc wydania robi lokalnie tylko współtwórca-właściciel. Pull requesty z funkcjami nie podbijają wersji: dopisują wpis do `### Unreleased`. Wydanie to dwa kroki:
+
+1. `./tools/cut-release.sh X.Y.Z` tworzy branch `release/X.Y.Z`, zmienia `### Unreleased` na `### X.Y.Z` we wszystkich czterech changelogach, podbija wersję (`package.json`, plakietki w README), przebudowuje `dist/`, uruchamia `node --check`, guard i `npm test`, robi commit `chore: release X.Y.Z` i otwiera pull request do `main`.
+2. Po zmergowaniu pull requestu `./tools/tag-release.sh X.Y.Z` taguje `main` jako `vX.Y.Z`, wypycha tag, tworzy wydanie GitHub bez załączników (HACS instaluje wtedy płaski `dist/`) i sprawdza tag.
 
 ```bash
-./tools/release.sh 0.3.21   # czyste drzewo, zalogowane gh
+./tools/cut-release.sh 2.31.0   # czyste drzewo, zalogowane gh, z main
+./tools/tag-release.sh 2.31.0   # po zmergowaniu pull requestu wydania
 ```
 
-Przed wydaniem dopisz wpis w `CHANGELOG.md`, `CHANGELOG.pl.md`, `CHANGELOG.fr.md` i `CHANGELOG.nl.md` (zobacz [CONTRIBUTING.md](../../CONTRIBUTING.md)): skrypt aktualizuje tylko wersję w `package.json` i plakietkę wersji w plikach README.
+Każda zmiana dopisuje wpis do `CHANGELOG.md`, `CHANGELOG.pl.md`, `CHANGELOG.fr.md` i `CHANGELOG.nl.md` w sekcji `### Unreleased` (zobacz [CONTRIBUTING.md](../../CONTRIBUTING.md)).
 
 Sam tag ręcznie: `git fetch origin && git tag -a v2.12.0 origin/main -m "Nuvio 2.12.0" && git push origin v2.12.0`.
