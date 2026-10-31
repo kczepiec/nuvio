@@ -40,8 +40,8 @@ Every new feature has to meet the UI rules in [DESIGN.md](DESIGN.md).
 - Branch names use a prefix: `feature/`, `fix/` or `chore/`.
 - Commit messages follow Conventional Commits, for example `feat: Air purifier card` or `fix: Stack height in Safari`.
 - Versions follow semantic versioning. A new feature raises the minor number and a fix raises the patch number.
-- Describe the change in `CHANGELOG.md` and `CHANGELOG.pl.md`, in the component lists (`docs/components.md` and `docs/pl/components.md`) and in `docs/STATUS.md`, and update the version in `package.json`.
-- The author keeps writing the changelog in English and Polish. `CHANGELOG.fr.md` and the French documentation (`README.fr.md`, `docs/fr/`) may lag behind: a contributor catches up the missing French entries in a separate pull request.
+- Describe the change in all four changelogs (`CHANGELOG.md`, `CHANGELOG.pl.md`, `CHANGELOG.fr.md`, `CHANGELOG.nl.md`), in the component lists (`docs/components.md` and `docs/pl/components.md`) and in `docs/STATUS.md`, and update the version in `package.json`.
+- The four changelogs stay in step: each version has the same headings and the same entries in the same order. Write the English entry in `CHANGELOG.md` first, then translate it into `CHANGELOG.pl.md`, `CHANGELOG.fr.md` and `CHANGELOG.nl.md` in the same pull request.
 
 ## Translations
 
