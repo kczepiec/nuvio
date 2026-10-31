@@ -10,6 +10,7 @@ Toutes les modifications notables de Nuvio sont listées ici, des plus récentes
 - Ajouté : modes Studio pour les cartes d’accueil, météo, média, caméras et scènes (option `studio` ; les configurations existantes restent inchangées).
 - Ajouté : les versions bêta comme `2.32.0-beta.1` chargent leurs ressources depuis le CDN. `tools/cut-release.sh --pre` et `tools/tag-release.sh --pre` publient une préversion depuis la branche courante.
 - Corrigé : les widgets Studio se rapprochent de la maquette. Les cartes sur la photo ont un verre plus sombre et un texte blanc, l’arc climat reste dans la carte, les barres d’énergie apparaissent dès la taille moyenne, le média a une pochette plus grande, les lumières allumées sont indigo et les scènes tiennent sur une rangée.
+- Corrigé : cadre Studio. Le logo réapparaît, le rail est une barre arrondie sans flèche retour, et les icônes en haut à droite ont plus d’espace. Le Wi-Fi et le Bluetooth reflètent l’état de la tablette et ouvrent l’entité ; l’icône de batterie disparaît.
 
 ### 2.31.0
 - Ajouté : le titre et le sous-titre de l’en-tête peuvent afficher l’état d’une entité en direct avec `{state:sensor.votre_entite}`, par exemple l’état d’un lave-linge. La ligne disparaît quand l’état est vide, `off`, `unavailable` ou `unknown`, et l’en-tête se met à jour quand l’entité change.

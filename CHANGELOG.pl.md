@@ -10,6 +10,7 @@ Tutaj zapisane są wszystkie istotne zmiany w Nuvio, od najnowszych. Wersje zgod
 - Dodano: tryby Studio dla kart powitania, pogody, multimediów, kamer i scen (opcja `studio`; istniejące konfiguracje wyglądają bez zmian).
 - Dodano: wersje beta, np. `2.32.0-beta.1`, ładują zasoby z CDN. `tools/cut-release.sh --pre` i `tools/tag-release.sh --pre` publikują wersję przedpremierową z bieżącej gałęzi.
 - Naprawiono: widżety Studio są bliżej makiety. Karty na zdjęciu mają ciemniejszą taflę i biały tekst, łuk klimatyzacji mieści się w karcie, słupki energii widać już w średnim rozmiarze, multimedia mają większą okładkę, włączone światła są indygo, a sceny leżą w jednym rzędzie.
+- Naprawiono: ramka Studio. Logo znów widać, szyna jest zaokrąglonym paskiem bez strzałki wstecz, a ikony w prawym górnym rogu mają odstęp. Wi-Fi i Bluetooth pokazują stan tabletu i otwierają encję; ikony baterii nie ma.
 
 ### 2.31.0
 - Dodano: tytuł i podtytuł nagłówka mogą pokazywać stan encji na żywo wpisem `{state:sensor.twoja_encja}`, np. status pralki. Linia znika, gdy stan jest pusty, `off`, `unavailable` lub `unknown`, a nagłówek odświeża się przy zmianie encji.

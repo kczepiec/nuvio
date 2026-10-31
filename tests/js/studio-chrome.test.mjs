@@ -18,7 +18,7 @@ function method(name) {
 function page(states) {
   const ctx = { console, H: { esc: (x) => String(x), icon: (i) => `<ha-icon icon="${i}"></ha-icon>` }, hgT: (k, p) => k + (p ? JSON.stringify(p) : ''), HG_LOC: () => 'en-GB' };
   vm.createContext(ctx);
-  vm.runInContext('class P { constructor(){ this._hass = { states: ' + JSON.stringify(states) + ', locale: { time_format: "24" } }; }\n' + method('_stDev') + '\n' + method('_stChrome') + '\n}\nglobalThis.P = P;', ctx);
+  vm.runInContext('class P { constructor(){ this._hass = { states: ' + JSON.stringify(states) + ', locale: { time_format: "24" } }; }\n' + method('_stDev') + '\n' + method('_stLink') + '\n' + method('_stChrome') + '\n}\nglobalThis.P = P;', ctx);
   return new ctx.P();
 }
 
@@ -29,8 +29,12 @@ test('studio chrome: status icons only for existing tablet entities, date + time
   });
   const h = p._stChrome();
   assert.match(h, /class="sst"/);
-  assert.match(h, /class="si wf"/); assert.match(h, /mdi:battery-90/); assert.doesNotMatch(h, /class="si bt"/);
+  assert.match(h, /data-act="stent"/); assert.match(h, /mdi:wifi"/); assert.doesNotMatch(h, /mdi:battery/); assert.doesNotMatch(h, /mdi:bluetooth"/);
   assert.match(h, /<time class="sdt">/);
+  const weak = page({ 'sensor.wall_tablet_wifi_signal': { state: '-80', attributes: {} } })._stChrome();
+  assert.match(weak, /mdi:wifi-strength-1/);
+  const off = page({ 'binary_sensor.wall_tablet_wifi': { state: 'off', attributes: {} } })._stChrome();
+  assert.match(off, /mdi:wifi-off/);
 });
 
 test('studio chrome: no tablet entities -> no status icons, clock stays', () => {

@@ -10,6 +10,7 @@ All notable changes to Nuvio are listed here, newest first. Versions follow [sem
 - Added: Studio modes for the greeting, weather, media, cameras and scenes cards (`studio` option; existing configs render unchanged).
 - Added: beta builds such as `2.32.0-beta.1` load their assets from the CDN. `tools/cut-release.sh --pre` and `tools/tag-release.sh --pre` publish a beta pre-release from the current branch.
 - Fixed: Studio widgets sit closer to the mockup. Cards on the photo use darker glass and white text, the climate arc stays inside the card, energy bars show from the medium size, media uses a larger cover, lights-on is indigo, and scenes sit in one row.
+- Fixed: Studio chrome. The logo shows again, the rail is a rounded bar without the back arrow, and the top-right icons have more space. Wi-Fi and Bluetooth reflect the tablet state and open the entity; the battery icon is gone.
 
 ### 2.31.0
 - Added: the header title and subtitle can show a live entity state with `{state:sensor.your_entity}`, for example a washer's status. The line disappears when the state is empty, `off`, `unavailable` or `unknown`, and the header updates when the entity changes.

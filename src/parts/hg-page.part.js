@@ -728,12 +728,20 @@ class HGPage extends HTMLElement {
     }
     return (this._stIds = o);
   }
+  /* siła Wi-Fi: dBm (ujemne) albo procent; stan on/connected = pełny znak, off = przekreślony */
+  _stLink(id, kind) {
+    const s = id && this._hass.states[id]; if (!s || /^(unavailable|unknown)$/.test(s.state)) return '';
+    const st = String(s.state), n = parseFloat(st), on = /^(on|home|connected)$/i.test(st);
+    let icon;
+    if (kind === 'bt') icon = on || (!/^(off|disconnected)$/i.test(st) && isNaN(n)) ? 'mdi:bluetooth' : 'mdi:bluetooth-off';
+    else if (!isNaN(n)) { const lvl = n < 0 ? (n >= -55 ? 4 : n >= -67 ? 3 : n >= -75 ? 2 : n > -100 ? 1 : 0) : (n >= 80 ? 4 : n >= 55 ? 3 : n >= 30 ? 2 : n > 0 ? 1 : 0); icon = lvl ? 'mdi:wifi-strength-' + lvl : 'mdi:wifi-off'; }
+    else icon = on || !/^(off|disconnected)$/i.test(st) ? 'mdi:wifi' : 'mdi:wifi-off';
+    const l = hgT(kind === 'bt' ? 'page.studio_bluetooth' : 'page.studio_wifi');
+    return `<button type="button" class="si" data-act="stent" data-e="${H.esc(id)}" aria-label="${H.esc(l)}" title="${H.esc(l)}">${H.icon(icon)}</button>`;
+  }
   _stChrome() {
-    const o = this._stDev(), S = this._hass.states, ok = (id) => id && S[id] && !/^(unavailable|unknown|off)$/.test(S[id].state), lang = typeof HG_LOC === 'function' ? HG_LOC() : undefined, tf = this._hass.locale && this._hass.locale.time_format, d = new Date();
-    const bat = ok(o.bat) ? Math.round(parseFloat(S[o.bat].state)) : NaN, b10 = Math.max(0, Math.min(100, Math.round(bat / 10) * 10));
-    const ic = (cls, i, l) => `<span class="si ${cls}" role="img" aria-label="${H.esc(l)}" title="${H.esc(l)}">${H.icon(i)}</span>`;
-    return `<div class="sst">${ok(o.wifi) ? ic('wf', 'mdi:wifi', hgT('page.studio_wifi')) : ''}${ok(o.bt) ? ic('bt', 'mdi:bluetooth', hgT('page.studio_bluetooth')) : ''}`
-      + `${isNaN(bat) ? '' : ic('bat', b10 >= 100 ? 'mdi:battery' : b10 <= 0 ? 'mdi:battery-outline' : 'mdi:battery-' + b10, hgT('page.studio_battery', { value: bat }))}`
+    const o = this._stDev(), lang = typeof HG_LOC === 'function' ? HG_LOC() : undefined, tf = this._hass.locale && this._hass.locale.time_format, d = new Date();
+    return `<div class="sst">${this._stLink(o.wifi, 'wf')}${this._stLink(o.bt, 'bt')}`
       + `<time class="sdt">${H.esc(d.toLocaleDateString(lang, { weekday: 'short', month: 'short', day: 'numeric' }))}&nbsp; ${H.esc(d.toLocaleTimeString(lang, Object.assign({ hour: '2-digit', minute: '2-digit' }, tf === '12' ? { hour12: true } : tf === '24' ? { hour12: false } : {})))}</time></div>`;
   }
   _paintTop(force) {
@@ -745,7 +753,7 @@ class HGPage extends HTMLElement {
     const tabs = c.tabs.map((t) => ({ ...t, act: path === t.path || (t.match && hgMatch(t.match, path)), b: badgeOf(t) }));
     /* cheap signature: primitives compared with === instead of JSON.stringify over the whole user object, which ran on every state update */
     const ps0 = ui.person && H.st(this._hass, ui.person), sig = [!!this._editing, this._canEdit(), nCount, ui.person || '', ui.first || '', this._menuOpen,
-      ps0 ? ps0.attributes.entity_picture || '' : '', !!(window.HGAssistUI && HGAssistUI.get().button), tabs.map((t) => (t.act ? 'a' : '_') + t.b).join('|'), ...(c.studio ? [Math.floor(Date.now() / 6e4), ...['wifi', 'bt', 'bat'].map((k) => { const e = this._stDev()[k], s = e && this._hass.states[e]; return s ? s.state : ''; })] : [])];
+      ps0 ? ps0.attributes.entity_picture || '' : '', !!(window.HGAssistUI && HGAssistUI.get().button), tabs.map((t) => (t.act ? 'a' : '_') + t.b).join('|'), ...(c.studio ? [Math.floor(Date.now() / 6e4), ...['wifi', 'bt'].map((k) => { const e = this._stDev()[k], s = e && this._hass.states[e]; return s ? s.state : ''; })] : [])];
     /* _sigTop bywa null (reset przy dotyku/edycji/rebuildzie) - bez guardu pierwsze malowanie rzuca TypeError */
     if (!force && this._sigTop && sig.length === this._sigTop.length && sig.every((v, i) => v === this._sigTop[i])) return; this._sigTop = sig;
     const ps = ui.person && H.st(this._hass, ui.person);
@@ -995,6 +1003,7 @@ class HGPage extends HTMLElement {
       case 'assist': return window.HGAssistUI && HGAssistUI.open(this, t);
       case 'mail': return go(c.mail_action);
       case 'bell': return go(c.notifications_action);
+      case 'stent': return t.dataset.e && H.fire(this, 'hass-more-info', { entityId: t.dataset.e });
       case 'pmore': { const el = this._panelEl; return el && el.scrollBy({ top: Math.round(el.clientHeight * 0.8), behavior: 'smooth' }); }
       case 'profile': return go(c.user.action || { navigate: '/profile' });
       case 'menu': this._menuOpen = !this._menuOpen; return this._paintTop(true);
@@ -1281,9 +1290,13 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 :host([mode=wide][scroll]) .panel::-webkit-scrollbar-thumb{ background:rgba(0,0,0,.28); border-radius:3px; }
 .more{ display:none; }
 /* ----- Studio (view cfg studio:true): ta sama góra, szyna i menu co zawsze; szkło daje każdy widżet, nie panel ----- */
-.sst{ display:flex; align-items:center; gap:8u; margin-right:6u; font-size:12u; font-weight:500; white-space:nowrap; font-variant-numeric:tabular-nums; } .sst .si{ display:inline-flex; } .sst .si ha-icon, .sst .si svg{ width:16u; height:16u; --mdc-icon-size:16u; }
+.sst{ display:flex; align-items:center; gap:12px; margin-right:4px; font-size:12u; font-weight:500; white-space:nowrap; font-variant-numeric:tabular-nums; } .sst .si{ display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; padding:0; border:0; background:none; color:inherit; cursor:pointer; } .sst .si ha-icon, .sst .si svg{ width:18px; height:18px; --mdc-icon-size:18px; }
 .rth{ margin-top:auto; }
-:host([studio]) .head, :host([studio]) .brand span{ display:none; }
+:host([studio]) .head{ display:none; }
+:host([studio]) .brand > span:not(.logo){ display:none; }
+:host([studio]) .back{ display:none; }
+:host([studio]) .rail{ border-radius:18px; }
+:host([studio]) .right{ gap:12px; }
 :host([studio]) .panel{ background:none; border:0; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; padding:0; }
 /* widżety na zdjęciu: ciemna tafla jak w makiecie, biały tekst; inne widoki zostają przy swoim szkle */
 :host([studio]){ --hg-glass-bg: rgba(8,12,18,.52); --hg-glass-sheen: linear-gradient(155deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.05) 42%, rgba(255,255,255,0) 72%);
