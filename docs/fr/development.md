@@ -76,6 +76,6 @@ Il n’y a pas de CI/CD : les versions et les étiquettes se construisent en lo
 ./tools/release.sh 0.3.21   # arbre propre requis, gh CLI connecté
 ```
 
-Ajoutez l’entrée du journal des modifications dans `CHANGELOG.md` et `CHANGELOG.pl.md` avant de publier (`CHANGELOG.fr.md` est rattrapé par un contributeur, voir [CONTRIBUTING.md](../../CONTRIBUTING.md)) : le script ne met à jour que la version dans `package.json` et le badge de version dans les fichiers README.
+Ajoutez l’entrée du journal des modifications dans `CHANGELOG.md`, `CHANGELOG.pl.md`, `CHANGELOG.fr.md` et `CHANGELOG.nl.md` avant de publier (voir [CONTRIBUTING.md](../../CONTRIBUTING.md)) : le script ne met à jour que la version dans `package.json` et le badge de version dans les fichiers README.
 
 Étiquette seule, à la main : `git fetch origin && git tag -a v2.12.0 origin/main -m "Nuvio 2.12.0" && git push origin v2.12.0`.

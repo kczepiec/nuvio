@@ -76,6 +76,6 @@ Nie ma CI/CD: wydania i tagi buduje się lokalnie. `tools/release.sh X.Y.Z` podb
 ./tools/release.sh 0.3.21   # czyste drzewo, zalogowane gh
 ```
 
-Przed wydaniem dopisz wpis w `CHANGELOG.md` i `CHANGELOG.pl.md` (`CHANGELOG.fr.md` uzupełnia współtwórca, zobacz [CONTRIBUTING.md](../../CONTRIBUTING.md)): skrypt aktualizuje tylko wersję w `package.json` i plakietkę wersji w plikach README.
+Przed wydaniem dopisz wpis w `CHANGELOG.md`, `CHANGELOG.pl.md`, `CHANGELOG.fr.md` i `CHANGELOG.nl.md` (zobacz [CONTRIBUTING.md](../../CONTRIBUTING.md)): skrypt aktualizuje tylko wersję w `package.json` i plakietkę wersji w plikach README.
 
 Sam tag ręcznie: `git fetch origin && git tag -a v2.12.0 origin/main -m "Nuvio 2.12.0" && git push origin v2.12.0`.
