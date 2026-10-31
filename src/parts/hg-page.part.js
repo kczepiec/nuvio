@@ -778,7 +778,7 @@ class HGPage extends HTMLElement {
         const et = r.headers.get('etag');
         return r.text().then((t) => { const m = new RegExp('HG_BUILD = ' + "'" + "([^']+)'").exec((t || '').slice(0, 400));
           try { if (et && m) localStorage.setItem('nuvio:jsETag:' + m[1], et); } catch (e) { /* tryb prywatny */ }
-          U.stale = m && m[1] !== HG_BUILD ? m[1].split('+')[0] : null; done(); });
+          U.stale = m && cmp(m[1].split('+')[0], run) > 0 ? m[1].split('+')[0] : null; done(); });
       }).catch(() => {}); }
     done(); }
   _vEmpty() { clearTimeout(this._veT); this._veT = setTimeout(() => { const P = this._panelEl; if (!P || !P.isConnected) return;

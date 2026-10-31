@@ -4,6 +4,9 @@
 
 Tutaj zapisane są wszystkie istotne zmiany w Nuvio, od najnowszych. Wersje zgodne z [semantycznym wersjonowaniem](https://semver.org). Angielska lista zmian jest w [CHANGELOG.md](CHANGELOG.md).
 
+### 2.30.2
+- Naprawiono: **pasek przeładowania** nie pojawia się już po aktualizacji, gdy działająca wersja jest najnowsza.
+
 ### 2.30.1
 - Naprawiono: okno ustawień **Wygląd** nie otwierało się po dodaniu harmonogramu nocnego. Znów działa.
 
