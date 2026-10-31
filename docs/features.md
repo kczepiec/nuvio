@@ -63,6 +63,15 @@ Admins can export and import the whole Nuvio layout from **Appearance → Layout
 - Before importing, the current layout is kept as a backup; **Restore previous** in the notification (or in the Layout backup section) undoes the import with one click.
 - The file is versioned (`format`, `schema`, `nuvio`, `exported`). Older raw layout data is converted automatically; files from a newer schema or damaged files are rejected with a clear message.
 
+## Studio view (beta)
+
+An optional view with a free widget grid, off by default.
+
+- **Enable**: **Settings → Views**, switch on **Studio**. Home and your saved layouts stay untouched. The first Studio layout is built once from your own entities and never regenerated.
+- **Edit mode**: drag a widget by its handle, resize it from the corner, open its menu to pick a size or hide or remove it, and use the dashed **Add widget** tile to add one or show a hidden one again. Other widgets move aside and compact. Arrow keys move a focused widget, Shift and arrows resize it.
+- **Per-device layouts**: the grid has 12 columns on wide screens, 8 on tablets and 4 on phones. Changes made at a given width are stored as a separate layout for that width. **Save** keeps them, **Cancel** restores the previous layout.
+- The layout is part of the [layout backup](#layout-backup).
+
 ## Voice assistant
 
 Talk to the Home Assistant assistant (Assist) without leaving the dashboard. Open it with the microphone button in the header or the **A** key when you are not typing in a field.

@@ -7,7 +7,8 @@ const HGBackup = window.__hgBackup || (window.__hgBackup = {
     ['layout', 's', 'mdi:view-grid-outline', hgTLazy('backup.cats.layout')],
     ['look', 'app', 'mdi:palette-outline', hgTLazy('backup.cats.look')],
     ['panel', 'pw', 'mdi:arrow-expand-horizontal', hgTLazy('backup.cats.panel')],
-    ['wall', 'wall', 'mdi:tablet-dashboard', hgTLazy('backup.cats.wall')]],
+    ['wall', 'wall', 'mdi:tablet-dashboard', hgTLazy('backup.cats.wall')],
+    ['studio', 'studio', 'mdi:view-dashboard-variant-outline', hgTLazy('backup.cats.studio')]],
   admin(p) { const h = p && p._hass; return !!(h && h.user && h.user.is_admin); },
   sel() { return this.inc || (this.inc = new Set(this.CATS.map((c) => c[0]))); },
   cl(x) { return x == null ? x : JSON.parse(JSON.stringify(x)); },
@@ -15,8 +16,8 @@ const HGBackup = window.__hgBackup || (window.__hgBackup = {
   when(ts) { try { return new Date(ts).toLocaleString(HG_LOC(), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } },
   /* ---- eksport ---- */
   build(sel) { const D = HGL.data || {}, data = {};
-    for (const [id, k] of this.CATS) if (sel.has(id)) data[k] = this.cl(D[k] || {});   /* pusta część też trafia do pliku: Zastąp ją wyczyści */
-    return { format: 'nuvio-layout', schema: this.SCHEMA, nuvio: String(HG_BUILD).split('+')[0], exported: new Date().toISOString(), include: this.CATS.filter((c) => sel.has(c[0])).map((c) => c[0]), data }; },
+    for (const [id, k] of this.CATS) if (sel.has(id) && (k !== 'studio' || D[k])) data[k] = this.cl(D[k] || {});   /* pusta część też trafia do pliku: Zastąp ją wyczyści; studio tylko gdy istnieje, pusty {} zablokowałby pierwsze wygenerowanie */
+    return { format: 'nuvio-layout', schema: this.SCHEMA, nuvio: String(HG_BUILD).split('+')[0], exported: new Date().toISOString(), include: this.CATS.filter((c) => sel.has(c[0]) && c[1] in data).map((c) => c[0]), data }; },
   text(sel) { return JSON.stringify(this.build(sel), null, 2); },
   download(p) { const t = this.text(this.sel()), d = new Date(), z = (n) => String(n).padStart(2, '0');
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([t], { type: 'application/json' }));
@@ -40,10 +41,11 @@ const HGBackup = window.__hgBackup || (window.__hgBackup = {
     if (!ob(o)) this.fail(hgT('backup.errors.unknown_format'));
     o = this.migrate(o); const d = o.data;
     if (!ob(d)) this.fail(hgT('backup.errors.no_layout_data'));
-    for (const k of ['s', 'wiz', 'app', 'pw', 'wall']) if (d[k] != null && !ob(d[k])) this.fail(hgT('backup.errors.damaged_part', { part: k }));
+    for (const k of ['s', 'wiz', 'app', 'pw', 'wall', 'studio']) if (d[k] != null && !ob(d[k])) this.fail(hgT('backup.errors.damaged_part', { part: k }));
     for (const [k, v] of Object.entries(d.s || {})) if (!ob(v) || !ar(v.order) || !ar(v.hidden) || !ar(v.added) || (v.size != null && !ob(v.size)) || (v.conf != null && !ob(v.conf))) this.fail(hgT('backup.errors.damaged_scope', { scope: k }));
+    if (d.studio && (!Array.isArray(d.studio.items) || d.studio.items.some((x) => !ob(x) || typeof x.id !== 'string'))) this.fail(hgT('backup.errors.damaged_part', { part: 'studio' }));
     if (d.wiz && (!ar(d.wiz.views) || !ar(d.wiz.custom) || (d.wiz.custom || []).some((c) => !ob(c) || typeof c.p !== 'string'))) this.fail(hgT('backup.errors.damaged_views'));
-    if (!['s', 'wiz', 'app', 'pw', 'wall'].some((k) => d[k] != null)) this.fail(hgT('backup.errors.nothing_to_import'));
+    if (!['s', 'wiz', 'app', 'pw', 'wall', 'studio'].some((k) => d[k] != null)) this.fail(hgT('backup.errors.nothing_to_import'));
     return o; },
   ents(d, h) { const out = new Set(), re = /^[a-z_]+\.[a-z0-9_]+$/;
     const dom = new Set([...Object.keys(h.states).map((e) => e.split('.')[0]), 'light', 'switch', 'sensor', 'binary_sensor', 'climate', 'media_player', 'camera', 'cover', 'fan', 'lock', 'person', 'weather', 'scene', 'script', 'automation', 'input_boolean', 'input_number', 'input_select', 'button', 'number', 'select', 'vacuum', 'water_heater', 'humidifier', 'valve', 'alarm_control_panel', 'calendar', 'device_tracker', 'update', 'siren', 'event', 'todo', 'lawn_mower']);

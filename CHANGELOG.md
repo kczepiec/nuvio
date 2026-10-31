@@ -4,6 +4,12 @@
 
 All notable changes to Nuvio are listed here, newest first. Versions follow [semantic versioning](https://semver.org). The Polish changelog is in [CHANGELOG.pl.md](CHANGELOG.pl.md).
 
+### Unreleased
+- Added: opt-in **Studio view** (beta), off by default and switched on in **Settings > Views**. It has a mockup-style frame (full-height rail with a light/dark toggle, pill tabs, optional Wi-Fi, Bluetooth and battery icons from a wall tablet, date and time) and a free 2D widget grid of 12 columns (8 on tablets, 4 on phones). In edit mode widgets can be dragged, resized, hidden and added with the "Add widget" tile; other widgets move aside and compact, and every widget has its own minimum and maximum size. The first layout is seeded from your entities, each screen width keeps its own layout, and a saved layout is never regenerated. It is included in the layout backup.
+- Added: new **climate**, **energy** and **home** widgets (also in the card picker) that switch between compact, medium and expanded layouts based on their own size.
+- Added: Studio modes for the greeting, weather, media, cameras and scenes cards (`studio` option; existing configs render unchanged).
+- Added: beta builds such as `2.32.0-beta.1` load their assets from the CDN. `tools/cut-release.sh --pre` and `tools/tag-release.sh --pre` publish a beta pre-release from the current branch.
+
 ### 2.31.0
 - Added: the header title and subtitle can show a live entity state with `{state:sensor.your_entity}`, for example a washer's status. The line disappears when the state is empty, `off`, `unavailable` or `unknown`, and the header updates when the entity changes.
 

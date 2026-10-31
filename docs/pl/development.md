@@ -80,6 +80,13 @@ Nie ma CI/CD, więc wydania robi lokalnie tylko współtwórca-właściciel. Pul
 ./tools/tag-release.sh 2.31.0   # po zmergowaniu pull requestu wydania
 ```
 
+**Pre-release.** Aby przetestować branch z funkcją przez HACS przed prawdziwym wydaniem, uruchom skrypty z `--pre X.Y.Z-beta.N`. `cut-release.sh --pre` działa na bieżącym branchu (nie `main`, czyste drzewo): podbija tylko `package.json` (plakietki w README i `### Unreleased` zostają bez zmian), przebudowuje `dist/`, uruchamia te same kontrole, robi commit `chore: pre-release X.Y.Z-beta.N` i wypycha branch, bez brancha wydania i pull requesta. `tag-release.sh --pre` taguje `HEAD` jako `vX.Y.Z-beta.N`, wypycha tag i tworzy pre-release w GitHub bez załączników. HACS pokazuje go tylko po włączeniu opcji „Pokaż wersje beta” dla repozytorium.
+
+```bash
+./tools/cut-release.sh --pre 2.32.0-beta.1   # czyste drzewo, branch inny niż main
+./tools/tag-release.sh --pre 2.32.0-beta.1   # po wypchnięciu, z tego samego brancha
+```
+
 Każda zmiana dopisuje wpis do `CHANGELOG.md`, `CHANGELOG.pl.md`, `CHANGELOG.fr.md` i `CHANGELOG.nl.md` w sekcji `### Unreleased` (zobacz [CONTRIBUTING.md](../../CONTRIBUTING.md)).
 
 Sam tag ręcznie: `git fetch origin && git tag -a v2.12.0 origin/main -m "Nuvio 2.12.0" && git push origin v2.12.0`.

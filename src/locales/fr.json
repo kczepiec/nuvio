@@ -63,6 +63,7 @@
       "layout": "Disposition, widgets et entités, titres, largeurs des sections, éléments masqués",
       "look": "Apparence : accent, fond d’écran, assombrissement",
       "panel": "Largeurs des panneaux des vues",
+      "studio": "Studio",
       "views": "Vues et vues personnalisées",
       "wall": "Mode tablette murale"
     },
@@ -397,7 +398,9 @@
     "cameras": {
       "no_cameras_are_available": "Aucune caméra n’est disponible pour le moment",
       "picker_description": "Caméras actives en grandes tuiles, indisponibles en pastilles",
-      "picker_name": "Home Glass – Caméras"
+      "picker_name": "Home Glass – Caméras",
+      "title": "Caméras",
+      "view_all": "Tout voir"
     },
     "chart": {
       "choose_a_numeric_sensor": "Choisissez un capteur numérique",
@@ -570,6 +573,14 @@
       "picker_name": "Nuvio – Grille"
     },
     "hero": {
+      "all_set": "Votre maison est prête.",
+      "attention_many": "{count} éléments demandent votre attention",
+      "attention_one": "{count} élément demande votre attention",
+      "attention_other": "{count} éléments demandent votre attention",
+      "greeting_afternoon": "Bon après-midi, {name} !",
+      "greeting_evening": "Bonsoir, {name} !",
+      "greeting_morning": "Bonjour, {name} !",
+      "greeting_night": "Bonne nuit, {name} !",
       "greeting_title": "Bonjour, {name} !",
       "picker_description": "Grand message d’accueil avec votre prénom et un slogan",
       "picker_name": "Nuvio – Accueil",
@@ -1279,6 +1290,7 @@
       "picker_name": "Nuvio – Pièce compacte"
     },
     "scenes": {
+      "add": "Ajouter",
       "picker_description": "Scripts sous forme de boutons avec animation de confirmation",
       "picker_name": "Home Glass – Scènes",
       "run": "lancer",
@@ -1458,6 +1470,44 @@
       "picker_name": "Home Glass – Compteur",
       "reset": "Réinitialiser",
       "step_value": "Pas {value}"
+    },
+    "studio_climate": {
+      "picker_name": "Nuvio Studio : Climatisation",
+      "picker_description": "Climatisation avec cadran de température cible, mode, ventilateur et préréglage",
+      "choose_a_climate_entity": "Choisissez une entité de climatisation",
+      "preset": "Préréglage",
+      "next_change": "Prochain changement {time}"
+    },
+    "studio_energy": {
+      "picker_name": "Nuvio Studio : Énergie",
+      "picker_description": "Consommation d'énergie du jour, de la semaine ou du mois avec variation et barres",
+      "choose_an_energy_sensor": "Choisissez un capteur d'énergie",
+      "day": "Jour",
+      "week": "Semaine",
+      "month": "Mois",
+      "period_aria": "Période",
+      "chart_aria": "Graphique de consommation d'énergie",
+      "vs_yesterday": "vs. hier",
+      "vs_last_week": "vs. semaine dernière",
+      "vs_last_month": "vs. mois dernier",
+      "no_statistics": "Ce capteur n'a pas encore de statistiques"
+    },
+    "studio_home": {
+      "picker_name": "Nuvio Studio : Maison",
+      "picker_description": "Tuiles rapides : toutes les lumières, serrure, caméras et température de la maison",
+      "title": "Maison",
+      "lights": "Lumières",
+      "all": "Toutes",
+      "lock": "Serrure",
+      "cameras": "Caméras",
+      "online_one": "{count} en ligne",
+      "online_many": "{count} en ligne",
+      "online_other": "{count} en ligne",
+      "home_temp": "Temp. maison",
+      "nothing_to_show": "Ajoutez une serrure, un capteur de température ou des lumières à afficher ici",
+      "lights_on_one": "{count} lumière allumée sur {total}",
+      "lights_on_many": "{count} lumières allumées sur {total}",
+      "lights_on_other": "{count} lumières allumées sur {total}"
     },
     "sun": {
       "above_the_horizon": "Au-dessus de l’horizon",
@@ -2565,7 +2615,8 @@
     "rooms": "Pièces",
     "rooms_sub": "Chaque pièce à portée de main",
     "scenes": "Scènes",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "studio": "Studio"
   },
   "oss": {
     "cv": {
@@ -2748,7 +2799,11 @@
     "user": "Utilisateur",
     "who_is_home_right": "Qui est à la maison en ce moment",
     "zoom_in": "Zoom avant",
-    "zoom_out": "Zoom arrière"
+    "zoom_out": "Zoom arrière",
+    "studio_wifi": "Wi-Fi",
+    "studio_bluetooth": "Bluetooth",
+    "studio_battery": "Batterie {value} %",
+    "studio_theme": "Basculer entre thème clair et sombre"
   },
   "roomx": {
     "add_tiles_one": "Ajouter {count} tuile",
@@ -3560,5 +3615,34 @@
     "layout_no_rooms": "Aucune pièce avec des appareils pour le téléviseur.",
     "layout_no_scenes": "Aucune scène ni script.",
     "layout_no_alarms": "Aucun panneau d’alarme."
+  },
+  "studio": {
+    "add_hint": "Glisser-déposer",
+    "add_widget": "Ajouter un widget",
+    "empty_text": "Activez le mode édition et ajoutez un widget.",
+    "empty_title": "Rien pour l’instant",
+    "hide": "Masquer",
+    "kb_hint": "Les flèches déplacent le widget, Maj et les flèches le redimensionnent, Entrée ouvre son menu.",
+    "menu": "Options de {name}",
+    "move": "Déplacer {name}",
+    "picker_description": "Grille libre de widgets à déplacer et redimensionner en mode édition.",
+    "picker_name": "Studio",
+    "pos": "{name} : colonne {x}, ligne {y}, {w} sur {h}",
+    "remove": "Supprimer",
+    "resize": "Redimensionner {name}",
+    "show": "Afficher {name}",
+    "size_l": "Grand",
+    "size_m": "Moyen",
+    "size_s": "Petit",
+    "w": {
+      "greeting": "Accueil",
+      "weather": "Météo",
+      "climate": "Climat",
+      "home": "Maison",
+      "media": "Multimédia",
+      "cameras": "Caméras",
+      "energy": "Énergie",
+      "scenes": "Scènes"
+    }
   }
 }

@@ -9,7 +9,7 @@ const HG_ASSET_P = window.HG_ASSET_P = (() => { try { const u = new URL(HG_ASSET
    Inne adresy (wgrane /api/image/serve, /local/…, https://…) bez zmian */
 const hgBgFix = window.hgBgFix = (u) => (typeof u === 'string' ? u.replace(/^(?:[a-z][a-z0-9+.-]*:\/\/[^/]+)?(?:\/[^?#\s]*)?\/(?:assets\/(?:backgrounds|bg)\/|nuvio-bg-)([a-z0-9-]+\.webp)(?:[?#].*)?$/i, (m, f) => HG_ASSET_P + 'nuvio-bg-' + f) : u);
 /* zapas z CDN (jsDelivr, przypięty do tagu działającej wersji): gdy plik obok paczki się nie wczyta; lokalny pierwszy (offline) */
-const hgCdn = window.hgCdn = (u) => { try { const v = String(HG_BUILD).split('+')[0]; if (!/^\d+\.\d+\.\d+$/.test(v) || typeof u !== 'string') return ''; const base = u.startsWith(HG_ASSET) ? HG_ASSET : u.startsWith(HG_ASSET_P) ? HG_ASSET_P : null; if (!base) return '';
+const hgCdn = window.hgCdn = (u) => { try { const v = String(HG_BUILD).split('+')[0]; if (!/^\d+\.\d+\.\d+(-beta\.\d+)?$/.test(v) || typeof u !== 'string') return ''; const base = u.startsWith(HG_ASSET) ? HG_ASSET : u.startsWith(HG_ASSET_P) ? HG_ASSET_P : null; if (!base) return '';
   return 'https://cdn.jsdelivr.net/gh/kczepiec/nuvio@v' + v + '/dist/' + u.slice(base.length).replace(/[?#].*$/, ''); } catch (e) { return ''; } };
 window.__hgNoVer = true;   /* wersję pilnuje HACS (hacstag) – bez własnego komunikatu o nowej wersji */
 const HG_DASH = () => (location.pathname.split('/')[1] || 'home-glass');
@@ -118,6 +118,7 @@ async function hgGenerate(hass, opt) {
     ['multimedia', hgT('nav.media'), 'mdi:play-box-multiple-outline', M.media.length > 0], ['kamery', hgT('nav.cams'), 'mdi:cctv', M.cams.length > 0],
     ['family', hgT('nav.family'), 'mdi:account-group-outline', M.persons.length > 0], ['energia', hgT('nav.energy'), 'mdi:lightning-bolt-outline', M.power.length > 0],
     ['mapa', hgT('nav.map'), 'mdi:map-outline', M.persons.length + M.trackers.length > 0], ['kalendarz', hgT('nav.calendar'), 'mdi:calendar-month-outline', M.calendars.length > 0],
+    ['studio', hgT('nav.studio'), 'mdi:view-dashboard-variant-outline', false],   /* Studio: tylko gdy włączone w Wyglądzie → Widoki (wiz.views) */
     ...((wiz && wiz.custom) || []).map((c) => [c.p, c.n, c.i || 'mdi:view-grid-outline', true])]
     /* jawna lista z kreatora / Wyglądu: kolejność wg listy, widok włączony nawet bez encji; bez listy – tylko dostępne */
     .filter((x) => (wiz && wiz.views ? x[0] === 'dashboard' || wiz.views.includes(x[0]) : x[3]) && !vOff(x[0])).sort((a, b) => (wiz && wiz.views ? (a[0] === 'dashboard' ? -1 : b[0] === 'dashboard' ? 1 : wiz.views.indexOf(a[0]) - wiz.views.indexOf(b[0])) : 0));
@@ -173,6 +174,7 @@ const hint = (k) => ({ type: 'custom:hg-hint-card', hint: k });
   if (V.some((v) => v[0] === 'multimedia')) views.push(view('multimedia', hgT('nav.media'), base('multimedia', hgT('nav.media'), hgT('nav.media_sub'), [M.media.length ? { type: 'custom:hg-players-card', area: 'm', entities: M.media } : { ...hint('media'), area: 'm' }], one('m'))));
   if (V.some((v) => v[0] === 'kamery')) views.push(view('kamery', hgT('nav.cams'), base('kamery', hgT('nav.cams'), hgT('nav.cams_sub'), [M.cams.length ? { type: 'custom:hg-cameras-card', area: 'c', entities: M.cams } : { ...hint('cams'), area: 'c' }], one('c'))));
   if (V.some((v) => v[0] === 'family')) views.push(view('family', hgT('nav.family'), base('family', hgT('nav.family'), hgT('nav.family_sub'), (M.persons.length ? M.persons.map((p) => ({ type: 'custom:hg-person-card', entity: p })) : [hint('people')]), scroll)));
+  if (V.some((v) => v[0] === 'studio')) views.push(view('studio', hgT('nav.studio'), base('studio', hgT('nav.studio'), '', [{ type: 'custom:hg-studio-card' }], one('st'), { studio: true })));
   /* przepływ energii na górze widoku Energia, gdy widać sieć i panele albo baterię (zgadywanie po nazwach) */
   /* jak karta z galerii: te same wartości startowe (najpierw panel Energia HA, najwyżej 3 s czekania) i ta sama konfiguracja */
   let ESrc = null; if (V.some((v) => v[0] === 'energia')) { try { ESrc = (await Promise.race([HGEnergyPrefs.get(hass), new Promise((ok) => setTimeout(() => ok(null), 3000))]) || {}).src || null; } catch (e) { /* brak panelu Energia */ } }
@@ -426,8 +428,9 @@ window.HGWizard = HGWizard;
 const HG_VIEW_DEF = [['dashboard', hgTLazy('nav.panel'), 'mdi:view-dashboard-outline', ''], ['rooms', hgTLazy('nav.rooms'), 'mdi:sofa-outline', hgTLazy('nav.req_rooms')],
   ['multimedia', hgTLazy('nav.media'), 'mdi:play-box-multiple-outline', hgTLazy('nav.req_media')], ['kamery', hgTLazy('nav.cams'), 'mdi:cctv', hgTLazy('nav.req_cams')],
   ['family', hgTLazy('nav.family'), 'mdi:account-group-outline', hgTLazy('nav.req_family')], ['energia', hgTLazy('nav.energy'), 'mdi:lightning-bolt-outline', hgTLazy('nav.req_energy')],
-  ['mapa', hgTLazy('nav.map'), 'mdi:map-outline', hgTLazy('nav.req_map')], ['kalendarz', hgTLazy('nav.calendar'), 'mdi:calendar-month-outline', hgTLazy('nav.req_cal')]];
-const hgViewHas = (M) => ({ dashboard: true, rooms: Object.keys(M.areas || {}).length > 0, multimedia: M.media.length > 0, kamery: M.cams.length > 0, family: M.persons.length > 0, energia: M.power.length > 0, mapa: M.persons.length + (M.trackers || []).length > 0, kalendarz: (M.calendars || []).length > 0 });
+  ['mapa', hgTLazy('nav.map'), 'mdi:map-outline', hgTLazy('nav.req_map')], ['kalendarz', hgTLazy('nav.calendar'), 'mdi:calendar-month-outline', hgTLazy('nav.req_cal')],
+  ['studio', hgTLazy('nav.studio'), 'mdi:view-dashboard-variant-outline', '']];
+const hgViewHas = (M) => ({ dashboard: true, rooms: Object.keys(M.areas || {}).length > 0, multimedia: M.media.length > 0, kamery: M.cams.length > 0, family: M.persons.length > 0, energia: M.power.length > 0, mapa: M.persons.length + (M.trackers || []).length > 0, kalendarz: (M.calendars || []).length > 0, studio: true });
 /* pakiety: wykrycie po zarejestrowanym zasobie ORAZ faktycznie wczytanym kodzie (globalna / element) */
 /* HACS: strona repozytorium w aplikacji (/hacs/repository/<id GitHub>); bez HACS -> GitHub w nowej karcie */
 const hgHasHacs = (h) => !!(h && h.panels && h.panels.hacs);
@@ -454,7 +457,7 @@ const HGLookX = {
   views() { const w = (HGL.data && HGL.data.wiz) || {}, has = this.M ? hgViewHas(this.M) : {};
     if (this.pend) return this.pend;
     const all = [...HG_VIEW_DEF.map((v) => v[0]), ...(w.custom || []).map((c) => c.p)];
-    const on = w.views ? w.views.filter((v) => all.includes(v)) : all.filter((v) => has[v] || (w.custom || []).some((c) => c.p === v));
+    const on = w.views ? w.views.filter((v) => all.includes(v)) : all.filter((v) => (v !== 'studio' && has[v]) || (w.custom || []).some((c) => c.p === v));
     const ord = [...on, ...all.filter((v) => !on.includes(v))].filter((v) => v !== 'dashboard');
     return { order: ['dashboard', ...ord], on: new Set(['dashboard', ...on]) }; },
   cvForm() { const c = this.cv, ed = !!c.old, L = HG_LAYS, num = (k, l, d) => `<label class="lcv-n"><span>${l}</span><select data-cv="${k}">${[1, 2, 3, 4, 5, 6].map((i) => `<option ${(+c[k] || d) === i ? 'selected' : ''}>${i}</option>`).join('')}</select></label>`;

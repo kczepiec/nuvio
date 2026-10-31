@@ -63,6 +63,7 @@
       "layout": "Układ, widżety i encje, tytuły, szerokości sekcji, ukryte",
       "look": "Wygląd: akcent, tło, przyciemnienie",
       "panel": "Szerokość paneli widoków",
+      "studio": "Studio",
       "views": "Widoki i własne widoki",
       "wall": "Tryb tabletu ściennego"
     },
@@ -404,7 +405,9 @@
     "cameras": {
       "no_cameras_are_available": "Żadna kamera nie jest teraz dostępna",
       "picker_description": "Działające kamery jako duże kafle, niedostępne jako chipy",
-      "picker_name": "Home Glass – Kamery"
+      "picker_name": "Home Glass – Kamery",
+      "title": "Kamery",
+      "view_all": "Zobacz wszystkie"
     },
     "chart": {
       "choose_a_numeric_sensor": "Wybierz czujnik liczbowy",
@@ -578,6 +581,15 @@
       "picker_name": "Nuvio – Siatka"
     },
     "hero": {
+      "all_set": "Twój dom jest gotowy.",
+      "attention_few": "{count} rzeczy wymagają uwagi",
+      "attention_many": "{count} rzeczy wymaga uwagi",
+      "attention_one": "{count} rzecz wymaga uwagi",
+      "attention_other": "{count} rzeczy wymaga uwagi",
+      "greeting_afternoon": "Dzień dobry, {name}!",
+      "greeting_evening": "Dobry wieczór, {name}!",
+      "greeting_morning": "Dzień dobry, {name}!",
+      "greeting_night": "Dobranoc, {name}!",
       "greeting_title": "Hej, {name}!",
       "picker_description": "Duże powitanie z imieniem i hasłem",
       "picker_name": "Nuvio – Powitanie",
@@ -1302,6 +1314,7 @@
       "picker_name": "Nuvio – Pokój kompakt"
     },
     "scenes": {
+      "add": "Dodaj",
       "picker_description": "Skrypty jako przyciski z animacją potwierdzenia",
       "picker_name": "Home Glass – Sceny",
       "run": "uruchom",
@@ -1487,6 +1500,46 @@
       "picker_name": "Home Glass – Licznik",
       "reset": "Wyzeruj",
       "step_value": "Krok {value}"
+    },
+    "studio_climate": {
+      "picker_name": "Nuvio Studio: Klimatyzacja",
+      "picker_description": "Klimatyzacja z pokrętłem temperatury, trybem, wentylatorem i presetem",
+      "choose_a_climate_entity": "Wybierz encję klimatyzacji",
+      "preset": "Preset",
+      "next_change": "Następna zmiana {time}"
+    },
+    "studio_energy": {
+      "picker_name": "Nuvio Studio: Energia",
+      "picker_description": "Zużycie energii za dzień, tydzień lub miesiąc ze zmianą i słupkami",
+      "choose_an_energy_sensor": "Wybierz czujnik energii",
+      "day": "Dzień",
+      "week": "Tydzień",
+      "month": "Miesiąc",
+      "period_aria": "Okres",
+      "chart_aria": "Wykres zużycia energii",
+      "vs_yesterday": "vs. wczoraj",
+      "vs_last_week": "vs. zeszły tydzień",
+      "vs_last_month": "vs. zeszły miesiąc",
+      "no_statistics": "Ten czujnik nie ma jeszcze statystyk"
+    },
+    "studio_home": {
+      "picker_name": "Nuvio Studio: Dom",
+      "picker_description": "Szybkie kafelki: wszystkie światła, zamek, kamery i temperatura w domu",
+      "title": "Dom",
+      "lights": "Światła",
+      "all": "Wszystkie",
+      "lock": "Zamek",
+      "cameras": "Kamery",
+      "online_one": "{count} online",
+      "online_few": "{count} online",
+      "online_many": "{count} online",
+      "online_other": "{count} online",
+      "home_temp": "Temp. domu",
+      "nothing_to_show": "Dodaj zamek, czujnik temperatury albo światła, aby je tu pokazać",
+      "lights_on_one": "{count} z {total} światła włączone",
+      "lights_on_few": "{count} z {total} świateł włączone",
+      "lights_on_many": "{count} z {total} świateł włączonych",
+      "lights_on_other": "{count} z {total} świateł włączonych"
     },
     "sun": {
       "above_the_horizon": "Nad horyzontem",
@@ -2601,7 +2654,8 @@
     "rooms": "Pokoje",
     "rooms_sub": "Każdy pokój w zasięgu ręki",
     "scenes": "Sceny",
-    "settings": "Ustawienia"
+    "settings": "Ustawienia",
+    "studio": "Studio"
   },
   "oss": {
     "cv": {
@@ -2789,7 +2843,11 @@
     "user": "Użytkownik",
     "who_is_home_right": "Kto jest teraz w domu",
     "zoom_in": "Powiększ",
-    "zoom_out": "Pomniejsz"
+    "zoom_out": "Pomniejsz",
+    "studio_wifi": "Wi-Fi",
+    "studio_bluetooth": "Bluetooth",
+    "studio_battery": "Bateria {value}%",
+    "studio_theme": "Przełącz motyw jasny lub ciemny"
   },
   "roomx": {
     "add_tiles_few": "Dodaj {count} kafelki",
@@ -3615,5 +3673,34 @@
     "layout_no_rooms": "Brak pokoi z urządzeniami dla TV.",
     "layout_no_scenes": "Brak scen i skryptów.",
     "layout_no_alarms": "Brak paneli alarmu."
+  },
+  "studio": {
+    "add_hint": "Przeciągnij i upuść",
+    "add_widget": "Dodaj widżet",
+    "empty_text": "Włącz tryb edycji i dodaj widżet.",
+    "empty_title": "Na razie pusto",
+    "hide": "Ukryj",
+    "kb_hint": "Strzałki przesuwają widżet, Shift ze strzałkami zmienia jego rozmiar, Enter otwiera menu.",
+    "menu": "Opcje: {name}",
+    "move": "Przesuń: {name}",
+    "picker_description": "Swobodna siatka widżetów, które w trybie edycji przesuwasz i zmieniasz ich rozmiar.",
+    "picker_name": "Studio",
+    "pos": "{name}: kolumna {x}, wiersz {y}, {w} na {h}",
+    "remove": "Usuń",
+    "resize": "Zmień rozmiar: {name}",
+    "show": "Pokaż: {name}",
+    "size_l": "Duży",
+    "size_m": "Średni",
+    "size_s": "Mały",
+    "w": {
+      "greeting": "Powitanie",
+      "weather": "Pogoda",
+      "climate": "Klimat",
+      "home": "Dom",
+      "media": "Multimedia",
+      "cameras": "Kamery",
+      "energy": "Energia",
+      "scenes": "Sceny"
+    }
   }
 }

@@ -80,6 +80,13 @@ Il n’y a pas de CI/CD : les versions sont publiées localement par le maintene
 ./tools/tag-release.sh 2.31.0   # après la fusion de la pull request de publication
 ```
 
+**Préversion.** Pour tester une branche de fonctionnalité via HACS avant une vraie publication, lancez les scripts avec `--pre X.Y.Z-beta.N`. `cut-release.sh --pre` travaille sur la branche courante (pas `main`, arbre propre) : il augmente uniquement `package.json` (les badges des README et `### Unreleased` restent inchangés), recompile `dist/`, lance les mêmes contrôles, crée le commit `chore: pre-release X.Y.Z-beta.N` et pousse la branche, sans branche de publication ni pull request. `tag-release.sh --pre` pose l’étiquette `vX.Y.Z-beta.N` sur `HEAD`, pousse l’étiquette et crée une préversion GitHub sans fichiers joints. HACS ne l’affiche que si « Afficher les versions bêta » est activé pour le dépôt.
+
+```bash
+./tools/cut-release.sh --pre 2.32.0-beta.1   # arbre propre, branche autre que main
+./tools/tag-release.sh --pre 2.32.0-beta.1   # après le push, depuis la même branche
+```
+
 Chaque modification ajoute son entrée dans `CHANGELOG.md`, `CHANGELOG.pl.md`, `CHANGELOG.fr.md` et `CHANGELOG.nl.md` sous `### Unreleased` (voir [CONTRIBUTING.md](../../CONTRIBUTING.md)).
 
 Étiquette seule, à la main : `git fetch origin && git tag -a v2.12.0 origin/main -m "Nuvio 2.12.0" && git push origin v2.12.0`.

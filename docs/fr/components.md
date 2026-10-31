@@ -229,6 +229,9 @@ Toutes les captures ci-dessus ont la même taille (thème sombre, fond d’écra
 - `custom:nuvio-map-card` : la carte native de HA dans un cadre en verre (les tuiles de la carte nécessitent un accès à Internet).
 - `custom:nuvio-image-card` et `custom:nuvio-webpage-card` : votre propre image, un instantané de caméra ou une page dans un cadre.
 - `custom:nuvio-kid-card` : présence d’un enfant (LiveKid), arrivée, repas et solde ; nécessite l’intégration LiveKid.
+- `custom:nuvio-studio-card` : la grille libre de widgets de la vue Studio (déplacer, redimensionner, ajouter et masquer des widgets ; voir [vue Studio](features.md#vue-studio-bêta)).
+- `custom:nuvio-studio-climate-card`, `custom:nuvio-studio-energy-card` et `custom:nuvio-studio-home-card` : widgets Studio pour le climat (cadran de consigne, mode, ventilateur), l’énergie (kWh du jour, de la semaine et du mois avec variation) et la maison (lumières, serrure, caméras en ligne, température). Chacun passe d’une disposition compacte à moyenne puis étendue selon sa propre taille.
+- Mode Studio (`studio: true`) des cartes d’accueil, météo (`hourly`), média (`now_playing`), caméras (`thumbs`, `max`, `view_all`) et scènes (`tiles`, `add`).
 - `custom:nuvio-energy-card` : pourcentage de charge de la puissance totale des phases par rapport à votre maximum.
 - `custom:nuvio-bars-card` : barres de consommation quotidienne à partir des statistiques.
 - `custom:nuvio-page` : la disposition plein écran elle-même (barre supérieure, rail, en-tête, panneau des cartes).

@@ -63,6 +63,7 @@
       "layout": "Indeling, widgets en entiteiten, titels, sectiebreedtes, verborgen items",
       "look": "Uiterlijk: accent, achtergrond, dimmen",
       "panel": "Paneelbreedte van weergaven",
+      "studio": "Studio",
       "views": "Weergaven en eigen weergaven",
       "wall": "Wandtabletmodus"
     },
@@ -390,7 +391,9 @@
     "cameras": {
       "no_cameras_are_available": "Er is nu geen enkele camera beschikbaar",
       "picker_description": "Werkende camera's als grote tegels, niet-beschikbare als chips",
-      "picker_name": "Home Glass – Camera's"
+      "picker_name": "Home Glass – Camera's",
+      "title": "Camera's",
+      "view_all": "Alles bekijken"
     },
     "chart": {
       "choose_a_numeric_sensor": "Kies een numerieke sensor",
@@ -562,6 +565,13 @@
       "picker_name": "Nuvio – Raster"
     },
     "hero": {
+      "all_set": "Je huis is helemaal in orde.",
+      "attention_one": "{count} ding vraagt aandacht",
+      "attention_other": "{count} dingen vragen aandacht",
+      "greeting_afternoon": "Goedemiddag, {name}!",
+      "greeting_evening": "Goedenavond, {name}!",
+      "greeting_morning": "Goedemorgen, {name}!",
+      "greeting_night": "Goedenacht, {name}!",
       "greeting_title": "Hoi, {name}!",
       "picker_description": "Grote begroeting met je naam en een slogan",
       "picker_name": "Nuvio – Begroeting",
@@ -1256,6 +1266,7 @@
       "picker_name": "Nuvio – Compacte kamer"
     },
     "scenes": {
+      "add": "Toevoegen",
       "picker_description": "Scripts als knoppen met een bevestigingsanimatie",
       "picker_name": "Home Glass – Scènes",
       "run": "uitvoeren",
@@ -1429,6 +1440,42 @@
       "picker_name": "Home Glass – Teller",
       "reset": "Resetten",
       "step_value": "Stap {value}"
+    },
+    "studio_climate": {
+      "picker_name": "Nuvio Studio: Airco",
+      "picker_description": "Airco met een draaiknop voor de doeltemperatuur, modus, ventilator en preset",
+      "choose_a_climate_entity": "Kies een klimaatentiteit",
+      "preset": "Preset",
+      "next_change": "Volgende wijziging {time}"
+    },
+    "studio_energy": {
+      "picker_name": "Nuvio Studio: Energie",
+      "picker_description": "Energieverbruik per dag, week of maand met verandering en staafjes",
+      "choose_an_energy_sensor": "Kies een energiesensor",
+      "day": "Dag",
+      "week": "Week",
+      "month": "Maand",
+      "period_aria": "Periode",
+      "chart_aria": "Grafiek van het energieverbruik",
+      "vs_yesterday": "t.o.v. gisteren",
+      "vs_last_week": "t.o.v. vorige week",
+      "vs_last_month": "t.o.v. vorige maand",
+      "no_statistics": "Deze sensor heeft nog geen statistieken"
+    },
+    "studio_home": {
+      "picker_name": "Nuvio Studio: Huis",
+      "picker_description": "Snelle tegels: alle lampen, slot, camera's en temperatuur in huis",
+      "title": "Huis",
+      "lights": "Lampen",
+      "all": "Alle",
+      "lock": "Slot",
+      "cameras": "Camera's",
+      "online_one": "{count} online",
+      "online_other": "{count} online",
+      "home_temp": "Temp. huis",
+      "nothing_to_show": "Voeg een slot, temperatuursensor of lampen toe om hier te tonen",
+      "lights_on_one": "{count} van {total} lamp aan",
+      "lights_on_other": "{count} van {total} lampen aan"
     },
     "sun": {
       "above_the_horizon": "Boven de horizon",
@@ -2529,7 +2576,8 @@
     "rooms": "Kamers",
     "rooms_sub": "Elke kamer binnen handbereik",
     "scenes": "Scènes",
-    "settings": "Instellingen"
+    "settings": "Instellingen",
+    "studio": "Studio"
   },
   "oss": {
     "cv": {
@@ -2698,6 +2746,10 @@
     "sections": "Secties",
     "show_panel": "Paneel tonen",
     "shrink_panel": "Paneel verkleinen",
+    "studio_battery": "Batterij {value}%",
+    "studio_bluetooth": "Bluetooth",
+    "studio_theme": "Wissel tussen licht en donker thema",
+    "studio_wifi": "Wifi",
     "temperature": "Temperatuur",
     "this_view_has_no": "Deze weergave heeft nog geen widgets.",
     "tomorrow_no_data": "morgen: geen gegevens",
@@ -3479,5 +3531,34 @@
     "layout_no_rooms": "Geen kamers met apparaten voor de tv.",
     "layout_no_scenes": "Geen scènes of scripts.",
     "layout_no_alarms": "Geen alarmpanelen."
+  },
+  "studio": {
+    "add_hint": "Slepen en neerzetten",
+    "add_widget": "Widget toevoegen",
+    "empty_text": "Zet de bewerkmodus aan en voeg een widget toe.",
+    "empty_title": "Nog niets hier",
+    "hide": "Verbergen",
+    "kb_hint": "Pijltjestoetsen verplaatsen de widget, Shift met pijltjes wijzigt de grootte, Enter opent het menu.",
+    "menu": "Opties voor {name}",
+    "move": "{name} verplaatsen",
+    "picker_description": "Vrij raster met widgets die je in de bewerkmodus verplaatst en van grootte verandert.",
+    "picker_name": "Studio",
+    "pos": "{name}: kolom {x}, rij {y}, {w} bij {h}",
+    "remove": "Verwijderen",
+    "resize": "Grootte van {name} wijzigen",
+    "show": "{name} tonen",
+    "size_l": "Groot",
+    "size_m": "Middel",
+    "size_s": "Klein",
+    "w": {
+      "greeting": "Begroeting",
+      "weather": "Weer",
+      "climate": "Klimaat",
+      "home": "Thuis",
+      "media": "Media",
+      "cameras": "Camera's",
+      "energy": "Energie",
+      "scenes": "Scènes"
+    }
   }
 }

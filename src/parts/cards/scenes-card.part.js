@@ -2,7 +2,7 @@
 /* hg-scenes-card: skrypty jako duże pigułki. Tap -> script.turn_on (w tle), fala (ripple) od miejsca dotyku, potem ✓;
    gdy skrypt działa (stan „on”) – obracający się pierścień, „Działa…”, przycisk zablokowany. */
 class HGScenesCard extends HGBase {
-  defaults() { return { title: hgT('cards.scenes.scenes'), icon: 'mdi:play-circle-outline', scripts: [] }; }
+  defaults() { return { title: hgT('cards.scenes.scenes'), icon: 'mdi:play-circle-outline', scripts: [], studio: false, tiles: false, add: false, edit: false }; }
   ents() { return this._config.scripts.map((x) => x.entity); }
   _extraSig() { return [this._ok || '']; }
   css() {
@@ -28,6 +28,15 @@ ha-card.glass{ display:flex; flex-direction:column; gap:var(--s1); padding:var(-
 .rp{ position:absolute; width:20u; height:20u; margin:-10u 0 0 -10u; border-radius:50%; background:var(--c); opacity:.3; pointer-events:none; transform:scale(0); animation:hgrip .6s cubic-bezier(.2,.8,.2,1) forwards; }
 @keyframes hgrip{ to{ transform:scale(16); opacity:0 } }
 .un{ opacity:.5; }
+/* kafle studio: pionowy kafel (ikona nad etykietą), siatka auto-fit, opcjonalny kafel „+”; stopnie wg szerokości kontenera */
+ha-card.glass.tl{ container-type:inline-size; }
+.row.tl{ container-type:normal; display:grid; grid-template-columns:repeat(auto-fit, minmax(max(64px, 18cqi), 1fr)); }
+.row.tl .p{ flex-direction:column; justify-content:center; gap:6px; height:auto; min-height:72px; padding:8px 4px; text-align:center; border-radius:var(--r-md); box-shadow:none; background:var(--hg-inner-bg); }
+.row.tl .p.ok{ background:var(--hg-accent-soft); }
+.row.tl .tx{ white-space:normal; font-size:min(var(--fs-sm), 13px); font-weight:500; overflow-wrap:anywhere; }
+.row.tl .p.add{ border:1px dashed color-mix(in srgb, currentColor 30%, transparent); background:none; color:inherit; opacity:.75; min-height:72px; } .row.tl .p.add .ic{ background:none; color:inherit; }
+@container (max-width: 239px){ .tl .hd .tt{ display:none; } .row.tl .p{ min-height:60px; } .row.tl .p .ic{ width:28px; height:28px; } }
+@container (min-width: 480px){ .row.tl .p{ min-height:88px; } .row.tl .p .ic{ width:38px; height:38px; } .row.tl .p .ic ha-icon{ width:22px; height:22px; } }
 `);
   }
   render() {
@@ -39,9 +48,11 @@ ha-card.glass{ display:flex; flex-direction:column; gap:var(--s1); padding:var(-
       return `<button class="p lift ${run ? 'run' : ''} ${ok ? 'ok' : ''} ${un ? 'un' : ''}" style="--c:${x.color || 'var(--hg-accent)'}" data-act="run" data-i="${i}" ${un || run ? 'disabled' : ''} aria-label="${H.lv(H.esc(nm), `${sub}`)}" title="${H.esc(nm)} – ${sub}" aria-busy="${!!run}">
         <span class="ic">${H.icon(ok ? 'mdi:check' : x.icon || (s && s.attributes.icon) || 'mdi:play')}</span><span class="tx">${H.esc(nm)}</span></button>`;
     }).join('');
-    return `<ha-card class="glass"><div class="hd">${H.icon(c.icon, 'ic')}<span class="tt">${H.esc(c.title)}</span></div><div class="row">${items}</div></ha-card>`;
+    const tl = !!(c.studio || c.tiles), ad = (c.add || c.edit || (this.hasAttribute && this.hasAttribute('edit'))) ? `<button class="p add lift" data-act="add" aria-label="${hgT('cards.scenes.add')}" title="${hgT('cards.scenes.add')}"><span class="ic">${H.icon('mdi:plus')}</span><span class="tx">${hgT('cards.scenes.add')}</span></button>` : '';
+    return `<ha-card class="glass${tl ? ' tl' : ''}"><div class="hd">${H.icon(c.icon, 'ic')}<span class="tt">${H.esc(c.title)}</span></div><div class="row${tl ? ' tl' : ''}">${items}${ad}</div></ha-card>`;
   }
   onAct(a, t, e) {
+    if (a === 'add') return H.fire(this, 'hg-card-add', { kind: 'scene' });
     if (a !== 'run') return;
     const x = this._config.scripts[Number(t.dataset.i)]; if (!x) return;
     const r = t.getBoundingClientRect(), px = (e && e.clientX ? e.clientX : r.left + r.width / 2) - r.left, py = (e && e.clientY ? e.clientY : r.top + r.height / 2) - r.top;

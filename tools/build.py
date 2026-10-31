@@ -28,6 +28,8 @@ SHARED = [
     'shared/compact-cards.part.js',
     'shared/nv-card.part.js',
     'shared/livekid.part.js',
+    'shared/grid-engine.part.js',
+    'shared/studio-widgets.part.js',
 ]
 CARDS = [
     'cards/energy-card.part.js',
@@ -115,6 +117,10 @@ CARDS = [
     'cards/logbook-card.part.js',
     'cards/webpage-card.part.js',
     'cards/kid-card.part.js',
+    'cards/studio-climate-card.part.js',
+    'cards/studio-energy-card.part.js',
+    'cards/studio-home-card.part.js',
+    'cards/studio-card.part.js',
 ]
 PAGE = ['hg-roomx.part.js', 'hg-page.part.js', 'hg-edit.part.js', 'hg-looks.part.js', 'hg-lookr.part.js', 'hg-backup.part.js', 'hg-wall.part.js', 'hg-wallqa.part.js', 'hg-vlock.part.js', 'hg-wallclock.part.js', 'hg-wallboard.part.js', 'hg-wallglass.part.js', 'hg-wallx.part.js', 'hg-wallx-stars.part.js', 'hg-wallx-words.part.js', 'hg-wallx-sunrise.part.js', 'hg-wallnotify.part.js', 'hg-cmd.part.js', 'hg-users.part.js', 'hg-tvlogic.part.js', 'hg-tv.part.js', 'hg-voice.part.js', 'hg-assist.part.js']
 PARTS = CORE + UI + SHARED + CARDS + PAGE

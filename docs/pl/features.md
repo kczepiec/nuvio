@@ -63,6 +63,15 @@ Administrator może wyeksportować i zaimportować cały układ Nuvio w **Wyglą
 - Przed importem bieżący układ jest zapisywany jako kopia; **Przywróć poprzedni** w powiadomieniu (albo w sekcji Kopia układu) cofa import jednym kliknięciem.
 - Plik ma wersję (`format`, `schema`, `nuvio`, `exported`). Starsze surowe dane układu są konwertowane automatycznie, a pliki z nowszego schematu lub uszkodzone są odrzucane z jasnym komunikatem.
 
+## Widok Studio (beta)
+
+Opcjonalny widok ze swobodną siatką widżetów, domyślnie wyłączony.
+
+- **Włączenie**: **Ustawienia → Widoki**, włącz **Studio**. Strona główna i zapisane układy zostają bez zmian. Pierwszy układ Studio powstaje raz z Twoich encji i nigdy nie jest generowany od nowa.
+- **Tryb edycji**: przeciągaj widżet za uchwyt, zmieniaj rozmiar z rogu, w menu widżetu wybierz rozmiar albo ukryj lub usuń go, a kafelkiem **Dodaj widżet** dodasz nowy lub pokażesz ukryty. Pozostałe widżety ustępują miejsca i układają się ciasno. Strzałki przesuwają aktywny widżet, Shift ze strzałkami zmienia jego rozmiar.
+- **Układ dla każdego urządzenia**: siatka ma 12 kolumn na szerokich ekranach, 8 na tabletach i 4 na telefonach. Zmiany zrobione przy danej szerokości zapisują się jako osobny układ dla tej szerokości. **Zapisz** je zachowuje, **Anuluj** przywraca poprzedni układ.
+- Układ wchodzi do [kopii układu](#kopia-układu).
+
 ## Asystent głosowy
 
 Rozmowa z asystentem Home Assistant (Assist) bez wychodzenia z pulpitu. Otwiera go przycisk mikrofonu w nagłówku albo klawisz **A**, gdy nie piszesz w polu.

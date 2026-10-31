@@ -13,7 +13,7 @@ const HGL = window.__hgL || (window.__hgL = {
   set(sc, v) { const o = { order: v.order || [], hidden: v.hidden || [], size: v.size || {}, added: v.added || [], names: v.names || {}, conf: v.conf || {} };
     for (const k of Object.keys(o.conf)) if (!o.conf[k] || !Object.keys(o.conf[k]).length) delete o.conf[k];
     if (!o.order.length && !o.hidden.length && !Object.keys(o.size).length && !o.added.length && !Object.keys(o.names).length && !Object.keys(o.conf).length) delete this.data.s[sc]; else this.data.s[sc] = o; },
-  SECS: ['app', 'wiz', 'pw', 'wall', 'assist'],
+  SECS: ['app', 'wiz', 'pw', 'wall', 'assist', 'studio'],
   /* zrzut stanu serwera (po load/save) – przy zapisie wysyłamy tylko to, co zmieniło się względem niego */
   _snap(v) { const x = v || { s: {} }, o = { s: Object.fromEntries(Object.entries(x.s || {}).map(([k, y]) => [k, JSON.stringify(y)])) }; for (const k of this.SECS) o[k] = JSON.stringify(x[k] || null); return o; },
   /* wspólny dashboard: edycja tylko dla admina; własny układ: każdy edytuje swój */
@@ -1380,7 +1380,8 @@ const HG_EDIT = {
     for (const [t, f, o] of this._eL) window.addEventListener(t, f, o);
   },
   _eUnwire() { for (const [t, f, o] of this._eL || []) window.removeEventListener(t, f, o); this._eL = null; this._eUndecorate(); },
-  _ePath(e) { const p = e.composedPath(); const ctl = p.find((n) => n.dataset && n.dataset.hge); const it = p.find((n) => n.dataset && n.dataset.hgk && n.parentElement && (n.parentElement.dataset.hgl || n.parentElement === this._panelEl));
+  _ePath(e) { const p = e.composedPath(); if (p.some((n) => n.classList && n.classList.contains('st-root'))) return { p, inBar: true };   /* Studio sam obsługuje edycję swoich widżetów */
+    const ctl = p.find((n) => n.dataset && n.dataset.hge); const it = p.find((n) => n.dataset && n.dataset.hgk && n.parentElement && (n.parentElement.dataset.hgl || n.parentElement === this._panelEl));
     return { p, ctl, it, inBar: p.includes(this._eBarEl) || (this._eSheetEl && p.includes(this._eSheetEl)) }; },
   _eClick(e) {
     const { ctl, it, inBar } = this._ePath(e);

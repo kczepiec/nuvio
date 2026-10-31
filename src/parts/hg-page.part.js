@@ -497,7 +497,7 @@ class HGPage extends HTMLElement {
       w.appendChild(el); this._panelEl.appendChild(w);
       this._cards.push(el); this._cardWraps.push(w);
     }
-    this.toggleAttribute('norail', !(c.rail || []).length); this._navParam();
+    this.toggleAttribute('norail', !(c.rail || []).length); this.toggleAttribute('studio', !!c.studio); this._stIds = null; this._navParam();
     this._built = true; this._building = false; this._lsig = this._layoutSig();
     if (window.HGVLock) HGVLock.guard(this);   /* blokada widoku PIN-em (#17) */
     if (this._rebuild || this._config !== c) { this._rebuild = false; return this._build(); }   /* setConfig w trakcie pierwszej (asynchronicznej) budowy */
@@ -717,6 +717,25 @@ class HGPage extends HTMLElement {
       const name = typeof hgBadgeLabel === 'function' ? hgBadgeLabel(c.k) : hgT('lookr.badge'), ic = c.icon || ((window.HG_BADGE_META || {})[c.k] || {}).i || 'mdi:circle-small';
       bits.push(`<span class="bdg" role="listitem" title="${H.esc(name)}" aria-label="${H.esc(name + ' ' + n)}">${H.icon(ic)}<b>${n}</b></span>`); }
     el.hidden = !bits.length; if (force) el._hgHtml = null; this._setHTML(el, bits.join('')); }
+  /* Studio: encje tabletu ściennego (wifi / bluetooth / bateria), wyszukiwane raz na budowę; brak encji = brak ikony */
+  _stDev() {
+    if (this._stIds) return this._stIds; const S = (this._hass && this._hass.states) || {}, o = {};
+    for (const id of Object.keys(S)) {
+      if (!/^(sensor|binary_sensor|device_tracker)\./.test(id) || !/tablet|wall|ipad|kiosk/i.test(id)) continue;
+      if (!o.bat && S[id].attributes.device_class === 'battery') o.bat = id;
+      else if (!o.bt && /bluetooth/i.test(id)) o.bt = id;
+      else if (!o.wifi && /wi_?fi|ssid|rssi/i.test(id)) o.wifi = id;
+    }
+    return (this._stIds = o);
+  }
+  _stChrome() {
+    const o = this._stDev(), S = this._hass.states, ok = (id) => id && S[id] && !/^(unavailable|unknown|off)$/.test(S[id].state), lang = typeof HG_LOC === 'function' ? HG_LOC() : undefined, tf = this._hass.locale && this._hass.locale.time_format, d = new Date();
+    const bat = ok(o.bat) ? Math.round(parseFloat(S[o.bat].state)) : NaN, b10 = Math.max(0, Math.min(100, Math.round(bat / 10) * 10));
+    const ic = (cls, i, l) => `<span class="si ${cls}" role="img" aria-label="${H.esc(l)}" title="${H.esc(l)}">${H.icon(i)}</span>`;
+    return `<div class="sst">${ok(o.wifi) ? ic('wf', 'mdi:wifi', hgT('page.studio_wifi')) : ''}${ok(o.bt) ? ic('bt', 'mdi:bluetooth', hgT('page.studio_bluetooth')) : ''}`
+      + `${isNaN(bat) ? '' : ic('bat', b10 >= 100 ? 'mdi:battery' : b10 <= 0 ? 'mdi:battery-outline' : 'mdi:battery-' + b10, hgT('page.studio_battery', { value: bat }))}`
+      + `<time class="sdt">${H.esc(d.toLocaleDateString(lang, { weekday: 'short', month: 'short', day: 'numeric' }))}&nbsp; ${H.esc(d.toLocaleTimeString(lang, Object.assign({ hour: '2-digit', minute: '2-digit' }, tf === '12' ? { hour12: true } : tf === '24' ? { hour12: false } : {})))}</time></div>`;
+  }
   _paintTop(force) {
     if (!this._built || !this._hass) return;
     const c = this._config, ui = this._userInfo(), brand = c.brand ?? hgT('page.home');
@@ -726,7 +745,7 @@ class HGPage extends HTMLElement {
     const tabs = c.tabs.map((t) => ({ ...t, act: path === t.path || (t.match && hgMatch(t.match, path)), b: badgeOf(t) }));
     /* cheap signature: primitives compared with === instead of JSON.stringify over the whole user object, which ran on every state update */
     const ps0 = ui.person && H.st(this._hass, ui.person), sig = [!!this._editing, this._canEdit(), nCount, ui.person || '', ui.first || '', this._menuOpen,
-      ps0 ? ps0.attributes.entity_picture || '' : '', !!(window.HGAssistUI && HGAssistUI.get().button), tabs.map((t) => (t.act ? 'a' : '_') + t.b).join('|')];
+      ps0 ? ps0.attributes.entity_picture || '' : '', !!(window.HGAssistUI && HGAssistUI.get().button), tabs.map((t) => (t.act ? 'a' : '_') + t.b).join('|'), ...(c.studio ? [Math.floor(Date.now() / 6e4), ...['wifi', 'bt', 'bat'].map((k) => { const e = this._stDev()[k], s = e && this._hass.states[e]; return s ? s.state : ''; })] : [])];
     /* _sigTop bywa null (reset przy dotyku/edycji/rebuildzie) - bez guardu pierwsze malowanie rzuca TypeError */
     if (!force && this._sigTop && sig.length === this._sigTop.length && sig.every((v, i) => v === this._sigTop[i])) return; this._sigTop = sig;
     const ps = ui.person && H.st(this._hass, ui.person);
@@ -739,12 +758,14 @@ class HGPage extends HTMLElement {
         ${window.HGAssistUI && HGAssistUI.get().button ? `<button class="cir as" data-act="assist" aria-haspopup="dialog" aria-keyshortcuts="A" aria-label="${hgT('page.assist_voice_assistant_a')}" title="${hgT('page.assist_a')}">${H.icon('mdi:microphone-message')}</button>` : ''}
         <button class="cir" data-act="mail" aria-label="${hgT('page.messages')}" title="${hgT('page.messages_and_notifications')}">${H.icon('mdi:email')}</button>
         <button class="cir" data-act="bell" aria-label="${hgT('common.notifications')} (${nCount})" title="${H.lv(hgT('common.notifications'), nCount)}">${H.icon('mdi:bell')}${nCount ? `<i class="nb">${nCount > 9 ? '9+' : nCount}</i>` : ''}</button>
+        ${c.studio ? this._stChrome() : ''}
         <div class="user">
           <button class="uin" data-act="profile" aria-label="${hgT('page.profile')}" title="${hgT('page.profile')}">${av}<span class="un"><b>${H.esc(ui.full)}</b><small>${H.esc(ui.handle)}</small></span></button>
           <button class="chev" data-act="menu" aria-haspopup="menu" aria-expanded="${!!this._menuOpen}" aria-label="${this._updDot() ? hgT('page.menu_update_available') : hgT('page.menu')}" title="${hgT('page.menu')}">${H.icon('mdi:chevron-down')}${this._updDot() ? '<i class="udot" aria-hidden="true"></i>' : ''}</button>
         </div>
       </div>`);
     this._menuEl = this._topEl.querySelector('.user');
+    if (c.studio && !this._stT) this._stT = setInterval(() => { if (this.isConnected && this._config.studio && !document.hidden) this._paintTop(); }, 30000);
     if (this._hass && !this._updT) { setTimeout(() => this._updCheck(), 1500); if (window.HGBackup) setTimeout(() => HGBackup.offer(this), 1200); }
     this._paintMenu();
     this._tabsFit();
@@ -889,7 +910,7 @@ class HGPage extends HTMLElement {
     delete this._railEl.dataset.pn;
     const all = c.rail.map((r, i) => ({ ...r, i, act: r.match ? hgMatch(r.match, path) : false }));
     // szyna nie mieści wszystkiego: nadmiar (najpierw wg rail_overflow, potem od końca, bez ostatniej = Ustawienia) do „Więcej”
-    const fit = this._railFit(all.length), ov = new Set();
+    const st = c.studio && this.getAttribute('mode') !== 'phone' ? 1 : 0, fit = st ? this._railFit(all.length + 1) - 1 : this._railFit(all.length), ov = new Set();
     if (fit < all.length) {
       const need = all.length - (fit - 1), order = [...(c.rail_overflow || []).map(function (l) { const u = this; const i = all.findIndex((r, j) => !u.has(j) && ((r.action && r.action.navigate === l) || r.label === l)); if (i >= 0) u.add(i); return i; }, new Set()).filter((i) => i >= 0 && i < all.length - 1),
         ...all.map((r, i) => i).slice(0, -1).reverse()];
@@ -897,11 +918,11 @@ class HGPage extends HTMLElement {
     }
     this._railOv = [...ov].sort((x, y) => x - y).map((i) => all[i]);
     const items = all.filter((r, i) => !ov.has(i)), moreAct = this._railOv.some((r) => r.act) || (this._sheetOpen && this._sheetMode === 'rail');
-    const sig = JSON.stringify([items.map((r) => r.i + (r.act ? 'a' : '')), [...ov], moreAct]);
+    const dk = st && document.documentElement.getAttribute('data-hg-scheme') === 'dark', sig = JSON.stringify([items.map((r) => r.i + (r.act ? 'a' : '')), [...ov], moreAct, st, dk]);
     if (!force && sig === this._sigRail) return; this._sigRail = sig;
     const btn = (r) => `<button class="ri ${r.act ? 'act' : ''}" data-act="rail" data-i="${r.i}" aria-label="${H.esc(r.label)}" title="${H.esc(r.label)}">${r.svg && HG_SVG[r.svg] ? HG_SVG[r.svg] : H.icon(r.icon)}</button>`;
     const moreB = ov.size ? `<button class="ri ${moreAct ? 'act' : ''}" data-act="railmore" aria-haspopup="dialog" aria-expanded="${!!(this._sheetOpen && this._sheetMode === 'rail')}" aria-label="${hgT('common.more')}" title="${hgT('common.more')}">${H.icon('mdi:dots-grid')}</button>` : '';
-    this._railEl.innerHTML = items.slice(0, -1).map(btn).join('') + moreB + (items.length ? btn(items[items.length - 1]) : '') + '<i class="rind" aria-hidden="true"></i>';
+    this._railEl.innerHTML = items.slice(0, -1).map(btn).join('') + moreB + (items.length ? btn(items[items.length - 1]) : '') + (st ? `<button class="ri rth" data-act="scheme" aria-label="${hgT('page.studio_theme')}" title="${hgT('page.studio_theme')}">${H.icon(dk ? 'mdi:weather-sunny' : 'mdi:weather-night')}</button>` : '') + '<i class="rind" aria-hidden="true"></i>';
     this._placeInd();
     if (!this._rfChk) { this._rfChk = true; requestAnimationFrame(() => { this._rfChk = false; this._paintRail(); }); }   // ponowny pomiar po malowaniu
     if (!this._rfT) { this._rfT = true; for (const ms of [400, 1200, 3000]) setTimeout(() => { if (this.isConnected) this._paintRail(); }, ms); }
@@ -968,6 +989,7 @@ class HGPage extends HTMLElement {
       case 'roomback': return go({ navigate: c.room_back || HG_P('rooms') });
       case 'roomsens': return this._roomSens(t);
       case 'sheetnav': { const m = (this._sheetItems || c.phone_nav.more)[i]; this._openSheet(false); return go(m.action); }
+      case 'scheme': try { localStorage.setItem('home-glass:scheme', HGTheme.dark ? 'light' : 'dark'); } catch (e) { /* */ } HGTheme.apply(!HGTheme.dark); return this._paintRail(true);
       case 'railmore': return this._openSheet(this._sheetOpen ? false : 'rail');
       case 'edit': return this._editing ? this._editExit(true) : this._editEnter();
       case 'assist': return window.HGAssistUI && HGAssistUI.open(this, t);
@@ -1258,6 +1280,16 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 :host([mode=wide][scroll]) .panel::-webkit-scrollbar{ width:6px; } :host([mode=wide][scroll]) .panel::-webkit-scrollbar-track{ background:transparent; margin:var(--s3) 0; }
 :host([mode=wide][scroll]) .panel::-webkit-scrollbar-thumb{ background:rgba(0,0,0,.28); border-radius:3px; }
 .more{ display:none; }
+/* ----- Studio (view cfg studio:true): ta sama góra, szyna i menu co zawsze; szkło daje każdy widżet, nie panel ----- */
+.sst{ display:flex; align-items:center; gap:8u; margin-right:6u; font-size:12u; font-weight:500; white-space:nowrap; font-variant-numeric:tabular-nums; } .sst .si{ display:inline-flex; } .sst .si ha-icon, .sst .si svg{ width:16u; height:16u; --mdc-icon-size:16u; }
+.rth{ margin-top:auto; }
+:host([studio]) .head, :host([studio]) .brand span{ display:none; }
+:host([studio]) .panel{ background:none; border:0; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; padding:0; }
+:host([studio]) .un{ display:none; }
+:host([studio][mode=wide]) .tabs{ left:56u; }
+:host([studio][mode=wide]) .rail{ top:73u; bottom:19u; }
+:host([studio][mode=wide]) .panel{ left:70u; width:auto; }
+:host([studio][mode=phone]) .sst, :host([studio][mode=phone]) .rth{ display:none; }
 :host([mode=wide][scroll]) .more:not([hidden]){ display:flex; position:absolute; z-index:5; width:36px; height:36px; border-radius:50%; align-items:center; justify-content:center;
   color: var(--hg-chrome-fg); }
 /* podskakuje tylko ikona i tylko 3 razy: ruch szklanego przycisku przeliczał jego rozmycie w każdej klatce (połowa klatek na słabszym tablecie) */

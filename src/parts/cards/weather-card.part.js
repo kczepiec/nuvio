@@ -1,5 +1,5 @@
 class HGWeatherCard extends HGBase {
-  defaults() { return { entity: '', temp_sensor: null, sun: 'sun.sun', hours: 24, title: hgT('cards.weather.outside'), icon_base: HG_ASSET + 'nuvio-meteo-', icon_v: '1', variant: 'card' }; }
+  defaults() { return { entity: '', temp_sensor: null, sun: 'sun.sun', hours: 24, title: hgT('cards.weather.outside'), icon_base: HG_ASSET + 'nuvio-meteo-', icon_v: '1', variant: 'card', studio: false, hourly: 0 }; }
   ents() { const c = this._config; return [c.entity, c.temp_sensor, c.sun, c.forecast_sensor].filter(Boolean); }
   /* prognoza godzinowa: z weather/subscribe_forecast, a gdy encja jej nie daje – z atrybutu forecast czujnika (np. MQTT / template) */
   _hsrc() { if ((this._hourly || []).length) return this._hourly; const s = this._config.forecast_sensor && this._hass && this._hass.states[this._config.forecast_sensor], f = s && s.attributes.forecast; return Array.isArray(f) ? f.filter((x) => x && x.datetime) : []; }
@@ -25,6 +25,16 @@ class HGWeatherCard extends HGBase {
 :host{ --k: calc(var(--hg-u, var(--hg-u0, 1.3px)) * var(--wx-scale, 1)); }
 ha-card.glass{ display:flex; flex-direction:column; justify-content:space-between; gap:6u; padding:var(--s2) var(--s3) var(--s2); min-width:0; overflow:hidden; container-type:inline-size; }
 .hd .tt{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+/* studio: ikona + temperatura, stan i max/min, N slotów godzinowych; stopnie: compact = ikona+temp, medium = + stan i max/min, expanded = + godziny */
+ha-card.sw{ justify-content:flex-start; gap:var(--s2); }
+.sw .swt{ display:flex; align-items:center; gap:var(--s2); min-width:0; } .sw .swt img{ width:clamp(40px, 22cqi, 72px); height:clamp(40px, 22cqi, 72px); flex:none; }
+.sw .swn{ font-size:clamp(34px, 16cqi, 56px); font-weight:300; line-height:1; letter-spacing:-.04em; font-variant-numeric:tabular-nums; } .sw .swn sup{ font-size:.4em; font-weight:400; vertical-align:top; position:relative; top:.2em; margin-left:2px; }
+.sw .swc{ display:flex; flex-direction:column; gap:2u; min-width:0; flex:1; } .sw .swc b{ font-size:var(--fs-md); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .sw .swc span{ font-size:var(--fs-sm); color:var(--hg-t2, #4A4E54); font-variant-numeric:tabular-nums; }
+.sw .swh{ display:grid; grid-template-columns:repeat(var(--n), minmax(0, 1fr)); gap:var(--s1); text-align:center; font-variant-numeric:tabular-nums; margin-top:auto; }
+.sw .swh div{ display:flex; flex-direction:column; align-items:center; gap:2u; } .sw .swh small{ font-size:var(--fs-xs); opacity:.75; } .sw .swh img{ width:max(22u, 26px); height:max(22u, 26px); } .sw .swh b{ font-size:var(--fs-sm); font-weight:600; }
+.sw .swc, .sw .swh{ display:none; }
+@container (min-width: 200px){ .sw .swc{ display:flex; } }
+@container (min-width: 280px){ .sw .swh{ display:grid; } }
 .hd .ic{ color:var(--hg-accent-tx); }
 .hdb{ display:flex; align-items:center; gap:var(--s1); min-width:0; flex:1; background:none; padding:0; color:inherit; text-align:left; cursor:pointer; }
 .now{ display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:var(--s1); min-width:0; }
@@ -168,9 +178,11 @@ ha-card.glass{ display:flex; flex-direction:column; justify-content:space-betwee
     /* samodzielna karta z variant: hero (#15): atrybut hosta włącza styl hero tak jak w nagłówku strony */
     if (c.variant === 'hero') { if (this.getAttribute('variant') !== 'hero') { this.setAttribute('variant', 'hero'); this._vOwn = true; } return this._hero(w); }
     if (this._vOwn) { this._vOwn = false; this.removeAttribute('variant'); }
+    const sw = c.studio || Number(c.hourly) > 0;
     const hd = (inner) => `<div class="hd"><button class="hdb" data-act="more" aria-label="${H.esc(hgT('cards.weather.title_details_aria', { title: c.title }))}">${H.icon('mdi:weather-partly-cloudy', 'ic')}<span class="tt">${H.esc(c.title)}</span></button>${inner || ''}</div>`;
     if (!H.ok(w)) return `<ha-card class="glass">${hd()}<div class="ph">${hgT('cards.weather.weather_unavailable')}</div></ha-card>`;
     const tn = this._tNow(), cond = [HGWx.cn(w.state)], mm = this._minmax(), night = this._night(new Date());
+    if (sw) return this._sw(w, tn, cond[0], mm, night);
     const hr = this._hrs();
     const exp = `<button class="ib" data-act="expand" aria-label="${hgT('cards.weather.detailed_forecast')}" title="${hgT('cards.weather.24_h_and_daily')}">${H.icon('mdi:arrow-expand')}</button>`;
     return `<ha-card class="glass">${hd(exp)}
@@ -178,6 +190,14 @@ ha-card.glass{ display:flex; flex-direction:column; justify-content:space-betwee
         ${tn ? `<div class="tn" title="${tn.src === 'sensor' ? hgT('cards.weather.outdoor_sensor') : hgT('cards.weather.forecast_no_sensor')}">${H.fmt(tn.v, Math.abs(tn.v) < 10 ? 1 : 0)}<sup>°</sup></div>` : ''}</div>
       ${hr.length ? `<div class="strip" tabindex="0" aria-label="${hgT('cards.weather.hourly_forecast')}"><div class="sc" style="--n:${hr.length}"><div class="hrs" role="list">${this._hourCells(hr, false)}</div>${this._tline(hr)}</div></div>` : ''}
       ${this._sun()}</ha-card>`;
+  }
+  _sw(w, tn, cond, mm, night) {
+    const c = this._config, n = Math.max(1, Math.min(8, Number(c.hourly) || 4)), hr = this._hrs().slice(0, n);
+    const slots = hr.map((f) => `<div><small>${String(new Date(f.datetime).getHours()).padStart(2, '0')}:00</small><img src="${HGWx.icon(c, f.condition, this._night(new Date(f.datetime)), false)}" alt="" loading="lazy" decoding="async"><b>${H.fmt(f.temperature, 0)}°</b></div>`).join('');
+    return `<ha-card class="glass sw"><div class="swt"><img src="${HGWx.icon(c, w.state, night, true)}" alt="" decoding="async">${tn ? `<div class="swn" data-act="more">${H.fmt(tn.v, Math.abs(tn.v) < 10 ? 1 : 0)}<sup>°C</sup></div>` : ''}
+      <div class="swc" data-act="more"><b>${H.esc(cond)}</b>${mm ? `<span>${H.fmt(mm[0], 0)}° / ${mm[1] != null ? H.fmt(mm[1], 0) + '°' : '–'}</span>` : ''}</div>
+      <button class="ib" data-act="expand" aria-label="${hgT('cards.weather.detailed_forecast')}" title="${hgT('cards.weather.24_h_and_daily')}">${H.icon('mdi:arrow-expand')}</button></div>
+      ${hr.length ? `<div class="swh" style="--n:${hr.length}" role="list" aria-label="${hgT('cards.weather.hourly_forecast')}">${slots}</div>` : ''}</ha-card>`;
   }
   _hero(w) {
     const c = this._config;
@@ -335,5 +355,6 @@ ha-card.glass{ display:flex; flex-direction:column; justify-content:space-betwee
   }
   _closeX() { if (!this._x) return; const c = this._xC; this._x = null; this._xC = null; this._xFocused = false; if (c) c(); }
   getCardSize() { return 5; }
+  getGridOptions() { const sw = this._config && (this._config.studio || Number(this._config.hourly) > 0); return sw ? { columns: 6, rows: 3, min_columns: 3, min_rows: 2 } : { columns: 6, rows: 4 }; }
 }
 hgReg('hg-weather-card', HGWeatherCard, hgTLazy('cards.weather.picker_name'), hgTLazy('cards.weather.picker_description'));

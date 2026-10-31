@@ -63,6 +63,15 @@ Beheerders kunnen de hele Nuvio-indeling exporteren en importeren via **Uiterlij
 - Vóór het importeren wordt de huidige indeling als back-up bewaard; **Vorige herstellen** in de melding (of in het gedeelte Back-up van indeling) maakt de import met één klik ongedaan.
 - Het bestand heeft een versie (`format`, `schema`, `nuvio`, `exported`). Oudere ruwe indelingsgegevens worden automatisch omgezet; bestanden van een nieuwer schema of beschadigde bestanden worden met een duidelijke melding geweigerd.
 
+## Studio-weergave (bèta)
+
+Een optionele weergave met een vrij widgetraster, standaard uit.
+
+- **Inschakelen**: **Instellingen → Weergaven**, zet **Studio** aan. Home en je opgeslagen indelingen blijven ongewijzigd. De eerste Studio-indeling wordt één keer uit je eigen entiteiten opgebouwd en nooit opnieuw gegenereerd.
+- **Bewerkmodus**: sleep een widget aan het handvat, wijzig de grootte vanaf de hoek, kies in het menu een formaat of verberg of verwijder de widget, en gebruik de tegel **Widget toevoegen** om er een toe te voegen of een verborgen widget weer te tonen. Andere widgets schuiven opzij en sluiten aan. Pijltjestoetsen verplaatsen de actieve widget, Shift met pijlen wijzigt de grootte.
+- **Indeling per apparaat**: het raster heeft 12 kolommen op brede schermen, 8 op tablets en 4 op telefoons. Wijzigingen bij een bepaalde breedte worden als aparte indeling voor die breedte bewaard. **Opslaan** houdt ze, **Annuleren** herstelt de vorige indeling.
+- De indeling zit in de [back-up van de indeling](#back-up-van-de-indeling).
+
 ## Spraakassistent
 
 Praat met de Home Assistant-assistent (Assist) zonder het dashboard te verlaten. Open hem met de microfoonknop in de koptekst of de toets **A** wanneer je niet in een veld typt.

@@ -63,6 +63,7 @@
       "layout": "Layout, widgets and entities, titles, section widths, hidden items",
       "look": "Appearance: accent, background, dimming",
       "panel": "View panel widths",
+      "studio": "Studio",
       "views": "Views and custom views",
       "wall": "Wall tablet mode"
     },
@@ -390,7 +391,9 @@
     "cameras": {
       "no_cameras_are_available": "No cameras are available right now",
       "picker_description": "Działające kamery jako duże kafle, niedostępne jako chipy",
-      "picker_name": "Home Glass – Kamery"
+      "picker_name": "Home Glass – Kamery",
+      "title": "Cameras",
+      "view_all": "View all"
     },
     "chart": {
       "choose_a_numeric_sensor": "Choose a numeric sensor",
@@ -562,6 +565,13 @@
       "picker_name": "Nuvio – Grid"
     },
     "hero": {
+      "all_set": "Your home is all set.",
+      "attention_one": "{count} thing needs attention",
+      "attention_other": "{count} things need attention",
+      "greeting_afternoon": "Good afternoon, {name}!",
+      "greeting_evening": "Good evening, {name}!",
+      "greeting_morning": "Good morning, {name}!",
+      "greeting_night": "Good night, {name}!",
       "greeting_title": "Hey, {name}!",
       "picker_description": "Large greeting with your name and a tagline",
       "picker_name": "Nuvio – Greeting",
@@ -1256,6 +1266,7 @@
       "picker_name": "Nuvio – Compact room"
     },
     "scenes": {
+      "add": "Add",
       "picker_description": "Scripts as buttons with a confirmation animation",
       "picker_name": "Home Glass – Scenes",
       "run": "run",
@@ -1429,6 +1440,42 @@
       "picker_name": "Home Glass – Stepper",
       "reset": "Reset",
       "step_value": "Step {value}"
+    },
+    "studio_climate": {
+      "picker_name": "Nuvio Studio: Climate",
+      "picker_description": "Air conditioning with a target temperature dial, mode, fan and preset",
+      "choose_a_climate_entity": "Choose a climate entity",
+      "preset": "Preset",
+      "next_change": "Next change {time}"
+    },
+    "studio_energy": {
+      "picker_name": "Nuvio Studio: Energy",
+      "picker_description": "Energy use for the day, week or month with change and bars",
+      "choose_an_energy_sensor": "Choose an energy sensor",
+      "day": "Day",
+      "week": "Week",
+      "month": "Month",
+      "period_aria": "Period",
+      "chart_aria": "Energy use chart",
+      "vs_yesterday": "vs. yesterday",
+      "vs_last_week": "vs. last week",
+      "vs_last_month": "vs. last month",
+      "no_statistics": "No statistics for this sensor yet"
+    },
+    "studio_home": {
+      "picker_name": "Nuvio Studio: Home",
+      "picker_description": "Quick tiles: all lights, lock, cameras and home temperature",
+      "title": "Home",
+      "lights": "Lights",
+      "all": "All",
+      "lock": "Lock",
+      "cameras": "Cameras",
+      "online_one": "{count} online",
+      "online_other": "{count} online",
+      "home_temp": "Home temp.",
+      "nothing_to_show": "Add a lock, a temperature sensor or lights to show here",
+      "lights_on_one": "{count} of {total} light on",
+      "lights_on_other": "{count} of {total} lights on"
     },
     "sun": {
       "above_the_horizon": "Above the horizon",
@@ -2529,7 +2576,8 @@
     "rooms": "Rooms",
     "rooms_sub": "Every room at your fingertips",
     "scenes": "Scenes",
-    "settings": "Settings"
+    "settings": "Settings",
+    "studio": "Studio"
   },
   "oss": {
     "cv": {
@@ -2698,6 +2746,10 @@
     "sections": "Sections",
     "show_panel": "Show panel",
     "shrink_panel": "Shrink panel",
+    "studio_battery": "Battery {value}%",
+    "studio_bluetooth": "Bluetooth",
+    "studio_theme": "Switch light or dark theme",
+    "studio_wifi": "Wi-Fi",
     "temperature": "Temperature",
     "this_view_has_no": "This view has no widgets yet.",
     "tomorrow_no_data": "tomorrow: no data",
@@ -3505,5 +3557,34 @@
     "layout_no_rooms": "No rooms with devices for the TV.",
     "layout_no_scenes": "No scenes or scripts.",
     "layout_no_alarms": "No alarm panels."
+  },
+  "studio": {
+    "add_hint": "Drag and drop",
+    "add_widget": "Add widget",
+    "empty_text": "Turn on edit mode and add a widget.",
+    "empty_title": "Nothing here yet",
+    "hide": "Hide",
+    "kb_hint": "Arrow keys move the widget, Shift and arrow keys resize it, Enter opens its menu.",
+    "menu": "Options for {name}",
+    "move": "Move {name}",
+    "picker_description": "Free grid of widgets you can move and resize in edit mode.",
+    "picker_name": "Studio",
+    "pos": "{name}: column {x}, row {y}, {w} by {h}",
+    "remove": "Remove",
+    "resize": "Resize {name}",
+    "show": "Show {name}",
+    "size_l": "Large",
+    "size_m": "Medium",
+    "size_s": "Small",
+    "w": {
+      "greeting": "Greeting",
+      "weather": "Weather",
+      "climate": "Climate",
+      "home": "Home",
+      "media": "Media",
+      "cameras": "Cameras",
+      "energy": "Energy",
+      "scenes": "Scenes"
+    }
   }
 }

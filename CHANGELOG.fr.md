@@ -4,6 +4,12 @@
 
 Toutes les modifications notables de Nuvio sont listées ici, des plus récentes aux plus anciennes. Les versions suivent le [versionnage sémantique](https://semver.org). Le journal des modifications en anglais se trouve dans [CHANGELOG.md](CHANGELOG.md), celui en polonais dans [CHANGELOG.pl.md](CHANGELOG.pl.md) et celui en néerlandais dans [CHANGELOG.nl.md](CHANGELOG.nl.md).
 
+### Unreleased
+- Ajouté : **vue Studio** optionnelle (bêta), désactivée par défaut et activée dans **Réglages > Vues**. Elle offre un cadre inspiré de la maquette (rail pleine hauteur avec bascule clair/sombre, onglets en pastilles, icônes Wi-Fi, Bluetooth et batterie facultatives d’une tablette murale, date et heure) et une grille libre de widgets 2D sur 12 colonnes (8 sur tablette, 4 sur téléphone). En mode édition, les widgets se déplacent, se redimensionnent, se masquent et s’ajoutent avec la tuile « Ajouter un widget » ; les autres widgets s’écartent et se compactent, et chaque widget a sa taille minimale et maximale. La première disposition est créée à partir de vos entités, chaque largeur d’écran garde sa propre disposition et une disposition enregistrée n’est jamais régénérée. Studio est inclus dans la sauvegarde de la disposition.
+- Ajouté : nouveaux widgets **climat**, **énergie** et **maison** (aussi dans le sélecteur de cartes) qui passent d’une disposition compacte à moyenne puis étendue selon leur propre taille.
+- Ajouté : modes Studio pour les cartes d’accueil, météo, média, caméras et scènes (option `studio` ; les configurations existantes restent inchangées).
+- Ajouté : les versions bêta comme `2.32.0-beta.1` chargent leurs ressources depuis le CDN. `tools/cut-release.sh --pre` et `tools/tag-release.sh --pre` publient une préversion depuis la branche courante.
+
 ### 2.31.0
 - Ajouté : le titre et le sous-titre de l’en-tête peuvent afficher l’état d’une entité en direct avec `{state:sensor.votre_entite}`, par exemple l’état d’un lave-linge. La ligne disparaît quand l’état est vide, `off`, `unavailable` ou `unknown`, et l’en-tête se met à jour quand l’entité change.
 

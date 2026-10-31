@@ -229,6 +229,9 @@ Elke schermafbeelding hierboven heeft hetzelfde formaat (donker thema, standaard
 - `custom:nuvio-map-card`: de eigen HA-kaart in een glazen kader (kaarttegels hebben internettoegang nodig).
 - `custom:nuvio-image-card` en `custom:nuvio-webpage-card`: je eigen afbeelding, camerabeeld of pagina in een kader.
 - `custom:nuvio-kid-card`: aanwezigheid van een kind (LiveKid), inchecken, maaltijden en saldo; vereist de LiveKid-integratie.
+- `custom:nuvio-studio-card`: het vrije widgetraster van de Studio-weergave (widgets slepen, vergroten of verkleinen, toevoegen en verbergen; zie [Studio-weergave](features.md#studio-weergave-bèta)).
+- `custom:nuvio-studio-climate-card`, `custom:nuvio-studio-energy-card` en `custom:nuvio-studio-home-card`: Studio-widgets voor klimaat (doelschijf, modus, ventilator), energie (kWh van dag, week en maand met verandering) en thuis (lampen, slot, camera's online, temperatuur). Elk wisselt tussen compacte, middelgrote en uitgebreide weergave op basis van de eigen grootte.
+- Studio-modus (`studio: true`) van de kaarten begroeting, weer (`hourly`), media (`now_playing`), camera's (`thumbs`, `max`, `view_all`) en scènes (`tiles`, `add`).
 - `custom:nuvio-energy-card`: belastingpercentage van het totale fasevermogen ten opzichte van je maximum.
 - `custom:nuvio-bars-card`: balken met het dagelijks verbruik uit statistieken.
 - `custom:nuvio-page`: de indeling over het volledige scherm zelf (balk, rail, koptekst, kaartpaneel).

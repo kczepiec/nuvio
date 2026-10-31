@@ -1,18 +1,26 @@
 #!/usr/bin/env bash
 # Krok 2 wydania: tag vX.Y.Z i GitHub release na main, po zmergowaniu release PR z ./tools/cut-release.sh.
 # Użycie: ./tools/tag-release.sh 2.31.0
+# Pre-release (beta) z bieżącego brancha: ./tools/tag-release.sh --pre X.Y.Z-beta.N
 set -euo pipefail
-V="${1:?usage: tools/tag-release.sh X.Y.Z}"
+PRE=""; [ "${1:-}" = "--pre" ] && { PRE="--prerelease"; shift; }
+V="${1:?usage: tools/tag-release.sh [--pre] X.Y.Z[-beta.N]}"
 cd "$(dirname "$0")/.."
 [ -z "$(git status --porcelain)" ] || { echo "Working tree not clean"; exit 1; }
+if [ -n "$PRE" ]; then
+[[ "$V" =~ ^[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+$ ]] || { echo "Wersja musi mieć postać X.Y.Z-beta.N"; exit 1; }
+B=$(git branch --show-current)
+{ [ -n "$B" ] && [ "$B" != main ]; } || { echo "Pre-release z brancha innego niż main"; exit 1; }
+else
 git fetch -q origin && git checkout -q main && git merge -q --ff-only origin/main
+fi
 python3 -c "import json,sys; sys.exit(0 if json.load(open('package.json'))['version'] == sys.argv[1] else 1)" "$V" \
   || { echo "package.json nie ma wersji $V: release PR nie jest zmergowany"; exit 1; }
 grep -q "HG_BUILD = '$V+" dist/nuvio.js || { echo "dist/nuvio.js nie ma wersji $V"; exit 1; }
 git rev-parse -q --verify "refs/tags/v$V" >/dev/null && { echo "Tag v$V już istnieje"; exit 1; }
 git tag -a "v$V" -m "Nuvio $V"
 git push -q origin "v$V"
-if ! gh release view "v$V" >/dev/null 2>&1; then gh release create "v$V" --title "Nuvio $V" --generate-notes --verify-tag; fi
+if ! gh release view "v$V" >/dev/null 2>&1; then gh release create "v$V" $PRE --title "Nuvio $V" --generate-notes --verify-tag; fi
 # weryfikacja: dist/nuvio.js w tagu ma nową wersję, wydanie nie ma załączników
 T=$(mktemp -d); sleep 3
 git show "v$V:dist/nuvio.js" > "$T/t.js"

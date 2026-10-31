@@ -1,0 +1,229 @@
+/* ===================== STUDIO: swobodna siatka widżetów (HGGrid + HG_STUDIO_W), układ w HGL.data.studio ===================== */
+/* Siatka: 12 / 8 / 4 kolumny wg szerokości karty (HGGrid.bp), stały wiersz. lg zapisuje items, md / sm własne nadpisanie bps[bp].
+   Treść rysowana poza render() (morph do .st-root), bo w trybie edycji HG_FREEZE wstrzymuje zwykłe przerysowanie kart.
+   Widżety: karty z hgMakeCard w gniazdach data-own (container-type:size), trzymane między aktualizacjami po id elementu. */
+const HG_ST_ROW = 64, HG_ST_GAP = 16;
+const hgStArea = (i) => `grid-area:${i.y + 1} / ${i.x + 1} / span ${i.h} / span ${i.w}`;
+class HGStudioGrid extends HGBase {
+  static getStubConfig() { return {}; }
+  ents() { return []; }
+  css() { return `
+.st-root{ position:relative; }
+.st-g{ position:relative; display:grid; grid-template-columns:repeat(var(--st-cols, 12), minmax(0, 1fr)); grid-template-rows:repeat(var(--st-rows, 1), ${HG_ST_ROW}px);
+  grid-auto-rows:${HG_ST_ROW}px; gap:${HG_ST_GAP}px; }
+.st-w{ position:relative; min-width:0; min-height:0; z-index:1; border-radius:var(--r-lg); outline:none; }
+.st-k{ position:absolute; inset:0; container-type:size; }
+.st-k > *{ display:block; height:100%; }
+.st-bg{ display:grid; grid-template-columns:repeat(var(--st-cols, 12), minmax(0, 1fr)); grid-auto-rows:${HG_ST_ROW}px; gap:${HG_ST_GAP}px; z-index:0; pointer-events:none; opacity:.18; }
+.st-bg i{ border:1.5px dashed currentColor; border-radius:var(--r-md); }
+.ed .st-k{ pointer-events:none; }
+.ed .st-w::after{ content:''; position:absolute; inset:0; border-radius:inherit; box-shadow:0 0 0 1.5px var(--hg-accent-soft); pointer-events:none; transition:box-shadow var(--hg-t-fast) var(--hg-ease-out); }
+.ed .st-w:focus-visible::after, .ed .st-w.st-drag::after{ box-shadow:0 0 0 2px var(--hg-accent); }
+.st-bar{ position:absolute; top:var(--s1); left:var(--s1); right:var(--s1); z-index:3; display:flex; align-items:center; gap:6px; pointer-events:none; }
+.st-bar > *, .st-rs{ pointer-events:auto; }
+.st-h, .st-m, .st-rs{ display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:var(--hg-radius-pill, 999px); flex:none;
+  background:var(--hg-panel-flat, var(--hg-glass-bg)); box-shadow:var(--hg-edge, 0 0 0 transparent), var(--hg-shadow-lg, none); color:inherit; }
+.st-h ha-icon, .st-m ha-icon, .st-rs ha-icon{ width:18px; height:18px; }
+.st-h{ cursor:grab; touch-action:none; }
+.st-n{ flex:1; min-width:0; font-size:var(--fs-sm); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; opacity:.8; }
+.st-rs{ position:absolute; right:var(--s1); bottom:var(--s1); z-index:3; cursor:nwse-resize; touch-action:none; }
+.st-h:focus-visible, .st-m:focus-visible, .st-rs:focus-visible, .st-add:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
+@media (pointer: coarse){ .st-h, .st-m, .st-rs{ width:var(--hg-btn-touch, 44px); height:var(--hg-btn-touch, 44px); } }
+.st-drag{ z-index:5; cursor:grabbing; box-shadow:var(--hg-shadow-float, none); transition:none; }
+.st-gh{ z-index:0; border-radius:var(--r-lg); background:var(--hg-accent-faint); box-shadow:inset 0 0 0 2px var(--hg-accent-soft); pointer-events:none; }
+.st-add{ position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; min-width:0; min-height:0; border-radius:var(--r-lg);
+  padding:var(--s2); text-align:center; color:inherit; cursor:pointer; background:none; transition:background var(--hg-t-fast) var(--hg-ease-out); }
+.st-add::before{ content:''; position:absolute; inset:0; border-radius:inherit; border:1.5px dashed currentColor; opacity:.35; pointer-events:none; }
+.st-add:hover{ background:var(--hg-accent-faint); }
+.st-pl{ display:inline-flex; align-items:center; justify-content:center; width:var(--hg-btn, 40px); height:var(--hg-btn, 40px); border-radius:var(--hg-radius-pill, 999px);
+  background:var(--hg-panel-flat, var(--hg-glass-bg)); box-shadow:var(--hg-edge, 0 0 0 transparent); }
+.st-pl ha-icon{ width:22px; height:22px; }
+.st-add b{ font-size:var(--fs-md); font-weight:600; } .st-add small{ font-size:var(--fs-sm); opacity:.65; }
+.st-empty{ padding:var(--s4); text-align:center; } .st-empty b{ display:block; font-weight:600; margin-bottom:4px; } .st-empty span{ font-size:var(--fs-sm); opacity:.65; }
+.st-sr{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+@media (prefers-reduced-motion: reduce){ .st-root *, .st-root *::after{ transition:none !important; animation:none !important; } }
+`; }
+  render() { return `<div class="st-root" data-own data-key="st"></div><div class="st-sr" role="status" aria-live="polite" data-st-live></div><span class="st-sr" id="st-kh">${hgT('studio.kb_hint')}</span>`; }
+  afterRender() {
+    if (this._once(this.$, 'st')) {
+      this.$.addEventListener('pointerdown', (e) => this._down(e));
+      this.$.addEventListener('keydown', (e) => this._key(e));
+      this.$.addEventListener('click', (e) => { const b = e.composedPath().find((n) => n.dataset && n.dataset.st); if (!b || !this._ed) return; e.stopPropagation();
+        if (b.dataset.st === 'menu') { const c = b.closest('.st-w'); if (c) this._menu(c.dataset.id, b); } else if (b.dataset.st === 'add') this._addMenu(b); });
+    }
+    this._lay();
+  }
+  set hass(h) { this._hass = h; window.__hgHass = h; if (typeof HGTheme !== 'undefined') HGTheme.pick(h); this._update(); this._seed(h); this._lay(); }
+  get hass() { return this._hass; }
+  connectedCallback() { super.connectedCallback(); this._lsub = this._lsub || (() => this._lay()); HGL.subs.add(this._lsub);
+    if (!this._ro && typeof ResizeObserver !== 'undefined') this._ro = new ResizeObserver((es) => this._width(es[0].contentRect.width)); if (this._ro) this._ro.observe(this);
+    this._watchEd(); }
+  disconnectedCallback() { HGL.subs.delete(this._lsub); if (this._ro) this._ro.disconnect(); if (this._mo) { this._mo.disconnect(); this._mo = null; } }
+  /* pierwszy układ: raz, po wczytaniu HGL, z modelu domu; istniejący klucz studio nigdy nie jest nadpisywany (hgStudioEnsure) */
+  _model(h) { return this._Mp || (this._Mp = Promise.resolve(typeof HGModel !== 'undefined' && h ? HGModel.load(h) : {}).then((M) => (this._M = M || {}), () => (this._M = {}))); }
+  _seed(h) {
+    if (!h || HGL.data.studio || this._seeding || typeof hgStudioEnsure !== 'function') return;
+    if (!HGL.loaded) { if (!this._lw && HGL.load) { this._lw = 1; Promise.resolve(HGL.load(h)).then(() => { this._lw = 0; this._seed(this._hass); }, () => { this._lw = 0; }); } return; }
+    if (HGL.failed) return;
+    this._seeding = 1; this._model(h).then((M) => { this._seeding = 0; if (hgStudioEnsure(HGL, M, this._hass)) this._lay(); }, () => { this._seeding = 0; });
+  }
+  /* tryb edycji strony: HGL.editing; zmianę zgłasza atrybut editing na stronie (wejście) i HGL.notify (wyjście, Anuluj przywraca dane) */
+  _edNow() { return !!HGL.editing; }
+  _pageHost() { let n = this; for (let k = 0; k < 8 && n; k++) { const r = n.getRootNode && n.getRootNode(); n = r && r.host; if (n && typeof n._editEnter === 'function') return n; } return null; }
+  _watchEd() { if (this._mo || typeof MutationObserver === 'undefined') return; const p = this._pageHost(); if (!p) return;
+    this._mo = new MutationObserver(() => this._lay()); this._mo.observe(p, { attributes: true, attributeFilter: ['editing'] }); }
+  _width(w) { if (!(w > 0)) return; const b = HGGrid.bp(w); if (!this._bp || b.id !== this._bp.id) { this._bp = b; if (this._drag) this._dragEnd(false); this._lay(); } }
+  _bpNow() { if (!this._bp) { let w = 0; try { w = this.getBoundingClientRect().width; } catch (e) { /* bez DOM */ } this._bp = HGGrid.bp(w || 1440); } return this._bp; }
+  _cols() { return this._bpNow().cols; }
+  /* układ bieżącego progu: nadpisanie bps[bp] (uzupełnione o nowe widżety, bez usuniętych) albo układ wyprowadzony z 12 kolumn */
+  _cur() {
+    const L = HGL.data.studio; if (!L || !Array.isArray(L.items)) return [];
+    const id = this._bpNow().id, cols = this._cols(), ids = new Set(L.items.map((i) => i.id));
+    let a = HGGrid.layoutFor(L, id);
+    if (L.bps && L.bps[id]) {
+      a = a.filter((i) => ids.has(i.id));
+      const miss = L.items.filter((i) => !a.some((x) => x.id === i.id));
+      if (miss.length) { const d = HGGrid.derive(L.items, 12, cols); for (const m of miss) { const { x, y, ...r } = d.find((o) => o.id === m.id); a = HGGrid.place(a, r, cols); } }
+    }
+    return a;
+  }
+  _byId() { const L = HGL.data.studio; return new Map(((L && L.items) || []).map((i) => [i.id, i])); }
+  _name(t) { const d = HG_STUDIO_W[t]; return d ? String(d.n) : t; }
+  _gridHtml() {
+    const L = HGL.data.studio, ed = this._ed = this._edNow(), cols = this._cols(), by = this._byId();
+    const vis = this._cur().filter((i) => { const t = by.get(i.id); return !i.hidden && t && HG_STUDIO_W[t.type]; });
+    if ((!L && HGL.failed) || (L && !vis.length && !ed)) return `<div class="st-empty nv-empty"><b>${hgT('studio.empty_title')}</b><span>${hgT('studio.empty_text')}</span></div>`;
+    if (!L) return '';
+    /* kafel „Dodaj widżet”: pierwsze wolne miejsce, najwyżej jak się da (szerokość 4, 3 albo 2 kolumny) */
+    let add = null; if (ed) for (const w of [4, 3, 2]) { const p = HGGrid.place(vis, { id: '_add', w: Math.min(w, cols), h: 3 }, cols), a = p[p.length - 1]; if (!add || a.y < add.y) add = a; }
+    const rows = Math.max(1, ...vis.map((i) => i.y + i.h), add ? add.y + add.h : 0), esc = H.esc;
+    const cell = (i) => { const t = by.get(i.id), nm = esc(this._name(t.type)), id = esc(i.id);
+      return `<div class="st-w" data-key="w-${id}" data-id="${id}" style="${hgStArea(i)}"${ed ? ` tabindex="0" role="group" aria-label="${nm}" aria-describedby="st-kh"` : ''}><div class="st-k" data-own data-key="k-${id}"></div>`
+        + (ed ? `<div class="st-bar"><button class="st-h" type="button" data-st="drag" data-no-swipe aria-label="${hgT('studio.move', { name: nm })}" title="${hgT('studio.move', { name: nm })}">${H.icon('mdi:drag')}</button><span class="st-n">${nm}</span>`
+          + `<button class="st-m" type="button" data-st="menu" aria-haspopup="menu" aria-label="${hgT('studio.menu', { name: nm })}" title="${hgT('studio.menu', { name: nm })}">${H.icon('mdi:dots-horizontal')}</button></div>`
+          + `<button class="st-rs" type="button" data-st="size" data-no-swipe aria-label="${hgT('studio.resize', { name: nm })}" title="${hgT('studio.resize', { name: nm })}">${H.icon('mdi:resize-bottom-right')}</button>` : '') + '</div>'; };
+    return `<div class="st-g${ed ? ' ed' : ''}" data-key="g" style="--st-cols:${cols};--st-rows:${rows}">`
+      + (ed ? `<div class="st-bg" data-key="bg" aria-hidden="true" style="grid-area:1 / 1 / span ${rows} / span ${cols}">${'<i></i>'.repeat(cols * rows)}</div>` : '')
+      + vis.map(cell).join('')
+      + (add ? `<button class="st-add" type="button" data-key="add" data-st="add" data-no-swipe aria-haspopup="menu" style="${hgStArea(add)}"><span class="st-pl">${H.icon('mdi:plus')}</span><b>${hgT('studio.add_widget')}</b><small>${hgT('studio.add_hint')}</small></button>` : '')
+      + (ed ? '<div class="st-gh" data-key="gh" hidden></div>' : '') + '</div>';
+  }
+  /* łatanie siatki (morph zostawia gniazda data-own z kartami) + montaż widżetów; w trakcie przeciągania bez zmian w DOM */
+  _lay() {
+    this._ed = this._edNow(); this._watchEd();
+    if (this._drag) return;
+    const root = this.$ && this.$.querySelector && this.$.querySelector('.st-root'), html = this._gridHtml();
+    if (!root) return;
+    if (html !== this._lh) { this._lh = html; hgMorph(root, html); }
+    this._mount(root);
+  }
+  _cfg(it) { const d = HG_STUDIO_W[it.type]; if (!d) return null; const s = it.settings || {}; try { return Object.assign({ type: 'custom:' + d.card }, d.cfg(s.entity || null, s, this._hass)); } catch (e) { return null; } }
+  _mount(root) {
+    const by = this._byId(), seen = new Set(), K = this._kids || (this._kids = new Map());
+    const put = (x, id) => { const sl = root.querySelector(`.st-w[data-id="${id}"] > .st-k`); if (!sl) return; if (x.parentElement !== sl) { sl.textContent = ''; sl.appendChild(x); } if (this._hass) hgPass(x, this._hass); };
+    for (const sl of root.querySelectorAll('.st-k[data-own]')) {
+      const id = sl.parentElement.dataset.id, it = by.get(id), cfg = it && this._cfg(it); if (!cfg) continue;
+      const sig = JSON.stringify(cfg), k = K.get(id); seen.add(id);
+      if (k && k.sig === sig) { if (k.el) put(k.el, id); continue; }
+      const rec = { sig, el: null }; K.set(id, rec);
+      hgMakeCard(cfg, (x) => { if (K.get(id) !== rec) return; rec.el = x; put(x, id); });
+    }
+    for (const id of [...K.keys()]) if (!seen.has(id)) K.delete(id);
+  }
+  /* ---- zapis: lg -> items, md / sm -> bps[bp]; custom:1; brudny stan wykrywa tryb edycji (porównanie HGL.data z _eSnap) ---- */
+  _put(next) {
+    const L = HGL.data.studio; if (!L) return; const b = this._bpNow().id, n = Object.assign({}, L, { custom: 1 });
+    if (b === 'lg') n.items = next; else n.bps = Object.assign({}, L.bps || {}, { [b]: next.map(({ settings, ...r }) => r) });
+    HGL.data.studio = n; this._lh = null; this._lay();
+  }
+  _opMove(id, x, y) { this._put(HGGrid.move(this._cur(), id, x, y, this._cols())); }
+  _opResize(id, w, h) { this._put(HGGrid.resize(this._cur(), id, w, h, this._cols())); }
+  _opHide(id) { this._put(HGGrid.compact(this._cur().map((i) => (i.id === id ? { ...i, hidden: true } : i)), this._cols())); }
+  _opShow(id) { const c = this._cur(), it = c.find((i) => i.id === id); if (!it) return; const { x, y, ...r } = it;
+    this._put(HGGrid.place(c.filter((i) => i.id !== id), { ...r, hidden: false }, this._cols())); }
+  _opRemove(id) { const L = HGL.data.studio; if (!L) return; const bps = {};
+    for (const [k, v] of Object.entries(L.bps || {})) bps[k] = HGGrid.compact(v.filter((i) => i.id !== id), (HGGrid.BP.find((b) => b.id === k) || HGGrid.BP[0]).cols);
+    HGL.data.studio = Object.assign({}, L, { items: HGGrid.compact(L.items.filter((i) => i.id !== id), 12), bps, custom: 1 }); this._kids && this._kids.delete(id); this._lh = null; this._lay(); }
+  _opAdd(type) {
+    const L = HGL.data.studio, d = HG_STUDIO_W[type]; if (!L || !d) return null;
+    let e = null; try { e = d.pick(this._M || {}, this._hass); } catch (x) { e = null; }
+    const ids = new Set(L.items.map((i) => i.id)); let id = 'w_' + type, n = 2; while (ids.has(id)) id = 'w_' + type + '_' + n++;
+    const it = { id, type, w: d.def.w, h: d.def.h, minW: d.min.w, minH: d.min.h, maxW: d.max.w, maxH: d.max.h, hidden: false, settings: e ? { entity: e } : {} }, bps = {};
+    for (const [k, v] of Object.entries(L.bps || {})) { const c = (HGGrid.BP.find((b) => b.id === k) || HGGrid.BP[0]).cols, { settings, ...r } = it;
+      bps[k] = HGGrid.place(v, { ...r, w: Math.max(1, Math.round(it.w * c / 12)) }, c); }
+    HGL.data.studio = Object.assign({}, L, { items: HGGrid.place(L.items, it, 12), bps, custom: 1 }); this._lh = null; this._lay(); return id;
+  }
+  /* rozmiary S / M / L z rejestru (min / domyślny / większy), przeliczone na kolumny progu */
+  _preset(type, k) { const d = HG_STUDIO_W[type], f = this._cols() / 12; if (!d) return null;
+    const p = k === 's' ? d.min : k === 'l' ? { w: Math.min(d.max.w, Math.round(d.def.w * 1.5)), h: Math.min(d.max.h, d.def.h + 1) } : d.def;
+    return { w: Math.max(1, Math.round(p.w * f)), h: p.h }; }
+  _opSize(id, k) { const t = this._byId().get(id), p = t && this._preset(t.type, k); if (p) this._opResize(id, p.w, p.h); }
+  _say(id) { const it = this._cur().find((i) => i.id === id), t = this._byId().get(id), el = this.$ && this.$.querySelector && this.$.querySelector('[data-st-live]');
+    if (it && t && el) el.textContent = hgT('studio.pos', { name: this._name(t.type), x: it.x + 1, y: it.y + 1, w: it.w, h: it.h }); }
+  _focus(id) { const c = this.$ && this.$.querySelector && this.$.querySelector(`.st-w[data-id="${id}"]`); if (c && c.focus) c.focus(); }
+  async _menu(id, anchor) {
+    const it = this._cur().find((i) => i.id === id), t = this._byId().get(id); if (!it || !t) return;
+    const sz = (k) => { const p = this._preset(t.type, k); return !!p && p.w === it.w && p.h === it.h; };
+    const v = await hgOverlay.menu(anchor, [{ label: hgT('studio.size_s'), icon: 'mdi:size-s', value: 's', checked: sz('s') }, { label: hgT('studio.size_m'), icon: 'mdi:size-m', value: 'm', checked: sz('m') },
+      { label: hgT('studio.size_l'), icon: 'mdi:size-l', value: 'l', checked: sz('l') }, '-',
+      { label: hgT('studio.hide'), icon: 'mdi:eye-off-outline', value: 'hide' }, { label: hgT('studio.remove'), icon: 'mdi:delete-outline', value: 'remove', danger: true }]);
+    if (!v || !this._ed) return;
+    if (v === 'hide') return this._opHide(id);
+    if (v === 'remove') return this._opRemove(id);
+    this._opSize(id, v); this._focus(id); this._say(id);
+  }
+  async _addMenu(anchor) {
+    await this._model(this._hass); const by = this._byId();
+    const hid = this._cur().filter((i) => i.hidden && by.get(i.id) && HG_STUDIO_W[by.get(i.id).type]);
+    const items = [...hid.map((i) => { const t = by.get(i.id).type; return { label: hgT('studio.show', { name: this._name(t) }), icon: HG_STUDIO_W[t].i, value: 'show:' + i.id }; }), ...(hid.length ? ['-'] : []),
+      ...Object.keys(HG_STUDIO_W).map((t) => ({ label: this._name(t), icon: HG_STUDIO_W[t].i, value: 'add:' + t }))];
+    const v = await hgOverlay.menu(anchor, items); if (!v || !this._ed) return;
+    const [a, x] = [v.slice(0, v.indexOf(':')), v.slice(v.indexOf(':') + 1)];
+    const id = a === 'show' ? (this._opShow(x), x) : this._opAdd(x); if (id) { this._focus(id); this._say(id); }
+  }
+  /* ---- przeciąganie: uchwyt (mysz i dotyk, setPointerCapture), podgląd na żywo (HGGrid.snap + move / resize), zapis po puszczeniu ---- */
+  _dragBegin(id, mode, m, dom) { const cur = this._cur(), it = cur.find((i) => i.id === id); if (!it) return null; return (this._drag = Object.assign({ id, mode, it, cur, m, next: null }, dom || {})); }
+  _dragCalc(D, dx, dy) { const { cw, ch, gap } = D.m, it = D.it, cols = this._cols();
+    if (D.mode === 'drag') { const p = HGGrid.snap(it.x * (cw + gap) + dx, it.y * (ch + gap) + dy, D.m); return HGGrid.move(D.cur, it.id, p.x, p.y, cols); }
+    const w = Math.max(1, Math.round((it.w * (cw + gap) + dx) / (cw + gap))), h = Math.max(1, Math.round((it.h * (ch + gap) + dy) / (ch + gap)));
+    return HGGrid.resize(D.cur, it.id, w, h, cols); }
+  _dragMove(dx, dy) {
+    const D = this._drag; if (!D) return; const nx = D.next = this._dragCalc(D, dx, dy); if (!D.g) return;
+    for (const c of D.g.querySelectorAll('.st-w')) { const p = nx.find((i) => i.id === c.dataset.id); if (!p) continue;
+      if (c === D.cell && D.mode === 'drag') { c.style.transform = `translate(${dx}px, ${dy}px)`; continue; } c.style.gridArea = hgStArea(p).slice(10); }
+    const me = nx.find((i) => i.id === D.id), gh = D.g.querySelector('.st-gh'); if (gh && me) { gh.hidden = false; gh.style.gridArea = hgStArea(me).slice(10); }
+    const add = D.g.querySelector('.st-add'); if (add) add.style.visibility = 'hidden';
+    D.g.style.setProperty('--st-rows', Math.max(1, ...nx.filter((i) => !i.hidden).map((i) => i.y + i.h)));
+  }
+  _dragEnd(ok) {
+    const D = this._drag; this._drag = null; if (!D) return;
+    if (D.cell) { D.cell.classList.remove('st-drag'); D.cell.style.transform = ''; }
+    const pos = (a) => JSON.stringify(a.map((i) => [i.id, i.x, i.y, i.w, i.h]));
+    this._lh = null;
+    if (ok && D.next && pos(D.next) !== pos(D.cur)) { this._put(D.next); this._say(D.id); } else this._lay();
+  }
+  _down(e) {
+    if (!this._ed || e.button > 0 || e.isPrimary === false || this._drag) return;
+    const b = e.composedPath().find((n) => n.dataset && (n.dataset.st === 'drag' || n.dataset.st === 'size')); if (!b) return;
+    const cell = b.closest('.st-w'), g = cell && cell.parentElement; if (!g) return;
+    e.preventDefault(); e.stopPropagation();
+    const cols = this._cols(), cw = (g.clientWidth - HG_ST_GAP * (cols - 1)) / cols;
+    const D = this._dragBegin(cell.dataset.id, b.dataset.st, { cw, ch: HG_ST_ROW, gap: HG_ST_GAP }, { cell, g }); if (!D) return;
+    cell.classList.add('st-drag'); try { b.setPointerCapture(e.pointerId); } catch (x) { /* bez przechwycenia: zdarzenia i tak dochodzą do uchwytu */ }
+    const x0 = e.clientX, y0 = e.clientY, mv = (ev) => { if (this._drag === D) this._dragMove(ev.clientX - x0, ev.clientY - y0); };
+    const end = (ev) => { for (const [t, f] of L) b.removeEventListener(t, f); if (this._drag === D) this._dragEnd(ev.type === 'pointerup'); };
+    const L = [['pointermove', mv], ['pointerup', end], ['pointercancel', end], ['lostpointercapture', end]];
+    for (const [t, f] of L) b.addEventListener(t, f);
+  }
+  /* klawiatura: strzałki przesuwają, Shift + strzałki zmieniają rozmiar, Enter / Spacja / klawisz menu otwiera menu widżetu */
+  _key(e) {
+    if (!this._ed) return; const c = e.composedPath()[0]; if (!c || !c.classList || !c.classList.contains('st-w')) return;
+    const id = c.dataset.id, it = this._cur().find((i) => i.id === id); if (!it) return;
+    const d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+    if (d) { e.preventDefault(); e.stopPropagation(); if (e.shiftKey) this._opResize(id, it.w + d[0], it.h + d[1]); else this._opMove(id, it.x + d[0], it.y + d[1]); this._focus(id); this._say(id); return; }
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'ContextMenu' || (e.key === 'F10' && e.shiftKey)) { e.preventDefault(); e.stopPropagation(); this._menu(id, c.querySelector('[data-st=menu]') || c); }
+  }
+  getCardSize() { const c = this._cur().filter((i) => !i.hidden); return Math.max(1, Math.ceil(Math.max(1, ...c.map((i) => i.y + i.h)) * (HG_ST_ROW + HG_ST_GAP) / 50)); }
+  getGridOptions() { return { columns: 'full', rows: 'auto' }; }
+}
+hgReg('hg-studio-card', HGStudioGrid, hgTLazy('studio.picker_name'), hgTLazy('studio.picker_description'));

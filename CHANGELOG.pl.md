@@ -4,6 +4,12 @@
 
 Tutaj zapisane są wszystkie istotne zmiany w Nuvio, od najnowszych. Wersje zgodne z [semantycznym wersjonowaniem](https://semver.org). Angielska lista zmian jest w [CHANGELOG.md](CHANGELOG.md).
 
+### Unreleased
+- Dodano: opcjonalny **widok Studio** (beta), domyślnie wyłączony, włączany w **Ustawienia > Widoki**. Ma ramkę w stylu makiety (rail na całą wysokość z przełącznikiem jasny/ciemny, zakładki-pigułki, opcjonalne ikony Wi-Fi, Bluetooth i baterii z tabletu ściennego, data i godzina) oraz swobodną siatkę widżetów 2D o 12 kolumnach (8 na tabletach, 4 na telefonach). W trybie edycji widżety można przeciągać, zmieniać ich rozmiar, ukrywać i dodawać kafelkiem „Dodaj widżet”; pozostałe widżety ustępują miejsca i układają się ciasno, a każdy widżet ma własny minimalny i maksymalny rozmiar. Pierwszy układ powstaje z Twoich encji, każda szerokość ekranu ma własny układ, a zapisany układ nigdy nie jest generowany od nowa. Studio wchodzi do kopii układu.
+- Dodano: nowe widżety **klimat**, **energia** i **dom** (także w selektorze kart), które przełączają się między układem kompaktowym, średnim i rozszerzonym zależnie od własnego rozmiaru.
+- Dodano: tryby Studio dla kart powitania, pogody, multimediów, kamer i scen (opcja `studio`; istniejące konfiguracje wyglądają bez zmian).
+- Dodano: wersje beta, np. `2.32.0-beta.1`, ładują zasoby z CDN. `tools/cut-release.sh --pre` i `tools/tag-release.sh --pre` publikują wersję przedpremierową z bieżącej gałęzi.
+
 ### 2.31.0
 - Dodano: tytuł i podtytuł nagłówka mogą pokazywać stan encji na żywo wpisem `{state:sensor.twoja_encja}`, np. status pralki. Linia znika, gdy stan jest pusty, `off`, `unavailable` lub `unknown`, a nagłówek odświeża się przy zmianie encji.
 

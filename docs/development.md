@@ -80,6 +80,13 @@ There is no CI/CD, so releases are made locally by the maintainer. Feature pull 
 ./tools/tag-release.sh 2.31.0   # after the release pull request is merged
 ```
 
+**Pre-release.** To test a feature branch through HACS before a real release, run the scripts with `--pre X.Y.Z-beta.N`. `cut-release.sh --pre` works on the current branch (not `main`, clean tree): it bumps only `package.json` (README badges and `### Unreleased` stay untouched), rebuilds `dist/`, runs the same checks, commits `chore: pre-release X.Y.Z-beta.N` and pushes the branch, without a release branch or pull request. `tag-release.sh --pre` tags `HEAD` as `vX.Y.Z-beta.N`, pushes the tag and creates a GitHub pre-release without attached files. HACS shows it only when "Show beta versions" is enabled for the repository.
+
+```bash
+./tools/cut-release.sh --pre 2.32.0-beta.1   # clean tree, on a branch other than main
+./tools/tag-release.sh --pre 2.32.0-beta.1   # after the push, from the same branch
+```
+
 Every change adds its entry to `CHANGELOG.md`, `CHANGELOG.pl.md`, `CHANGELOG.fr.md` and `CHANGELOG.nl.md` under `### Unreleased` (see [CONTRIBUTING.md](../CONTRIBUTING.md)).
 
 Only tagging by hand: `git fetch origin && git tag -a v2.12.0 origin/main -m "Nuvio 2.12.0" && git push origin v2.12.0`.

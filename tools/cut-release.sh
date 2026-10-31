@@ -2,7 +2,27 @@
 # Krok 1 wydania: branch release/X.Y.Z z wersją, changelogiem i dist, potem PR do main.
 # Krok 2 (po zmergowaniu PR): ./tools/tag-release.sh X.Y.Z
 # Użycie: ./tools/cut-release.sh 2.31.0
+# Pre-release (beta) na bieżącym branchu, bez PR: ./tools/cut-release.sh --pre X.Y.Z-beta.N
 set -euo pipefail
+if [ "${1:-}" = "--pre" ]; then
+V="${2:?usage: tools/cut-release.sh --pre X.Y.Z-beta.N}"
+[[ "$V" =~ ^[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+$ ]] || { echo "Wersja musi mieć postać X.Y.Z-beta.N"; exit 1; }
+cd "$(dirname "$0")/.."
+[ -z "$(git status --porcelain)" ] || { echo "Working tree not clean"; exit 1; }
+B=$(git branch --show-current)
+{ [ -n "$B" ] && [ "$B" != main ]; } || { echo "Pre-release z brancha innego niż main"; exit 1; }
+python3 - "$V" <<'PY'
+import json,sys; p=json.load(open('package.json')); p['version']=sys.argv[1]; json.dump(p,open('package.json','w'))
+PY
+python3 tools/build.py </dev/null
+T0=$(mktemp -d) && cp dist/nuvio.js "$T0/nuvio.mjs" && node --check "$T0/nuvio.mjs" && cp dist/nuvio-core.*.js "$T0/core.mjs" && node --check "$T0/core.mjs"
+python3 tools/guard.py
+npm test --silent
+git add -A && git commit -qm "chore: pre-release $V"
+git push -q -u origin "$B"
+echo "Gotowe. Dalej: ./tools/tag-release.sh --pre $V"
+exit 0
+fi
 V="${1:?usage: tools/cut-release.sh X.Y.Z}"
 cd "$(dirname "$0")/.."
 [ -z "$(git status --porcelain)" ] || { echo "Working tree not clean"; exit 1; }

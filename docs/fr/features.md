@@ -59,6 +59,15 @@ Les administrateurs peuvent exporter et importer toute la disposition de Nuvio d
 - Avant l’import, la disposition actuelle est conservée comme sauvegarde ; **Restaurer la précédente** dans la notification (ou dans la section Sauvegarde de la disposition) annule l’import en un clic.
 - Le fichier est versionné (`format`, `schema`, `nuvio`, `exported`). Les anciennes données de disposition brutes sont converties automatiquement ; les fichiers d’un schéma plus récent ou endommagés sont refusés avec un message clair.
 
+## Vue Studio (bêta)
+
+Une vue facultative avec une grille libre de widgets, désactivée par défaut.
+
+- **Activer** : **Réglages → Vues**, activez **Studio**. L’accueil et vos dispositions enregistrées restent inchangés. La première disposition Studio est créée une fois à partir de vos entités et jamais régénérée.
+- **Mode édition** : déplacez un widget par sa poignée, redimensionnez-le depuis le coin, ouvrez son menu pour choisir une taille, le masquer ou le supprimer, et utilisez la tuile **Ajouter un widget** pour en ajouter un ou réafficher un widget masqué. Les autres widgets s’écartent et se compactent. Les flèches déplacent le widget actif, Maj et les flèches le redimensionnent.
+- **Disposition par appareil** : la grille compte 12 colonnes sur grand écran, 8 sur tablette et 4 sur téléphone. Les changements faits à une largeur donnée sont enregistrés comme une disposition distincte pour cette largeur. **Enregistrer** les conserve, **Annuler** rétablit la disposition précédente.
+- La disposition fait partie de la [sauvegarde de la disposition](#sauvegarde-de-la-disposition).
+
 ## Assistant vocal
 
 Parlez à l’assistant Home Assistant (Assist) sans quitter le tableau de bord. Ouvrez-le avec le bouton micro de l’en-tête ou la touche **A** quand vous n’écrivez pas dans un champ.

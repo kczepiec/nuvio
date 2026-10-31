@@ -80,6 +80,13 @@ Er is geen CI/CD, dus releases worden lokaal door de beheerder gemaakt. Pull req
 ./tools/tag-release.sh 2.31.0   # after the release pull request is merged
 ```
 
+**Pre-release.** Om een featurebranch via HACS te testen vóór een echte release, voer je de scripts uit met `--pre X.Y.Z-beta.N`. `cut-release.sh --pre` werkt op de huidige branch (niet `main`, clean tree): het verhoogt alleen `package.json` (README-badges en `### Unreleased` blijven ongewijzigd), bouwt `dist/` opnieuw, voert dezelfde controles uit, commit `chore: pre-release X.Y.Z-beta.N` en pusht de branch, zonder releasebranch of pull request. `tag-release.sh --pre` tagt `HEAD` als `vX.Y.Z-beta.N`, pusht de tag en maakt een GitHub-pre-release zonder bijgevoegde bestanden. HACS toont die alleen als "Bètaversies tonen" voor de repository is ingeschakeld.
+
+```bash
+./tools/cut-release.sh --pre 2.32.0-beta.1   # clean tree, andere branch dan main
+./tools/tag-release.sh --pre 2.32.0-beta.1   # na de push, vanaf dezelfde branch
+```
+
 Elke wijziging voegt haar vermelding toe aan `CHANGELOG.md`, `CHANGELOG.pl.md`, `CHANGELOG.fr.md` en `CHANGELOG.nl.md` onder `### Unreleased` (zie [CONTRIBUTING.md](../../CONTRIBUTING.md)).
 
 Alleen met de hand taggen: `git fetch origin && git tag -a v2.12.0 origin/main -m "Nuvio 2.12.0" && git push origin v2.12.0`.

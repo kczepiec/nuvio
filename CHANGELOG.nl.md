@@ -4,6 +4,12 @@
 
 Alle belangrijke wijzigingen in Nuvio staan hier, de nieuwste eerst. Versies volgen [semantic versioning](https://semver.org). De volledige Engelse lijst staat in [CHANGELOG.md](CHANGELOG.md); het Poolse en Franse wijzigingslogboek staan in [CHANGELOG.pl.md](CHANGELOG.pl.md) en [CHANGELOG.fr.md](CHANGELOG.fr.md).
 
+### Unreleased
+- Toegevoegd: optionele **Studio-weergave** (bèta), standaard uit en in te schakelen via **Instellingen > Weergaven**. Ze heeft een kader in de stijl van het ontwerp (rail over de volle hoogte met licht/donker-schakelaar, tabs als pillen, optionele wifi-, Bluetooth- en batterijpictogrammen van een wandtablet, datum en tijd) en een vrij 2D-widgetraster van 12 kolommen (8 op tablets, 4 op telefoons). In bewerkmodus kun je widgets slepen, vergroten of verkleinen, verbergen en toevoegen met de tegel "Widget toevoegen"; andere widgets schuiven opzij en sluiten aan, en elke widget heeft een eigen minimale en maximale grootte. De eerste indeling komt uit je entiteiten, elke schermbreedte houdt een eigen indeling en een opgeslagen indeling wordt nooit opnieuw gegenereerd. Studio zit in de back-up van de indeling.
+- Toegevoegd: nieuwe widgets **klimaat**, **energie** en **thuis** (ook in de kaartkiezer) die wisselen tussen compacte, middelgrote en uitgebreide weergave op basis van hun eigen grootte.
+- Toegevoegd: Studio-modi voor de kaarten begroeting, weer, media, camera's en scènes (optie `studio`; bestaande configuraties zien er hetzelfde uit).
+- Toegevoegd: bètaversies zoals `2.32.0-beta.1` laden hun bestanden van het CDN. `tools/cut-release.sh --pre` en `tools/tag-release.sh --pre` publiceren een pre-release vanaf de huidige branch.
+
 ### 2.31.0
 - Toegevoegd: de titel en ondertitel van de kop kunnen de actuele status van een entiteit tonen met `{state:sensor.jouw_entiteit}`, bijvoorbeeld de status van een wasmachine. De regel verdwijnt als de status leeg is, `off`, `unavailable` of `unknown`, en de kop werkt bij wanneer de entiteit verandert.
 
