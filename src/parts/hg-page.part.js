@@ -736,7 +736,7 @@ class HGPage extends HTMLElement {
     if (kind === 'bt') icon = on || (!/^(off|disconnected)$/i.test(st) && isNaN(n)) ? 'mdi:bluetooth' : 'mdi:bluetooth-off';
     else if (!isNaN(n)) { const lvl = n < 0 ? (n >= -55 ? 4 : n >= -67 ? 3 : n >= -75 ? 2 : n > -100 ? 1 : 0) : (n >= 80 ? 4 : n >= 55 ? 3 : n >= 30 ? 2 : n > 0 ? 1 : 0); icon = lvl ? 'mdi:wifi-strength-' + lvl : 'mdi:wifi-off'; }
     else icon = on || !/^(off|disconnected)$/i.test(st) ? 'mdi:wifi' : 'mdi:wifi-off';
-    const l = hgT(kind === 'bt' ? 'page.studio_bluetooth' : 'page.studio_wifi');
+    const l = kind === 'bt' ? hgT('page.studio_bluetooth') : hgT('page.studio_wifi');
     return `<button type="button" class="si" data-act="stent" data-e="${H.esc(id)}" aria-label="${H.esc(l)}" title="${H.esc(l)}">${H.icon(icon)}</button>`;
   }
   _stChrome() {
