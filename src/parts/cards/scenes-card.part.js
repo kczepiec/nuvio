@@ -29,11 +29,12 @@ ha-card.glass{ display:flex; flex-direction:column; gap:var(--s1); padding:var(-
 @keyframes hgrip{ to{ transform:scale(16); opacity:0 } }
 .un{ opacity:.5; }
 /* kafle studio: pionowy kafel (ikona nad etykietą), siatka auto-fit, opcjonalny kafel „+”; stopnie wg szerokości kontenera */
-ha-card.glass.tl{ container-type:inline-size; }
-.row.tl{ container-type:normal; display:grid; grid-template-columns:repeat(auto-fit, minmax(max(64px, 18cqi), 1fr)); }
-.row.tl .p{ flex-direction:column; justify-content:center; gap:6px; height:auto; min-height:72px; padding:8px 4px; text-align:center; border-radius:var(--r-md); box-shadow:none; background:var(--hg-inner-bg); }
-.row.tl .p.ok{ background:var(--hg-accent-soft); }
-.row.tl .tx{ white-space:normal; font-size:min(var(--fs-sm), 13px); font-weight:500; overflow-wrap:anywhere; }
+ha-card.glass.tl{ container-type:inline-size; height:100%; min-height:0; }
+.row.tl{ container-type:normal; flex:1; min-height:0; display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0, 1fr); grid-template-columns:none; align-items:stretch; }
+.row.tl .p{ flex-direction:column; justify-content:center; gap:6px; height:100%; min-height:0; padding:6px 2px; text-align:center; border-radius:var(--r-md); box-shadow:none; background:transparent; }
+.row.tl .ic{ background:var(--hg-inner-bg); color:inherit; }
+.row.tl .p.ok{ background:transparent; }
+.row.tl .tx{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; white-space:normal; font-size:min(var(--fs-sm), 12px); font-weight:500; line-height:1.15; overflow:hidden; }
 .row.tl .p.add{ border:1px dashed color-mix(in srgb, currentColor 30%, transparent); background:none; color:inherit; opacity:.75; min-height:72px; } .row.tl .p.add .ic{ background:none; color:inherit; }
 @container (max-width: 239px){ .tl .hd .tt{ display:none; } .row.tl .p{ min-height:60px; } .row.tl .p .ic{ width:28px; height:28px; } }
 @container (min-width: 480px){ .row.tl .p{ min-height:88px; } .row.tl .p .ic{ width:38px; height:38px; } .row.tl .p .ic ha-icon{ width:22px; height:22px; } }

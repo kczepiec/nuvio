@@ -20,6 +20,8 @@ class HGStudioHomeCard extends HGStudioCard {
 @media (hover:hover) and (pointer:fine){ .tl:not(.on):not([disabled]):hover{ background:var(--hg-inner-bg-h); } }
 .tl ha-icon{ width:24u; height:24u; flex:none; } .tl b{ font-size:var(--fs-sm); font-weight:600; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .tl small{ font-size:var(--fs-xs); opacity:.65; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .tl.on{ background:var(--hg-accent); color:var(--hg-on-accent); box-shadow:0 0 16px var(--hg-accent-glow); } .tl.on small{ opacity:.75; }
+.tl[data-act=lights].on{ background:linear-gradient(180deg, #6E6ED0 0%, #3E4090 100%); color:#fff; box-shadow:0 10px 24px rgba(40,40,120,.35); }
+.tl[data-act=lights].on small{ color:#fff; opacity:.8; }
 .expanded .tl{ gap:6u; } .expanded .tl ha-icon{ width:30u; height:30u; } .expanded .tl b{ font-size:var(--fs-md); }
 .compact .tl{ min-height:0; } .compact .tl ha-icon{ width:28u; height:28u; } ha-card.glass.compact{ padding:var(--s2); }
 .sum{ font-size:var(--fs-sm); opacity:.65; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }

@@ -67,7 +67,7 @@ ha-card.glass{ gap:var(--s1); }
     if (c.compare !== false && d.prev > 0) { const p = ((d.tot - d.prev) / d.prev) * 100, lo = p < 0, r = Math.round(Math.abs(p));
       dl = `<div class="dt ${r === 0 ? '' : lo ? 'dn' : 'up'}">${r === 0 ? '' : H.icon(lo ? 'mdi:arrow-down' : 'mdi:arrow-up')}<span class="p">${H.esc(H.pct(r))}</span><span class="v">${HG_ST_EN[m]()}</span></div>`; }
     const lf = `<div class="lf">${val}${dl}</div>`;
-    return `<ha-card class="glass ${tier}">${tier === 'compact' ? '' : hd}<div class="bd">${lf}${tier === 'expanded' ? this._bars(d) : ''}</div></ha-card>`;
+    return `<ha-card class="glass ${tier}">${tier === 'compact' ? '' : hd}<div class="bd">${lf}${tier === 'compact' ? '' : this._bars(d)}</div></ha-card>`;
   }
   onAct(a, el) { if (a !== 'tab') return; const m = el.dataset.id; if (!HG_ST_EN[m] || m === this._mode()) return; H.haptic('selection'); this._m = m; this._load(); this.rerender(); }
   getGridOptions() { return { columns: 6, rows: 3, min_columns: 3, max_columns: 12, min_rows: 2, max_rows: 6 }; }

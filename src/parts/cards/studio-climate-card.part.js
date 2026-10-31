@@ -20,7 +20,7 @@ class HGStudioCard extends HGBase {
 }
 /* CSS wspólny: nagłówek, kafle, stan pusty. Kolory z tokenów (jasny / ciemny, szkło / płaski), ruch wyłączany przez prefers-reduced-motion */
 const HG_STUDIO_CSS = HG_NV_CSS + U(`
-ha-card.glass{ container-type:inline-size; gap:var(--s1); padding:var(--s2) var(--s3); }
+ha-card.glass{ display:flex; flex-direction:column; min-width:0; container-type:inline-size; gap:var(--s1); padding:var(--s2) var(--s3); }
 .sthd{ display:flex; align-items:center; gap:var(--s1); min-height:32u; min-width:0; }
 .sthd > ha-icon{ width:20u; height:20u; flex:none; } .sthd .nm{ flex:1; min-width:0; font-size:var(--fs-md); font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .un{ opacity:.55; }
@@ -40,22 +40,22 @@ class HGStudioClimateCard extends HGStudioCard {
   css() {
     return HG_STUDIO_CSS + U(`
 ha-card.glass{ --st-c:var(--hg-accent); }
-ha-card.heat{ --st-c:var(--hg-heat, #FF9F43); } ha-card.off{ --st-c:color-mix(in srgb, currentColor 35%, transparent); }
+ha-card.heat{ --st-c:var(--hg-ac-heat, #FF8A3D); } ha-card.off{ --st-c:color-mix(in srgb, currentColor 55%, transparent); }
 .sthd > ha-icon.run{ animation:stspin 5s linear infinite; } @keyframes stspin{ to{ transform:rotate(360deg); } }
 .md{ display:inline-flex; align-items:center; gap:6u; height:26u; padding:0 8u; border-radius:var(--hg-radius-pill, 999px); font-size:var(--fs-sm); font-weight:500; flex:none; max-width:45%; }
 .md i{ width:8u; height:8u; border-radius:50%; background:var(--st-c); flex:none; box-shadow:0 0 8px var(--st-c); } .md span{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .md ha-icon{ width:12u; height:12u; opacity:.7; flex:none; }
 .md:hover{ background:var(--hg-inner-bg); } .md:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
-.bd{ position:relative; z-index:1; flex:1; min-height:0; display:flex; align-items:center; justify-content:space-between; gap:var(--s2); }
-.lf{ display:flex; flex-direction:column; justify-content:center; gap:4u; min-width:0; }
+.bd{ position:relative; z-index:1; flex:1; min-height:0; min-width:0; display:flex; align-items:center; justify-content:space-between; gap:var(--s2); }
+.lf{ display:flex; flex-direction:column; justify-content:center; gap:4u; min-width:0; flex:1; }
 .tv{ display:flex; align-items:flex-start; line-height:1; white-space:nowrap; } .tv b{ font-size:clamp(34px, 17cqi, 76px); font-weight:var(--hg-fw-num, 200); letter-spacing:-.04em; font-variant-numeric:tabular-nums; }
 .tv sup{ font-size:clamp(14px, 5.5cqi, 24px); font-weight:400; margin:.35em 0 0 2u; opacity:.8; }
 .ss{ display:flex; align-items:center; gap:6u; font-size:var(--fs-md); font-weight:500; color:var(--st-c); } .ss ha-icon{ width:15u; height:15u; flex:none; }
-ha-card.off .ss{ color:inherit; opacity:.6; } ha-card.off .tv{ opacity:.55; }
+ha-card.off .ss{ color:inherit; opacity:.72; } ha-card.off .tv{ opacity:.88; }
 .cur{ font-size:var(--fs-sm); opacity:.6; display:block; } .cur::first-letter{ text-transform:uppercase; }
 .sp2{ display:flex; gap:var(--s1); margin-top:4u; }
-.dw{ position:relative; height:100%; max-height:190px; min-height:0; aspect-ratio:1; flex:none; }
+.dw{ position:relative; width:min(44cqi, 158px); height:auto; aspect-ratio:1; flex:none; align-self:center; max-height:100%; }
 .dl{ display:block; width:100%; height:100%; overflow:visible; touch-action:none; cursor:pointer; outline:none; -webkit-user-select:none; user-select:none; }
-.dl .trk, .dl .val{ fill:none; stroke-width:12; stroke-linecap:round; } .dl .trk{ stroke:color-mix(in srgb, currentColor 14%, transparent); }
+.dl .trk, .dl .val{ fill:none; stroke-width:12; stroke-linecap:round; } .dl .trk{ stroke:color-mix(in srgb, currentColor 28%, transparent); }
 .dl .val{ stroke:var(--st-c); transition:stroke-dasharray var(--hg-t-base, 200ms) var(--hg-ease-out, ease-out); filter:drop-shadow(0 0 5px color-mix(in srgb, var(--st-c) 55%, transparent)); }
 .dl .kn{ fill:#fff; stroke:var(--st-c); stroke-width:3; filter:drop-shadow(0 2px 5px rgba(0,0,0,.3)); } .dl.drag .val{ transition:none; } .dl.drag .kn{ r:11; }
 .dl:focus-visible .kn{ stroke-width:6; } .dl[aria-disabled=true]{ cursor:default; } ha-card.off .dl .kn{ display:none; }

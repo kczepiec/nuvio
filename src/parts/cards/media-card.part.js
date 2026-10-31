@@ -15,14 +15,15 @@ ha-card.glass{ display:flex; flex-direction:column; gap:var(--s1); }
 @media (pointer:coarse){ .cb::before{ content:''; position:absolute; inset:-7px; } }
 .playing .art{ animation: var(--hg-loop, hgpulse 3s ease-in-out infinite); }
 /* now playing (studio): okładka, wykonawca, tytuł, pasek postępu, prev/play/next, plakietka źródła; stopnie wg szerokości kontenera */
-ha-card.np{ container-type:inline-size; gap:var(--s1); }
-.np .npr{ display:flex; align-items:flex-start; gap:var(--s2); min-width:0; }
-.np .art{ width:clamp(44px, 28cqi, 104px); height:clamp(44px, 28cqi, 104px); border-radius:var(--r-md); }
+ha-card.np{ container-type:inline-size; height:100%; justify-content:flex-start; gap:var(--s2); }
+.np .npr{ display:flex; align-items:center; gap:var(--s2); min-width:0; flex:none; }
+.np .art{ width:clamp(72px, 36cqi, 120px); height:auto; aspect-ratio:1; border-radius:var(--r-md); flex:none; background-color:color-mix(in srgb, currentColor 10%, transparent); color:inherit; }
+.np .art ha-icon{ color:inherit; opacity:.75; width:32px; height:32px; }
 .np .tx{ align-self:center; } .np .tx b{ font-size:var(--fs-lg, 17px); font-weight:600; } .np .tx span{ color:var(--hg-t2, #4D5157); }
 .np .src{ flex:none; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--hg-inner-bg); color:var(--hg-accent-tx); box-shadow:var(--hg-inner-hi); } .np .src ha-icon{ width:18px; height:18px; }
 .np .src.sp{ color:#1DB954; }
 .np .pb{ height:4px; border-radius:2px; background:color-mix(in srgb, currentColor 18%, transparent); overflow:hidden; margin-top:auto; } .np .pb i{ display:block; height:100%; border-radius:2px; background:currentColor; opacity:.75; }
-.np .ctl{ margin-top:0; gap:var(--s3); } .np .cb{ background:transparent; } .np .cb.pp{ background:transparent; color:inherit; }
+.np .ctl{ margin-top:var(--s1); gap:var(--s4); } .np .cb{ background:transparent; } .np .cb.pp{ background:transparent; color:inherit; } .np .cb.pp ha-icon{ width:32px; height:32px; }
 @container (max-width: 219px){ .np .pb, .np .src, .np .ctl .cb:not(.pp), .np .kebab{ display:none; } .np .tx span{ display:none; } }
 @container (min-width: 220px) and (max-width: 299px){ .np .src{ display:none; } }
 @container (min-width: 420px){ .np .tx b{ font-size:20px; } }

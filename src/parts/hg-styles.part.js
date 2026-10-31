@@ -50,7 +50,7 @@ window.HG_RANGE_CSS = HG_RANGE_CSS;
 if (!window.__hgRangeW) { window.__hgRangeW = 1; const upd = (e) => { const t = e.composedPath && e.composedPath()[0]; if (!t || t.type !== 'range') return; const mn = +t.min || 0, mx = t.max === '' ? 100 : +t.max, v = ((+t.value - mn) / ((mx - mn) || 1)) * 100; t.style.setProperty('--v', v + '%'); }; window.addEventListener('input', upd, true); }
 const HG_BASE = U(`
 :host{ --k: var(--hg-u, 1.3px); --r-lg:var(--hg-radius, 24px); --r-md:var(--hg-radius-in, 16px); --r-sm:12px; --s1:8u; --s2:12u; --s3:16u; --s4:24u; --fs-xs:var(--hg-fs-xs, 8.5u); --fs-sm:var(--hg-fs-sm, 10u); --fs-md:var(--hg-fs-md, 12u); display:block; font-family:'HG DM Sans','DM Sans',-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;
-  -webkit-font-smoothing:antialiased; color:#1E2023; height:100%; font-weight:400; }
+  -webkit-font-smoothing:antialiased; color:var(--hg-card-fg, #1E2023); height:100%; font-weight:400; }
 *{ box-sizing:border-box; }
 /* rozmiar kafelka S/M/L: treść skaluje się do szerokości kontenera (kafelek, slot panelu) */
 @container (max-width: 300px){ :host{ --k: calc(var(--hg-u, 1.3px) * .9); } .hd .tt small, .note{ display:none; } }
@@ -69,10 +69,10 @@ ha-card.glass{ position:relative; height:100%; min-height:var(--hg-min-h, 0px); 
   -webkit-backdrop-filter: var(--hg-bfo, var(--hg-card-bf, none)); backdrop-filter: var(--hg-bfo, var(--hg-card-bf, none));
   /* cienka jasna krawędź (mocniejsza u góry) + miękki cień, jak w projekcie */
   box-shadow: var(--hg-edge, 0 0 0 transparent), var(--hg-card-sh, var(--hg-shadow-lg, 0 6px 20px var(--hg-glass-sh)));
-  color:#1E2023; padding:var(--s2); contain: layout paint style; }
+  color:var(--hg-card-fg, #1E2023); padding:var(--s2); contain: layout paint style; }
 /* .warm: jedno wspólne szkło dla wszystkich kart (bez osobnego odcienia) */
 .hd{ display:flex; align-items:center; gap:var(--s1); min-height:20u; position:relative; z-index:2; }
-.hd .ic{ width:12u; height:12u; color:#2A2D31; flex:none; }
+.hd .ic{ width:12u; height:12u; color:currentColor; flex:none; }
 .hd .tt{ font-size:var(--fs-md); font-weight:600; letter-spacing:-.005em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .hd .tt small{ font-size:var(--fs-xs); font-weight:400; color:#5A5E64; margin-left:4u; }
 .hd .sp{ flex:1; }
@@ -80,7 +80,7 @@ ha-card.glass{ position:relative; height:100%; min-height:var(--hg-min-h, 0px); 
 .lr{ display:flex; align-items:center; gap:var(--s2); min-height:max(calc(var(--k) * 34), 44px); padding:var(--s1) 0; }
 .lr + .lr{ border-top:1px solid rgba(0,0,0,.06); }
 .note{ font-size:var(--fs-xs); color:#8A8E94; white-space:nowrap; }
-.ib{ width:30u; height:30u; margin:-5u; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; color:#1E2023; position:relative; flex:none; transition: background var(--hg-t-base, 200ms) var(--hg-ease-out, ease-out), transform var(--hg-t-fast, 120ms) var(--hg-ease-out, ease-out); }
+.ib{ width:30u; height:30u; margin:-5u; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; color:inherit; position:relative; flex:none; transition: background var(--hg-t-base, 200ms) var(--hg-ease-out, ease-out), transform var(--hg-t-fast, 120ms) var(--hg-ease-out, ease-out); }
 .ib:active{ transform:scale(.92); }
 .ib ha-icon{ width:15u; height:15u; }
 /* wspólny hover kafli szklanych: lekkie uniesienie, minimalnie jaśniejsze szkło, mocniejszy miękki cień; tylko mysz (bez „przyklejonego” hovera na dotyku) */

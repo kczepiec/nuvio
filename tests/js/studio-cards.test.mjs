@@ -108,12 +108,12 @@ test('climate: stub config picks a climate entity, grid options have limits', ()
 const en = (state = '1.24') => ({ entity_id: 'sensor.e', state, attributes: { friendly_name: 'Energy', unit_of_measurement: 'kWh', device_class: 'energy' } });
 const hr = (h, n) => ({ start: h, change: n });
 
-test('energy: tiers (compact value + delta, medium + tabs, expanded + bars)', () => {
+test('energy: tiers (compact value + delta, medium and expanded add tabs and bars)', () => {
   const { HGStudioEnergyCard: C } = mk(), h = { states: { 'sensor.e': en() } };
   const R = (t) => { const c = mkCard(C, { entity: 'sensor.e', tier: t }, h); c._d = { day: { t: 1, vals: [0.1, 0.3, 0.2, null], tot: 0.6, prev: 0.8, has: true } }; return c.render(); };
   const co = R('compact'), me = R('medium'), ex = R('expanded');
   for (const x of [co, me, ex]) { assert.match(x, /class="nv-big/); assert.match(x, /class="dt dn"/); assert.match(x, /mdi:arrow-down/); assert.match(x, /<span class="p">/); }
-  assert.doesNotMatch(co, /nv-tabs|class="bars/); assert.match(me, /role="tablist"/); assert.doesNotMatch(me, /class="bars/);
+  assert.doesNotMatch(co, /nv-tabs|class="bars/); assert.match(me, /role="tablist"/); assert.match(me, /class="bars/);
   assert.match(ex, /role="tablist"/); assert.match(ex, /class="bars/); assert.equal((ex.match(/class="d /g) || []).length, 4);
   assert.match(ex, /data-act="tab" data-id="day"/); assert.match(ex, /data-act="tab" data-id="month"/);
 });

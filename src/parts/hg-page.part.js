@@ -1285,6 +1285,11 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 .rth{ margin-top:auto; }
 :host([studio]) .head, :host([studio]) .brand span{ display:none; }
 :host([studio]) .panel{ background:none; border:0; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; padding:0; }
+/* widżety na zdjęciu: ciemna tafla jak w makiecie, biały tekst; inne widoki zostają przy swoim szkle */
+:host([studio]){ --hg-glass-bg: rgba(8,12,18,.52); --hg-glass-sheen: linear-gradient(155deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.05) 42%, rgba(255,255,255,0) 72%);
+  --hg-card-fg: #fff; --hg-t2: rgba(255,255,255,.68);
+  --hg-inner-bg: rgba(255,255,255,.08); --hg-inner-bg-h: rgba(255,255,255,.14);
+  --hg-inner-hi: inset 0 1px 0 rgba(255,255,255,.16), inset 0 0 0 1px rgba(255,255,255,.06); }
 :host([studio]) .un{ display:none; }
 :host([studio][mode=wide]) .tabs{ left:56u; }
 :host([studio][mode=wide]) .rail{ top:73u; bottom:19u; }

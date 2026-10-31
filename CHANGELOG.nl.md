@@ -9,6 +9,7 @@ Alle belangrijke wijzigingen in Nuvio staan hier, de nieuwste eerst. Versies vol
 - Toegevoegd: nieuwe widgets **klimaat**, **energie** en **thuis** (ook in de kaartkiezer) die wisselen tussen compacte, middelgrote en uitgebreide weergave op basis van hun eigen grootte.
 - Toegevoegd: Studio-modi voor de kaarten begroeting, weer, media, camera's en scènes (optie `studio`; bestaande configuraties zien er hetzelfde uit).
 - Toegevoegd: bètaversies zoals `2.32.0-beta.1` laden hun bestanden van het CDN. `tools/cut-release.sh --pre` en `tools/tag-release.sh --pre` publiceren een pre-release vanaf de huidige branch.
+- Opgelost: Studio-widgets liggen dichter bij het ontwerp. Kaarten op de foto hebben donkerder glas en witte tekst, de klimaatboog blijft in de kaart, energiebalken verschijnen al op middelgroot formaat, media heeft een grotere hoes, ingeschakelde lampen zijn indigo en scènes staan op één rij.
 
 ### 2.31.0
 - Toegevoegd: de titel en ondertitel van de kop kunnen de actuele status van een entiteit tonen met `{state:sensor.jouw_entiteit}`, bijvoorbeeld de status van een wasmachine. De regel verdwijnt als de status leeg is, `off`, `unavailable` of `unknown`, en de kop werkt bij wanneer de entiteit verandert.
