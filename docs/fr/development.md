@@ -70,12 +70,16 @@ Les clés passées à `hgT`, `hgTLazy` et `hgTO` sont des chaînes littérales. 
 
 **Contrôles.** `python3 tools/i18n_check.py` échoue (code de sortie 1) quand une clé n’est pas littérale, qu’une clé utilisée manque dans `en.json`, qu’une clé de `en.json` est inutilisée, qu’un texte visible est écrit dans le code, qu’un catalogue contient du JSON invalide, une clé en double, un `_meta` incomplet, des variables différentes ou des formes de pluriel manquantes, ou qu’une langue obligatoire (`en`, `pl`, `fr`) est incomplète. Le texte des catalogues est inséré dans la page en HTML : il refuse donc aussi le balisage dans un texte (`<b>`, `</…`, `<!--` ; un repère en minuscules comme `<id>`, qui n’est pas un nom d’élément HTML, reste permis), un gestionnaire d’événement `on…=`, un guillemet droit `"` hors de l’anglais et un nom de fichier de catalogue qui n’est pas un code de langue en minuscules (`fr`, `pt-br`). Les autres langues peuvent être partielles et ne reçoivent qu’un avertissement avec leur couverture. Options : `--lang <code>` liste les clés manquantes et obsolètes d’une langue, `--list` affiche toutes les erreurs, `--json` renvoie le résultat en JSON. `tools/guard.py` le lance avec ses autres contrôles.
 
-Il n’y a pas de CI/CD : les versions et les étiquettes se construisent en local. `tools/release.sh X.Y.Z` augmente la version (`package.json`, README), compile, vérifie `dist/nuvio.js` (`node --check`) et lance la protection contre les valeurs codées en dur, crée le commit `chore: release X.Y.Z` et l’étiquette annotée `vX.Y.Z`, pousse `main` et l’étiquette, puis crée une publication GitHub sans fichiers joints (HACS installe alors tout le `dist/` à plat) :
+Il n’y a pas de CI/CD : les versions sont publiées localement par le mainteneur. Les pull requests de fonctionnalités n’augmentent pas la version : elles ajoutent leur entrée sous `### Unreleased`. Une publication se fait en deux étapes :
+
+1. `./tools/cut-release.sh X.Y.Z` crée la branche `release/X.Y.Z`, remplace `### Unreleased` par `### X.Y.Z` dans les quatre journaux des modifications, augmente la version (`package.json`, badges des README), recompile `dist/`, lance `node --check`, la protection contre les valeurs codées en dur et `npm test`, crée le commit `chore: release X.Y.Z` et ouvre une pull request vers `main`.
+2. Une fois la pull request fusionnée, `./tools/tag-release.sh X.Y.Z` pose l’étiquette `vX.Y.Z` sur `main`, pousse l’étiquette, crée la publication GitHub sans fichiers joints (HACS installe alors le `dist/` à plat) et vérifie l’étiquette.
 
 ```bash
-./tools/release.sh 0.3.21   # arbre propre requis, gh CLI connecté
+./tools/cut-release.sh 2.31.0   # arbre propre, gh CLI connecté, depuis main
+./tools/tag-release.sh 2.31.0   # après la fusion de la pull request de publication
 ```
 
-Ajoutez l’entrée du journal des modifications dans `CHANGELOG.md`, `CHANGELOG.pl.md`, `CHANGELOG.fr.md` et `CHANGELOG.nl.md` avant de publier (voir [CONTRIBUTING.md](../../CONTRIBUTING.md)) : le script ne met à jour que la version dans `package.json` et le badge de version dans les fichiers README.
+Chaque modification ajoute son entrée dans `CHANGELOG.md`, `CHANGELOG.pl.md`, `CHANGELOG.fr.md` et `CHANGELOG.nl.md` sous `### Unreleased` (voir [CONTRIBUTING.md](../../CONTRIBUTING.md)).
 
 Étiquette seule, à la main : `git fetch origin && git tag -a v2.12.0 origin/main -m "Nuvio 2.12.0" && git push origin v2.12.0`.
