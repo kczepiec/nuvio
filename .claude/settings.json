@@ -2,5 +2,20 @@
   "attribution": {
     "commit": "",
     "pr": ""
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npm test)",
+      "Bash(npm test --silent)",
+      "Bash(python3 tools/build.py *)",
+      "Bash(python3 tools/guard.py *)",
+      "Bash(python3 tools/i18n_check.py *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git checkout -b *)",
+      "Bash(git checkout main)",
+      "Bash(git checkout -q main)",
+      "Bash(node --check *)"
+    ]
   }
 }
