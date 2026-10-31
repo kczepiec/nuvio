@@ -33,7 +33,7 @@ test('hgGenerate: no studio view unless wiz.views lists it', async () => {
   assert.ok(v);
   assert.equal(v.cards[0].view, 'studio');
   assert.equal(v.cards[0].studio, true);
-  assert.deepEqual(v.cards[0].cards, [{ type: 'custom:hg-studio-card' }]);
+  assert.deepEqual(v.cards[0].cards, [{ type: 'custom:hg-studio-card', area: 'st' }]);
   assert.ok(b.views.find((x) => x.path === 'dashboard').cards[0].tabs.some((t) => /studio/.test(t.path)));
 });
 

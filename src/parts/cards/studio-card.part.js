@@ -88,16 +88,16 @@ class HGStudioGrid extends HGBase {
     return a;
   }
   _byId() { const L = HGL.data.studio; return new Map(((L && L.items) || []).map((i) => [i.id, i])); }
-  _name(t) { const d = HG_STUDIO_W[t]; return d ? String(d.n) : t; }
+  _name(t, it) { if (it && it.type === 'card') return (it.settings && it.settings.name) || t; const d = HG_STUDIO_W[t]; return d ? String(d.n) : t; }
   _gridHtml() {
     const L = HGL.data.studio, ed = this._ed = this._edNow(), cols = this._cols(), by = this._byId();
-    const vis = this._cur().filter((i) => { const t = by.get(i.id); return !i.hidden && t && HG_STUDIO_W[t.type]; });
+    const vis = this._cur().filter((i) => { const t = by.get(i.id); return !i.hidden && t && (t.type === 'card' ? t.settings && t.settings.card : HG_STUDIO_W[t.type]); });
     if ((!L && HGL.failed) || (L && !vis.length && !ed)) return `<div class="st-empty nv-empty"><b>${hgT('studio.empty_title')}</b><span>${hgT('studio.empty_text')}</span></div>`;
     if (!L) return '';
     /* kafel „Dodaj widżet”: pierwsze wolne miejsce, najwyżej jak się da (szerokość 4, 3 albo 2 kolumny) */
     let add = null; if (ed) for (const w of [4, 3, 2]) { const p = HGGrid.place(vis, { id: '_add', w: Math.min(w, cols), h: 3 }, cols), a = p[p.length - 1]; if (!add || a.y < add.y) add = a; }
     const rows = Math.max(1, ...vis.map((i) => i.y + i.h), add ? add.y + add.h : 0), esc = H.esc;
-    const cell = (i) => { const t = by.get(i.id), nm = esc(this._name(t.type)), id = esc(i.id);
+    const cell = (i) => { const t = by.get(i.id), nm = esc(this._name(t.type, t)), id = esc(i.id);
       return `<div class="st-w" data-key="w-${id}" data-id="${id}" style="${hgStArea(i)}"${ed ? ` tabindex="0" role="group" aria-label="${nm}" aria-describedby="st-kh"` : ''}><div class="st-k" data-own data-key="k-${id}"></div>`
         + (ed ? `<div class="st-bar"><button class="st-h" type="button" data-st="drag" data-no-swipe aria-label="${hgT('studio.move', { name: nm })}" title="${hgT('studio.move', { name: nm })}">${H.icon('mdi:drag')}</button><span class="st-n">${nm}</span>`
           + `<button class="st-m" type="button" data-st="menu" aria-haspopup="menu" aria-label="${hgT('studio.menu', { name: nm })}" title="${hgT('studio.menu', { name: nm })}">${H.icon('mdi:dots-horizontal')}</button></div>`
@@ -117,7 +117,10 @@ class HGStudioGrid extends HGBase {
     if (html !== this._lh) { this._lh = html; hgMorph(root, html); }
     this._mount(root);
   }
-  _cfg(it) { const d = HG_STUDIO_W[it.type]; if (!d) return null; const s = it.settings || {}; try { return Object.assign({ type: 'custom:' + d.card }, d.cfg(s.entity || null, s, this._hass)); } catch (e) { return null; } }
+  _cfg(it) {
+    if (it.type === 'card') { const c = it.settings && it.settings.card; if (!c || !c.type) return null; const o = Object.assign({}, c); for (const k of Object.keys(o)) if (k.indexOf('nv_') === 0) delete o[k]; return o; }
+    const d = HG_STUDIO_W[it.type]; if (!d) return null; const s = it.settings || {}; try { return Object.assign({ type: 'custom:' + d.card }, d.cfg(s.entity || null, s, this._hass)); } catch (e) { return null; }
+  }
   _mount(root) {
     const by = this._byId(), seen = new Set(), K = this._kids || (this._kids = new Map());
     const put = (x, id) => { const sl = root.querySelector(`.st-w[data-id="${id}"] > .st-k`); if (!sl) return; if (x.parentElement !== sl) { sl.textContent = ''; sl.appendChild(x); } if (this._hass) hgPass(x, this._hass); };
@@ -144,6 +147,16 @@ class HGStudioGrid extends HGBase {
   _opRemove(id) { const L = HGL.data.studio; if (!L) return; const bps = {};
     for (const [k, v] of Object.entries(L.bps || {})) bps[k] = HGGrid.compact(v.filter((i) => i.id !== id), (HGGrid.BP.find((b) => b.id === k) || HGGrid.BP[0]).cols);
     HGL.data.studio = Object.assign({}, L, { items: HGGrid.compact(L.items.filter((i) => i.id !== id), 12), bps, custom: 1 }); this._kids && this._kids.delete(id); this._lh = null; this._lay(); }
+  /* karta z galerii komponentów (ta sama co na innych widokach): konfiguracja w settings.card */
+  _opAddCard(p) {
+    const L = HGL.data.studio; if (!L || !p || !p.card || !p.card.type) return null;
+    const z = p.z === 'l' ? { w: 6, h: 4 } : p.z === 's' ? { w: 3, h: 2 } : { w: 4, h: 3 };
+    const ids = new Set(L.items.map((i) => i.id)); let id = 'w_card', n = 2; while (ids.has(id)) id = 'w_card_' + n++;
+    const it = { id, type: 'card', w: z.w, h: z.h, minW: 2, minH: 2, maxW: 12, maxH: 8, hidden: false, settings: { card: p.card, name: p.name || '', icon: p.icon || '' } }, bps = {};
+    for (const [k, v] of Object.entries(L.bps || {})) { const c = (HGGrid.BP.find((b) => b.id === k) || HGGrid.BP[0]).cols, { settings, ...r } = it;
+      bps[k] = HGGrid.place(v, { ...r, w: Math.max(2, Math.round(it.w * c / 12)) }, c); }
+    HGL.data.studio = Object.assign({}, L, { items: HGGrid.place(L.items, it, 12), bps, custom: 1 }); this._lh = null; this._lay(); return id;
+  }
   _opAdd(type) {
     const L = HGL.data.studio, d = HG_STUDIO_W[type]; if (!L || !d) return null;
     let e = null; try { e = d.pick(this._M || {}, this._hass); } catch (x) { e = null; }
@@ -154,12 +167,13 @@ class HGStudioGrid extends HGBase {
     HGL.data.studio = Object.assign({}, L, { items: HGGrid.place(L.items, it, 12), bps, custom: 1 }); this._lh = null; this._lay(); return id;
   }
   /* rozmiary S / M / L z rejestru (min / domyślny / większy), przeliczone na kolumny progu */
-  _preset(type, k) { const d = HG_STUDIO_W[type], f = this._cols() / 12; if (!d) return null;
+  _preset(type, k) { if (type === 'card') { const p = k === 's' ? { w: 3, h: 2 } : k === 'l' ? { w: 6, h: 4 } : { w: 4, h: 3 }, f = this._cols() / 12; return { w: Math.max(2, Math.round(p.w * f)), h: p.h }; }
+    const d = HG_STUDIO_W[type], f = this._cols() / 12; if (!d) return null;
     const p = k === 's' ? d.min : k === 'l' ? { w: Math.min(d.max.w, Math.round(d.def.w * 1.5)), h: Math.min(d.max.h, d.def.h + 1) } : d.def;
     return { w: Math.max(1, Math.round(p.w * f)), h: p.h }; }
   _opSize(id, k) { const t = this._byId().get(id), p = t && this._preset(t.type, k); if (p) this._opResize(id, p.w, p.h); }
   _say(id) { const it = this._cur().find((i) => i.id === id), t = this._byId().get(id), el = this.$ && this.$.querySelector && this.$.querySelector('[data-st-live]');
-    if (it && t && el) el.textContent = hgT('studio.pos', { name: this._name(t.type), x: it.x + 1, y: it.y + 1, w: it.w, h: it.h }); }
+    if (it && t && el) el.textContent = hgT('studio.pos', { name: this._name(t.type, t), x: it.x + 1, y: it.y + 1, w: it.w, h: it.h }); }
   _focus(id) { const c = this.$ && this.$.querySelector && this.$.querySelector(`.st-w[data-id="${id}"]`); if (c && c.focus) c.focus(); }
   async _menu(id, anchor) {
     const it = this._cur().find((i) => i.id === id), t = this._byId().get(id); if (!it || !t) return;
@@ -172,14 +186,13 @@ class HGStudioGrid extends HGBase {
     if (v === 'remove') return this._opRemove(id);
     this._opSize(id, v); this._focus(id); this._say(id);
   }
-  async _addMenu(anchor) {
-    await this._model(this._hass); const by = this._byId();
-    const hid = this._cur().filter((i) => i.hidden && by.get(i.id) && HG_STUDIO_W[by.get(i.id).type]);
-    const items = [...hid.map((i) => { const t = by.get(i.id).type; return { label: hgT('studio.show', { name: this._name(t) }), icon: HG_STUDIO_W[t].i, value: 'show:' + i.id }; }), ...(hid.length ? ['-'] : []),
-      ...Object.keys(HG_STUDIO_W).map((t) => ({ label: this._name(t), icon: HG_STUDIO_W[t].i, value: 'add:' + t }))];
-    const v = await hgOverlay.menu(anchor, items); if (!v || !this._ed) return;
-    const [a, x] = [v.slice(0, v.indexOf(':')), v.slice(v.indexOf(':') + 1)];
-    const id = a === 'show' ? (this._opShow(x), x) : this._opAdd(x); if (id) { this._focus(id); this._say(id); }
+  /* ta sama galeria co na innych widokach; widżety Studio i ukryte zostają na górze arkusza */
+  _addMenu() {
+    const page = this._pageHost(); if (!page || typeof page._eGallery !== 'function' || !this._ed) return;
+    const by = this._byId();
+    page._stHid = this._cur().filter((i) => i.hidden && by.get(i.id)).map((i) => { const t = by.get(i.id); return { id: i.id, name: this._name(t.type, t), icon: (HG_STUDIO_W[t.type] && HG_STUDIO_W[t.type].i) || (t.settings && t.settings.icon) || 'mdi:eye-outline' }; });
+    page._stAdd = (p) => { if (!this._ed || !p) return; const id = p.studio ? this._opAdd(p.studio) : p.show ? (this._opShow(p.show), p.show) : this._opAddCard(p); if (id) { this._focus(id); this._say(id); } };
+    page._eGallery();
   }
   /* ---- przeciąganie: uchwyt (mysz i dotyk, setPointerCapture), podgląd na żywo (HGGrid.snap + move / resize), zapis po puszczeniu ---- */
   _dragBegin(id, mode, m, dom) { const cur = this._cur(), it = cur.find((i) => i.id === id); if (!it) return null; return (this._drag = Object.assign({ id, mode, it, cur, m, next: null }, dom || {})); }

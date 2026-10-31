@@ -836,10 +836,13 @@ const HG_COMP_EDIT = {
     const h = this._hass; this._eSheet('cfg'); const S = this._eSheetEl; const sc = scOver || (ct ? (ct.page ? ct.scope + ':tiles' : ct.scope) : (this._pageScope() + ':tiles')); this._eGalSc = sc; this._eGalCt = ct;
     const list0 = HG_COMP.filter(hgCompOk),   /* wszędzie ta sama galeria: widok, pokój i kontener */
       lay = kN >= HG_CONT_MAX ? [] : list0.filter((C) => C.cat === 'layout'), bas = list0.filter((C) => HG_COMP_BASIC.includes(C.id)), rest = list0.filter((C) => !HG_COMP_BASIC.includes(C.id) && C.cat !== 'layout'), list = [...lay, ...bas, ...rest];
+    const stRow = (t, id, label, icon) => `<button class="hs-r" data-hge="${id ? 'stshow' : 'stwig'}" ${id ? `data-id="${H.esc(id)}"` : `data-t="${H.esc(t)}"`}><span class="hs-i">${H.icon(icon || 'mdi:card-outline')}</span><span class="hs-t"><b>${H.esc(label)}</b></span></button>`;
+    const stTop = this._stAdd && typeof HG_STUDIO_W !== 'undefined' ? `<div class="hs-l" style="margin-bottom:8px">${(this._stHid || []).map((x) => stRow('', x.id, hgT('studio.show', { name: x.name }), x.icon)).join('')}${Object.keys(HG_STUDIO_W).map((t) => stRow(t, '', String(HG_STUDIO_W[t].n), HG_STUDIO_W[t].i)).join('')}</div>` : '';
     const card = (C) => { const req = C.slots.filter((x) => x.req), miss = req.find((sl) => !hgSlotCands(h, sl).length);
       const dom = miss ? H.lv(miss.l.toLowerCase(), `${miss.dom.join(', ')}${miss.dc ? ' · ' + miss.dc.join(', ') : ''}`) : '';
       return `<button class="${miss ? 'na' : ''}" role="listitem" data-hge="cgo" data-c="${C.id}"${miss ? ` title="${H.esc(hgT('edit.needs_domains', { domains: dom }))}"` : ''}><div class="th" data-th="${C.id}">${hgMockHtml(C.id)}</div><b>${H.icon(C.i)}<span>${H.esc(C.n)}</span></b><small class="cd">${H.esc(C.d)}</small>${miss ? `<small class="cna">${H.icon('mdi:link-variant-off')}<span>${hgT('edit.no_matching_entity')}</span></small><small class="cdom">${H.esc(dom)}</small>` : ''}</button>`; };
     S.innerHTML = `<div class="hge-scrim" data-hge="sheetclose"></div><div class="hge-sheet wide" role="dialog" aria-modal="true" aria-label="${kid ? hgT('edit.add_to_container') : hgT('edit.add_component')}"><style>${HG_STY_CSS}${HG_COMP_CSS}${HG_MOCK_CSS}</style><div class="hs-h"><b>${kid ? hgT('edit.add_to_container') : hgT('edit.add_component')}<small style="margin-left:8px;font-weight:500;opacity:.55;font-size:12px" title="${hgT('edit.loaded_bundle_version')}">v${H.esc(String(HG_BUILD).split('+')[0])}</small></b><button class="hs-x" data-hge="sheetclose" aria-label="${hgT('common.close')}">${H.icon('mdi:close')}</button></div><div class="hs-sc">
+      ${stTop}
       ${kid ? '' : `<div class="cq"><button class="hs-r" data-hge="cgent" style="min-height:48px">${H.icon('mdi:magnify')}<span class="hs-t"><b>${hgT('edit.search_entities')}</b><small>${hgT('edit.quickly_add_a_single')}</small></span></button></div>`}
       ${lay.length ? `<h4 class="cgh">${hgT('edit.layout')}<small>${hgT('edit.containers_like_in_ha')}</small></h4><div class="cg" role="list">${lay.map(card).join('')}</div>` : ''}
       ${bas.length ? `<h4 class="cgh">${hgT('edit.basic')}<small>${hgT('edit.general_controls_for_any')}</small></h4><div class="cg" role="list">${bas.map(card).join('')}</div>` : ''}
@@ -933,6 +936,8 @@ const HG_COMP_EDIT = {
       const back = () => { this._eRepl = null; this._eComp(R.cid, this._eCompR || R); };
       return this._eGo(back, () => this._eSheet('add', null, this._eGalSc || R.sc)); }
     if (a === 'cok' && C.id === 'hacard' && !hgHaCard(R.v)) return this._eToast(hgT('edit.paste_a_valid_card'));
+    if (a === 'cok' && this._stAdd && !R.kid) { if (R._xBad) return; const n = R.n, i = /^mdi:[a-z0-9-]+$/.test(R.i || '') ? R.i : '', card = hgKidCfg(C, R, h); if (!card) return;
+      const fn = this._stAdd; fn({ card, name: n || String(C.n), icon: i || C.i, z: R.z || 'm' }); this._eCompR = null; this._eToast(hgT('edit.added_name', { name: n || C.n })); return this._eSheet(false); }
     if (a === 'cok' && R.kid) { if (R._xBad) return; const F = (this._eKidStk || []).pop(), kc = F && hgKidCfg(C, R, h); if (!kc) return;
       const P = F.R, A = (P.v.cards || []).slice(); if (F.i != null) { if (A[F.i] && A[F.i].span) kc.span = A[F.i].span; A[F.i] = kc; } else A.push(kc);
       P.v = Object.assign({}, P.v, { cards: A }); this._eStk.length = Math.min(this._eStk.length, F.d0); this._eRepl = null; this._eNav('b'); this._eComp(P.cid, P);
@@ -1430,7 +1435,9 @@ const HG_EDIT = {
     if (a === 'lktab') return this._eSetGo(b.dataset.k);
     if (a === 'lkback') { this._lkDD = 'nav'; const sh = this._eSheetEl && this._eSheetEl.querySelector('.hge-sheet.lk'); if (sh) { sh.dataset.dd = 'nav'; const t = sh.querySelector(`#lkt-${this._lkTab}`); if (t) t.focus(); } return; }
     if (a === 'lookreset') { HGL.data.app = {}; HGApp.apply(); this._eToast(hgT('edit.appearance_reset_to_default')); return this._eLook(); }
-    if (a === 'add') { const ct0 = b._ct || (b.closest('.hge-addw') && b.closest('.hge-addw').firstChild._ct); return ct0 && ct0.scope === 'rooms' ? this._eSheet('add', ct0) : this._eGallery(ct0); }
+    if (a === 'stwig' && this._stAdd) { const fn = this._stAdd, t = b.dataset.t; fn({ studio: t }); return this._eSheet(false); }
+    if (a === 'stshow' && this._stAdd) { const fn = this._stAdd, id = b.dataset.id; fn({ show: id }); return this._eSheet(false); }
+    if (a === 'add') { this._stAdd = null; this._stHid = null; const ct0 = b._ct || (b.closest('.hge-addw') && b.closest('.hge-addw').firstChild._ct); return ct0 && ct0.scope === 'rooms' ? this._eSheet('add', ct0) : this._eGallery(ct0); }
     if (/^(c(go|gent|back|typ|mod|z|del|slot|ok)|k(add|edit|dup|del|span|move|out))$/.test(a)) return this._eCompAct(a, b);
     if (a === 'restore') { this._eSet(b.dataset.sc, (L) => { L.hidden = L.hidden.filter((x) => x !== b.dataset.k); }); this._eSheet(false); return this._eRefresh(b.dataset.sc === this._pageScope()); }
     if (a === 'sback') return this._eBack();
@@ -1905,7 +1912,7 @@ const HG_EDIT = {
       const u = `/api/image/serve/${j.id}/original`; this._eApp((A) => { A.bg = { kind: 'url', v: u }; }); this._eToast(hgT('edit.uploaded_image_set')); this._eLook(); }, (e) => this._eToast(hgT('edit.upload_failed', { error: e })));
   },
   _eSheet(mode, ct, scOver) {
-    if (!mode) { this._eRepl = null; this._eStk = []; this._eKidStk = []; this._eShT = (this._eShT || 0) + 1; this._eShSnap = null; this._eSheetOpen = false; if (this._eSheetEl) { this._eSheetEl.remove(); this._eSheetEl = null; } return; }
+    if (!mode) { this._stAdd = null; this._stHid = null; this._eRepl = null; this._eStk = []; this._eKidStk = []; this._eShT = (this._eShT || 0) + 1; this._eShSnap = null; this._eSheetOpen = false; if (this._eSheetEl) { this._eSheetEl.remove(); this._eSheetEl = null; } return; }
     this._eSheetOpen = mode; this._eSheetCt = ct; if (!this._eBacking) { this._eF = 'all'; this._eQ = ''; }
     let L = this._eSheetEl; if (L && !L.isConnected) this.shadowRoot.appendChild(L); if (!L) { L = this._eSheetEl = document.createElement('div'); L.className = 'hge-sheet-l'; this.shadowRoot.appendChild(L); this._eStk = [];
       setTimeout(() => L.classList.add('opened'), 320); new MutationObserver(() => this._eDeco()).observe(L, { childList: true });

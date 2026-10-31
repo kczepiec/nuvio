@@ -174,7 +174,7 @@ const hint = (k) => ({ type: 'custom:hg-hint-card', hint: k });
   if (V.some((v) => v[0] === 'multimedia')) views.push(view('multimedia', hgT('nav.media'), base('multimedia', hgT('nav.media'), hgT('nav.media_sub'), [M.media.length ? { type: 'custom:hg-players-card', area: 'm', entities: M.media } : { ...hint('media'), area: 'm' }], one('m'))));
   if (V.some((v) => v[0] === 'kamery')) views.push(view('kamery', hgT('nav.cams'), base('kamery', hgT('nav.cams'), hgT('nav.cams_sub'), [M.cams.length ? { type: 'custom:hg-cameras-card', area: 'c', entities: M.cams } : { ...hint('cams'), area: 'c' }], one('c'))));
   if (V.some((v) => v[0] === 'family')) views.push(view('family', hgT('nav.family'), base('family', hgT('nav.family'), hgT('nav.family_sub'), (M.persons.length ? M.persons.map((p) => ({ type: 'custom:hg-person-card', entity: p })) : [hint('people')]), scroll)));
-  if (V.some((v) => v[0] === 'studio')) views.push(view('studio', hgT('nav.studio'), base('studio', hgT('nav.studio'), '', [{ type: 'custom:hg-studio-card' }], one('st'), { studio: true })));
+  if (V.some((v) => v[0] === 'studio')) views.push(view('studio', hgT('nav.studio'), base('studio', hgT('nav.studio'), '', [{ type: 'custom:hg-studio-card', area: 'st' }], one('st'), { studio: true })));
   /* przepływ energii na górze widoku Energia, gdy widać sieć i panele albo baterię (zgadywanie po nazwach) */
   /* jak karta z galerii: te same wartości startowe (najpierw panel Energia HA, najwyżej 3 s czekania) i ta sama konfiguracja */
   let ESrc = null; if (V.some((v) => v[0] === 'energia')) { try { ESrc = (await Promise.race([HGEnergyPrefs.get(hass), new Promise((ok) => setTimeout(() => ok(null), 3000))]) || {}).src || null; } catch (e) { /* brak panelu Energia */ } }

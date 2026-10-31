@@ -1306,7 +1306,12 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 :host([studio]) .un{ display:none; }
 :host([studio][mode=wide]) .tabs{ left:56u; }
 :host([studio][mode=wide]) .rail{ top:73u; bottom:19u; }
-:host([studio][mode=wide]) .panel{ left:70u; width:auto; }
+/* szyna kończy się na 56u (16+40). Kolumna 86u zostawiała pusty pas, a padding 78u i margines panelu zsuwały siatkę w dół. */
+:host([studio][mode=wide][wide-panel]) .page{ grid-template-columns:58u minmax(0,1fr); padding:73u 18u 19u 0; }
+/* wąski panel jest absolutny (right:18u, stała szerokość): left dosuwa go do szyny i width:auto rozciąga do prawej krawędzi.
+   Szeroki panel (studio ma panel.wide) stoi już w drugiej kolumnie siatki, za rynną szyny. To samo left przesuwało go jeszcze raz i ucinało prawą krawędź. */
+:host([studio][mode=wide]:not([wide-panel])) .panel{ left:70u; right:18u; width:auto; }
+:host([studio][mode=wide][wide-panel]) .panel{ position:relative; left:auto; right:auto; top:auto; bottom:auto; width:auto; max-width:100%; margin-top:0; min-height:0; align-self:stretch; }
 :host([studio][mode=phone]) .sst, :host([studio][mode=phone]) .rth{ display:none; }
 :host([mode=wide][scroll]) .more:not([hidden]){ display:flex; position:absolute; z-index:5; width:36px; height:36px; border-radius:50%; align-items:center; justify-content:center;
   color: var(--hg-chrome-fg); }

@@ -49,4 +49,7 @@ test('studio chrome is gated on cfg.studio; normal views render no chrome', () =
   const css = src.split('\n').filter((l) => /^:host\(\[studio\]/.test(l));
   assert.ok(css.length >= 5 && css.every((l) => l.startsWith(':host([studio]')), 'studio CSS is scoped to [studio]');
   assert.ok(/:host\(\[studio\]\[mode=phone\]\) \.sst/.test(src), 'rail theme/status hidden on phone');
+  assert.match(src, /:host\(\[studio\]\[mode=wide\]:not\(\[wide-panel\]\)\) \.panel\{[^}]*left:70u/, 'narrow studio panel still docks beside the rail');
+  assert.match(src, /:host\(\[studio\]\[mode=wide\]\[wide-panel\]\) \.panel\{[^}]*left:auto/, 'wide studio panel stays in its grid column');
+  assert.doesNotMatch(src, /:host\(\[studio\]\[mode=wide\]\) \.panel\{[^}]*left:70u/, 'left offset must not apply to every wide studio page');
 });

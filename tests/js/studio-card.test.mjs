@@ -128,6 +128,19 @@ test('hide, show, add (also into overrides) and remove', async () => {
   assert.ok(!HGL.data.studio.bps.md.some((i) => i.id === 'w_weather'));
 });
 
+test('a gallery card lands on the studio grid and drops editor metadata', async () => {
+  const { HGL, c } = await seeded();
+  const id = c._opAddCard({ name: 'Lista', icon: 'mdi:format-list-checks', z: 'm', card: { type: 'custom:hg-entities-card', entities: ['light.a'], nv_comp: 'entities' } });
+  const it = HGL.data.studio.items.find((i) => i.id === id);
+  assert.equal(it.type, 'card');
+  assert.deepEqual([it.w, it.h], [4, 3]);
+  assert.equal(c._cfg(it).nv_comp, undefined);
+  assert.deepEqual(c._cfg(it).entities, ['light.a']);
+  HGL.editing = true;
+  assert.match(c._gridHtml(), new RegExp('data-id="' + id + '"'));
+  assert.match(c._gridHtml(), /Lista/);
+});
+
 test('size presets and keyboard move', async () => {
   const { HGL, c } = await seeded();
   c._opSize('w_weather', 's'); let w = HGL.data.studio.items.find((i) => i.id === 'w_weather'); assert.deepEqual([w.w, w.h], [2, 2]);
