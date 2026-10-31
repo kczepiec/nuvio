@@ -12,7 +12,7 @@
   <a href="https://discord.gg/rFG9y2hFMJ"><img src="https://img.shields.io/discord/1563057427367075850?style=flat-square&logo=discord&label=Discord&color=a3e635" alt="Discord"></a>
 </p>
 
-<p align="center"><b>English</b> · <a href="README.pl.md">Polski</a> · <a href="README.fr.md">Français</a></p>
+<p align="center"><b>English</b> · <a href="README.pl.md">Polski</a> · <a href="README.fr.md">Français</a> · <a href="README.nl.md">Nederlands</a></p>
 
 <p align="center">
   <img src="docs/screenshots/demo_dashboard_dark_1440.png" alt="Nuvio home view in the dark theme" width="49%">
