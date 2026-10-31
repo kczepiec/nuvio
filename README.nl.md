@@ -28,16 +28,16 @@ Nuvio is een dashboard in glasstijl voor Home Assistant: pagina's, navigatie, ka
 - **Een dashboard dat zichzelf opbouwt.** Thuis, Kamers, Media, Camera's, Gezin en Energie verschijnen zodra je bijpassende entiteiten hebt. Ontbrekende integraties worden gewoon verborgen.
 - **Een begeleide eerste start.** Een stapsgewijze wizard stelt taal, weergaven, kamers, accentkleur en achtergrond in, met een live voorbeeld.
 - **Ter plekke bewerken.** Slepen en neerzetten, tegels verkleinen of vergroten, componenten toevoegen uit een galerij, accentkleur en achtergrond wijzigen.
-- **Veel kaarten, één stijl.** Meer dan 70 kaarten voor verlichting, klimaat, energie, media, camera's, personen en meer, elk ook los te gebruiken in een gewoon dashboard. Zie [Componenten](docs/components.md).
-- **Standaard gedeeld.** Een beheerder richt één dashboard in voor iedereen, en elke persoon kan een eigen indeling krijgen. Zie [Functiegids](docs/features.md#shared-dashboard).
-- **Wandtabletmodus.** Tien schermbeveiligingen (klok op foto, bord, minimaal, analoog, flip, aurora, nacht, sterren, woordklok en zonsopgang) met voorbeelden en een optionele pinvergrendeling. Zie [Wandtabletmodus](docs/features.md#wall-tablet-mode).
-- **Back-up van de indeling.** Exporteer en importeer de hele indeling als JSON met versiebeheer. Zie [Back-up van de indeling](docs/features.md#layout-backup).
-- **Pools, Engels en Frans.** Wissel op elk moment van taal, zonder opnieuw te laden; meer talen kunnen worden toegevoegd als één JSON-bestand. Zie [Taal](docs/configuration.md#language).
+- **Veel kaarten, één stijl.** Meer dan 70 kaarten voor verlichting, klimaat, energie, media, camera's, personen en meer, elk ook los te gebruiken in een gewoon dashboard. Zie [Componenten](docs/nl/components.md).
+- **Standaard gedeeld.** Een beheerder richt één dashboard in voor iedereen, en elke persoon kan een eigen indeling krijgen. Zie [Functiegids](docs/nl/features.md#shared-dashboard).
+- **Wandtabletmodus.** Tien schermbeveiligingen (klok op foto, bord, minimaal, analoog, flip, aurora, nacht, sterren, woordklok en zonsopgang) met voorbeelden en een optionele pinvergrendeling. Zie [Wandtabletmodus](docs/nl/features.md#wall-tablet-mode).
+- **Back-up van de indeling.** Exporteer en importeer de hele indeling als JSON met versiebeheer. Zie [Back-up van de indeling](docs/nl/features.md#layout-backup).
+- **Pools, Engels en Frans.** Wissel op elk moment van taal, zonder opnieuw te laden; meer talen kunnen worden toegevoegd als één JSON-bestand. Zie [Taal](docs/nl/configuration.md#language).
 - **Lichte en donkere modus**, geschikt voor aanraking, bruikbaar met het toetsenbord in de bewerkmodus, en rekening houdend met verminderde beweging.
 
 ## Componenten
 
-Enkele van de componenten, allemaal in dezelfde grootte weergegeven. De volledige lijst met opties staat bij [Componenten](docs/components.md).
+Enkele van de componenten, allemaal in dezelfde grootte weergegeven. De volledige lijst met opties staat bij [Componenten](docs/nl/components.md).
 
 <p align="center">
   <img src="docs/components/weather.webp" alt="Weer" width="24%">
@@ -64,7 +64,7 @@ Enkele van de componenten, allemaal in dezelfde grootte weergegeven. De volledig
 
 3. Open het dashboard. De wizard start bij je eerste bezoek.
 
-Handmatige installatie en de aanbevolen aanvullende pakketten staan in [docs/installation.md](docs/installation.md).
+Handmatige installatie en de aanbevolen aanvullende pakketten staan in [docs/nl/installation.md](docs/nl/installation.md).
 
 ## Minimale configuratie
 
@@ -76,19 +76,19 @@ strategy:
   language: nl        # pl | en | fr …
 ```
 
-Meer in [docs/configuration.md](docs/configuration.md).
+Meer in [docs/nl/configuration.md](docs/nl/configuration.md).
 
 ## Documentatie
 
 | Pagina | Wat erin staat |
 |---|---|
-| [Installatie](docs/installation.md) | HACS, handmatige installatie en aanvullende pakketten |
-| [Configuratie](docs/configuration.md) | Opties van de strategie, taal, voorinstellingen |
-| [Functiegids](docs/features.md) | Gedeeld dashboard, wandtabletmodus, back-up van de indeling |
-| [Componenten](docs/components.md) | Elke kaart, de bijbehorende entiteiten en opties |
-| [Roadmap](docs/roadmap.md) | Wat gepland is en wat klaar is |
+| [Installatie](docs/nl/installation.md) | HACS, handmatige installatie en aanvullende pakketten |
+| [Configuratie](docs/nl/configuration.md) | Opties van de strategie, taal, voorinstellingen |
+| [Functiegids](docs/nl/features.md) | Gedeeld dashboard, wandtabletmodus, back-up van de indeling |
+| [Componenten](docs/nl/components.md) | Elke kaart, de bijbehorende entiteiten en opties |
+| [Roadmap](docs/nl/roadmap.md) | Wat gepland is en wat klaar is |
 | [Wijzigingslog](CHANGELOG.nl.md) | Releasenotities van elke versie |
-| [Ontwikkeling](docs/development.md) | Build, broncode-indeling en releases |
+| [Ontwikkeling](docs/nl/development.md) | Build, broncode-indeling en releases |
 | [Bijdragen](CONTRIBUTING.md) | Bugs melden en wijzigingen insturen |
 | [Ontwerpregels](DESIGN.md) | De UI-regels die elke functie volgt |
 | [Gids voor merkgebruik](assets/brand/guide/usage-guide.md) | Hoe je het Nuvio-logo plaatst |
