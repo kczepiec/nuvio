@@ -4,6 +4,9 @@
 
 All notable changes to Nuvio are listed here, newest first. Versions follow [semantic versioning](https://semver.org). The Polish changelog is in [CHANGELOG.pl.md](CHANGELOG.pl.md).
 
+### Unreleased
+- Added: the header title and subtitle can show a live entity state with `{state:sensor.your_entity}`, for example a washer's status. The line disappears when the state is empty, `off`, `unavailable` or `unknown`, and the header updates when the entity changes.
+
 ### 2.30.2
 - Fixed: the **reload pill** no longer shows after an update when the running build is already the newest one.
 

@@ -4,6 +4,9 @@
 
 Tutaj zapisane są wszystkie istotne zmiany w Nuvio, od najnowszych. Wersje zgodne z [semantycznym wersjonowaniem](https://semver.org). Angielska lista zmian jest w [CHANGELOG.md](CHANGELOG.md).
 
+### Unreleased
+- Dodano: tytuł i podtytuł nagłówka mogą pokazywać stan encji na żywo wpisem `{state:sensor.twoja_encja}`, np. status pralki. Linia znika, gdy stan jest pusty, `off`, `unavailable` lub `unknown`, a nagłówek odświeża się przy zmianie encji.
+
 ### 2.30.2
 - Naprawiono: **pasek przeładowania** nie pojawia się już po aktualizacji, gdy działająca wersja jest najnowsza.
 
