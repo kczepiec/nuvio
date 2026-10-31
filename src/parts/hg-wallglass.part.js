@@ -4,7 +4,7 @@
    Zegar, data, napis wybudzania i podpis „Rodzina” to zwykły tekst bez tła (DESIGN.md); 
    Obrazy 3D: nuvio-3d-*.webp w dist (Fluent Emoji 3D, Microsoft, licencja MIT, dist/nuvio-3d-LICENSE.txt). Kolory przez K() i '#' + '…': tokenizer motywu ich nie zmienia. */
 const HG_GL_HEX = (s) => '#' + s;
-const HG_GL_IMG = ['sun', 'partly', 'cloud', 'rain', 'storm', 'snow', 'fog', 'moon', 'wind', 'camera', 'thermo', 'car', 'plug', 'bolt', 'battery', 'bulb', 'drop', 'fire', 'hotspring', 'sparkles', 'person', 'music', 'house', 'speaker', 'gauge', 'snowflake'];
+const HG_GL_IMG = ['sun', 'partly', 'cloud', 'rain', 'storm', 'snow', 'fog', 'moon', 'wind'];
 const HG_GL_WX = { 'clear-night': 'moon', cloudy: 'cloud', exceptional: 'storm', fog: 'fog', hail: 'snow', lightning: 'storm', 'lightning-rainy': 'storm', partlycloudy: 'partly', pouring: 'rain', rainy: 'rain', snowy: 'snow', 'snowy-rainy': 'snow', sunny: 'sun', windy: 'wind', 'windy-variant': 'wind' };
 const HG_GL_SS = `
 .ng{ position:absolute; inset:0; overflow:hidden; color:${K(255,255,255,1)}; font-family:'DM Sans','HG DM Sans',system-ui,sans-serif; --u:min(calc(100vw / 1280), calc(100vh / 680)); --rad:24; }
