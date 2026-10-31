@@ -4,6 +4,9 @@
 
 Toutes les modifications notables de Nuvio sont listées ici, des plus récentes aux plus anciennes. Les versions suivent le [versionnage sémantique](https://semver.org). Le journal des modifications en anglais se trouve dans [CHANGELOG.md](CHANGELOG.md), celui en polonais dans [CHANGELOG.pl.md](CHANGELOG.pl.md) et celui en néerlandais dans [CHANGELOG.nl.md](CHANGELOG.nl.md).
 
+### Unreleased
+- Ajouté : le titre et le sous-titre de l’en-tête peuvent afficher l’état d’une entité en direct avec `{state:sensor.votre_entite}`, par exemple l’état d’un lave-linge. La ligne disparaît quand l’état est vide, `off`, `unavailable` ou `unknown`, et l’en-tête se met à jour quand l’entité change.
+
 ### 2.30.2
 - Corrigé : la **pastille de rechargement** ne s’affiche plus après une mise à jour lorsque la version exécutée est déjà la plus récente.
 

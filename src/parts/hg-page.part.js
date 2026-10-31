@@ -209,6 +209,7 @@ class HGPage extends HTMLElement {
     if (!old || old.user !== h.user || w.some((e) => old.states[e] !== h.states[e])) { this._paintTop(); this._paintHub(); if (this._bdgEl) this._paintBadges(); }
     if (this._fuelEl && (!old || this._fuelEnts().some((e) => old.states[e] !== h.states[e]))) this._paintFuel();
     if (this._config.room_head && this._built) this._paintHead();
+    else if (this._built && (!old || this._headEnts().some((e) => old.states[e] !== h.states[e]))) this._paintHead();
   }
   _watch() {
     if (this._w) return this._w;
@@ -646,7 +647,11 @@ class HGPage extends HTMLElement {
   _headPick(hd, k, def, room) { const md = this.getAttribute('mode'), ui = this._userInfo();
     const raw = String((md === 'phone' && hd[k + 'm']) || (md === 'tablet' && hd[k + 't']) || hd[k] || def || '');
     if (/\{(time|date)\}/.test(raw)) this._headClk = true;
-    return hgClockFill(raw.replace(/\{name\}/g, ui.first || '').replace(/\{room\}/g, room || ''), this._hass); }
+    return hgClockFill(raw.replace(/\{name\}/g, ui.first || '').replace(/\{room\}/g, room || '').replace(/\{state:([a-z0-9_.]+)\}/g, (m, id) => this._headState(id)), this._hass); }
+  /* {state:encja} w tytule / podtytule: stan encji; pusty, unavailable, unknown lub off -> '' (podtytuł z pustym stanem znika) */
+  _headState(id) { const s = this._hass && this._hass.states[id], v = s ? s.state : ''; if (!v || ['unavailable', 'unknown', 'off'].includes(v)) { this._headStateEmpty = true; return ''; } return v; }
+  /* encje ze {state:...} w nagłówku widoku (odświeżanie nagłówka przy zmianie stanu) */
+  _headEnts() { const hd = this._headConf(); return [...new Set(Object.values(hd).filter((v) => typeof v === 'string').flatMap((v) => [...v.matchAll(/\{state:([a-z0-9_.]+)\}/g)].map((m) => m[1])))]; }
   /* zegar w nagłówku: przerysowanie na początku każdej minuty, tylko gdy tytuł albo podtytuł ma {time} / {date} */
   /* ?nuvio_settings w adresie: otwiera Wygląd (tylko dla osób z prawem edycji, nie na widoku zablokowanym PIN-em); parametr usuwany z adresu */
   _navParam() { let q; try { q = new URLSearchParams(location.search); } catch (e) { return; } if (!q.has('nuvio_settings')) return;
@@ -663,8 +668,9 @@ class HGPage extends HTMLElement {
     const hd = this._headConf();
     const pick = (k, def) => this._headPick(hd, k, def);
     const ttl = pick('t', c.title ?? hgT('common.welcome', { name: '{name}' })), hic = /^mdi:[a-z0-9-]+$/.test(hd.i || '') ? H.icon(hd.i, 'hdi') : '';
+    this._headStateEmpty = false; const sub = pick('s', c.subtitle ?? hgT('page.default_subtitle'));
     this._headVis(hd);
-    this._headEl.innerHTML = `<h1 title="${H.esc(ttl)}">${hic}${H.esc(ttl)}</h1>${hd.nos ? '' : `<p>${H.esc(pick('s', c.subtitle ?? hgT('page.default_subtitle')))}</p>`}<div class="bdgs" role="list" aria-label="${hgT('lookr.badge')}" hidden></div>${c.fuel || c.weather ? `<div class="hrow">${c.weather ? '<div class="wxs"></div>' : ''}${c.fuel ? `<div class="fuel" role="list" aria-label="${hgT('common.fuel_prices')}"></div>` : ''}</div>` : ''}${c.weather ? '<div class="wxh"></div>' : ''}`;
+    this._headEl.innerHTML = `<h1 title="${H.esc(ttl)}">${hic}${H.esc(ttl)}</h1>${hd.nos || (!sub && this._headStateEmpty) ? '' : `<p>${H.esc(sub)}</p>`}<div class="bdgs" role="list" aria-label="${hgT('lookr.badge')}" hidden></div>${c.fuel || c.weather ? `<div class="hrow">${c.weather ? '<div class="wxs"></div>' : ''}${c.fuel ? `<div class="fuel" role="list" aria-label="${hgT('common.fuel_prices')}"></div>` : ''}</div>` : ''}${c.weather ? '<div class="wxh"></div>' : ''}`;
     this._fuelEl = this._headEl.querySelector('.fuel'); this._paintFuel(true);
     this._bdgEl = this._headEl.querySelector('.bdgs'); this._paintBadges(true);
     this._placeWx();

@@ -4,6 +4,9 @@
 
 Alle belangrijke wijzigingen in Nuvio staan hier, de nieuwste eerst. Versies volgen [semantic versioning](https://semver.org). De volledige Engelse lijst staat in [CHANGELOG.md](CHANGELOG.md); het Poolse en Franse wijzigingslogboek staan in [CHANGELOG.pl.md](CHANGELOG.pl.md) en [CHANGELOG.fr.md](CHANGELOG.fr.md).
 
+### Unreleased
+- Toegevoegd: de titel en ondertitel van de kop kunnen de actuele status van een entiteit tonen met `{state:sensor.jouw_entiteit}`, bijvoorbeeld de status van een wasmachine. De regel verdwijnt als de status leeg is, `off`, `unavailable` of `unknown`, en de kop werkt bij wanneer de entiteit verandert.
+
 ### 2.30.2
 - Opgelost: de **herlaadpil** verschijnt na een update niet meer als de draaiende build al de nieuwste is.
 
