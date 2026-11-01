@@ -652,22 +652,20 @@ class HGPage extends HTMLElement {
     this._headT = setTimeout(() => { this._headT = null; if (this.isConnected && !document.hidden) this._paintHead(); else this._headTick(); }, 60500 - (Date.now() % 60000)); }
   _headVis(hd) { this._headEl.classList.toggle('hd-off', !!hd.hide); if (hd.hide) this._headEl.dataset.off = hgT('page.header_hidden'); else delete this._headEl.dataset.off;
     const md = this.getAttribute('mode'), sz = (hd.sz || {})[md] || ''; if (sz && sz !== 'm') this._headEl.dataset.sz = sz; else delete this._headEl.dataset.sz; }
-  /* Studio, widok Pokoje: tytuł + podtytuł z ikoną domu i przełącznik siatka / lista (aria-pressed) */
+  /* Studio, widok Pokoje: przełącznik siatka / lista w pasku górnym (aria-pressed); nagłówek widoku ukryty jak na pozostałych widokach */
   _roomsHead() {
     const cur = typeof hgRoomsLayout === 'function' ? hgRoomsLayout() : 'grid';
     const b = (m, ic, l) => `<button type="button" class="rvb${cur === m ? ' on' : ''}" data-act="roomsview" data-m="${m}" aria-pressed="${cur === m}" aria-label="${H.esc(l)}" title="${H.esc(l)}">${H.icon(ic)}</button>`;
-    return `<div class="rsh">${H.icon('mdi:home-outline', 'rshi')}<div class="rst"><h1>${H.esc(hgT('nav.rooms'))}</h1><p>${H.esc(hgT('nav.rooms_head_sub'))}</p></div>`
-      + `<div class="rvt" role="group" aria-label="${H.esc(hgT('page.rooms_view'))}">${b('grid', 'mdi:view-grid-outline', hgT('page.rooms_view_grid'))}${b('list', 'mdi:format-list-bulleted', hgT('page.rooms_view_list'))}</div></div>`;
+    return `<div class="rvt" role="group" aria-label="${H.esc(hgT('page.rooms_view'))}">${b('grid', 'mdi:view-grid-outline', hgT('page.rooms_view_grid'))}${b('list', 'mdi:format-list-bulleted', hgT('page.rooms_view_list'))}</div>`;
   }
   _roomsViewSet(m) {
-    if (typeof hgRoomsLayout !== 'function') return; hgRoomsLayout(m === 'list' ? 'list' : 'grid'); this._paintHead();
+    if (typeof hgRoomsLayout !== 'function') return; hgRoomsLayout(m === 'list' ? 'list' : 'grid'); if (this._paintTop) this._paintTop(true);
     for (const el of this._cards || []) if (el._lay) { el._lh = null; el._lay(); }
-    const n = this._headEl && this._headEl.querySelector('.rvb.on'); if (n && n.focus) n.focus();
+    const n = this.shadowRoot && this.shadowRoot.querySelector('.rvb.on'); if (n && n.focus) n.focus();
   }
   _paintHead() {
     const c = this._config; if (!this._hass) return; this._headClk = false; queueMicrotask(() => this._headTick());
     if (c.room_head) { const hd = this._headConf(); this._headVis(hd); this._bdgEl = null; this._setHTML(this._headEl, this._roomHead(hd)); if (this._editing && this._eHeadBtn) this._eHeadBtn(); this._railClear(); return; }
-    if (c.view === 'rooms' && this._studioUI(c)) { this._headVis({}); this._bdgEl = null; this._setHTML(this._headEl, this._roomsHead()); return; }
     const hd = this._headConf();
     const pick = (k, def) => this._headPick(hd, k, def);
     const ttl = pick('t', c.title ?? hgT('common.welcome', { name: '{name}' })), hic = /^mdi:[a-z0-9-]+$/.test(hd.i || '') ? H.icon(hd.i, 'hdi') : '';
@@ -736,7 +734,7 @@ class HGPage extends HTMLElement {
     const tabs = c.tabs.map((t) => ({ ...t, act: path === t.path || (t.match && hgMatch(t.match, path)), b: badgeOf(t) }));
     /* cheap signature: primitives compared with === instead of JSON.stringify over the whole user object, which ran on every state update */
     const ps0 = ui.person && H.st(this._hass, ui.person), sig = [!!this._editing, this._canEdit(), nCount, ui.person || '', ui.first || '', this._menuOpen,
-      ps0 ? ps0.attributes.entity_picture || '' : '', !!(window.HGAssistUI && HGAssistUI.get().button), tabs.map((t) => (t.act ? 'a' : '_') + t.b).join('|'), ...(this._studioUI(c) ? [Math.floor(Date.now() / 6e4), ...['wifi', 'bt'].map((k) => { const e = this._stDev()[k], s = e && this._hass.states[e]; return s ? s.state : ''; })] : [])];
+      ps0 ? ps0.attributes.entity_picture || '' : '', !!(window.HGAssistUI && HGAssistUI.get().button), tabs.map((t) => (t.act ? 'a' : '_') + t.b).join('|'), ...(this._studioUI(c) ? [Math.floor(Date.now() / 6e4), c.view === 'rooms' && typeof hgRoomsLayout === 'function' ? hgRoomsLayout() : '', ...['wifi', 'bt'].map((k) => { const e = this._stDev()[k], s = e && this._hass.states[e]; return s ? s.state : ''; })] : [])];
     /* _sigTop bywa null (reset przy dotyku/edycji/rebuildzie) - bez guardu pierwsze malowanie rzuca TypeError */
     if (!force && this._sigTop && sig.length === this._sigTop.length && sig.every((v, i) => v === this._sigTop[i])) return; this._sigTop = sig;
     const ps = ui.person && H.st(this._hass, ui.person);
@@ -747,6 +745,7 @@ class HGPage extends HTMLElement {
       <div class="right">
         ${this._topQuickActs(nCount, this._studioUI(c))}
         ${this._studioUI(c) ? this._stChrome() : ''}
+        ${c.view === 'rooms' && this._studioUI(c) ? this._roomsHead() : ''}
         <div class="user">
           <button class="uin" data-act="profile" aria-label="${hgT('page.profile')}" title="${hgT('page.profile')}">${av}<span class="un"><b>${H.esc(ui.full)}</b><small>${H.esc(ui.handle)}</small></span></button>
           <button class="chev" data-act="menu" aria-haspopup="menu" aria-expanded="${!!this._menuOpen}" aria-label="${this._updDot() ? hgT('page.menu_update_available') : hgT('page.menu')}" title="${hgT('page.menu')}">${H.icon('mdi:chevron-down')}${this._updDot() ? '<i class="udot" aria-hidden="true"></i>' : ''}</button>
@@ -1278,16 +1277,9 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 .sst{ display:flex; align-items:center; gap:12px; margin-right:4px; font-size:12u; font-weight:500; white-space:nowrap; font-variant-numeric:tabular-nums; } .sst .si{ display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; padding:0; border:0; background:none; color:inherit; cursor:pointer; } .sst .si ha-icon, .sst .si svg{ width:18px; height:18px; --mdc-icon-size:18px; }
 .rth{ margin-top:auto; }
 :host([studio]) .head{ display:none; }
-:host([studio]) .head:has(.rsh){ display:block; }
-:host([studio][mode=wide]) .head:has(.rsh){ width:auto; justify-self:stretch; max-width:none; margin:0 0 28px; }
-:host([studio][mode=tablet]) .head:has(.rsh), :host([studio][mode=phone]) .head:has(.rsh){ margin-bottom:16px; }
-.head .rsh{ display:flex; align-items:center; gap:16px; width:100%; } .head .rshi{ width:40px; height:40px; flex:none; align-self:center; display:inline-flex; --mdc-icon-size:40px; color:var(--hg-chrome-fg, currentColor); }
-.head .rst{ flex:1; min-width:0; } .head .rsh h1{ font-size:36px; line-height:1.15; margin:0; font-weight:600; display:block; } .head .rsh p{ font-size:15px; line-height:1.3; opacity:.7; margin:4px 0 0; display:block; }
-.head .rsh .rvt{ align-self:center; flex:none; }
-.head .rvt{ display:inline-flex; gap:4px; padding:4px; border-radius:16px; background:rgba(255,255,255,.12); backdrop-filter:blur(38px); -webkit-backdrop-filter:blur(38px); }
-.head .rvb{ all:unset; cursor:pointer; box-sizing:border-box; width:40px; height:40px; border-radius:12px; display:inline-grid; place-items:center; color:inherit; } .head .rvb ha-icon{ width:22px; height:22px; --mdc-icon-size:22px; }
-.head .rvb.on{ background:var(--hg-accent); color:var(--hg-on-accent, #fff); } .head .rvb:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
-:host([studio][mode=phone]) .head .rsh h1{ font-size:26px; } :host([studio][mode=phone]) .head .rshi{ width:30px; height:30px; }
+.rvt{ display:inline-flex; gap:2px; padding:3px; border-radius:14px; background:rgba(255,255,255,.12); backdrop-filter:blur(38px); -webkit-backdrop-filter:blur(38px); }
+.rvb{ all:unset; cursor:pointer; box-sizing:border-box; width:32px; height:32px; border-radius:11px; display:inline-grid; place-items:center; color:inherit; } .rvb ha-icon{ width:18px; height:18px; --mdc-icon-size:18px; }
+.rvb.on{ background:var(--hg-accent); color:var(--hg-on-accent, #fff); } .rvb:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 :host([studio]) .brand > span:not(.logo){ display:none; }
 :host([studio][mode=wide]) .tabs, :host([studio][mode=tablet]) .tabs{ display:none !important; }
 :host([studio]) .back{ display:none; }

@@ -1,4 +1,4 @@
-/* Widok Pokoje (Studio): nagłówek z tytułem/podtytułem, przełącznik siatka/lista, layout:'list' w configu kafla, seed 3 kolumny. */
+/* Widok Pokoje (Studio): przełącznik siatka/lista bez nagłówka, layout:'list' w configu kafla, seed 3 kolumny. */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -20,14 +20,14 @@ const lay = /const hgRoomsLayout = .*\n/.exec(seedSrc)[0];
 function head() {
   const ctx = { console, localStorage: ls, H: { esc: String, icon: (i) => `<ha-icon icon="${i}"></ha-icon>` }, hgT: (k) => k };
   vm.createContext(ctx);
-  vm.runInContext(lay.replace('const hgRoomsLayout', 'globalThis.hgRoomsLayout') + '\nclass P { constructor(){ this.n = 0; this._cards = []; }\n' + method(page, '_roomsHead') + '\n' + method(page, '_roomsViewSet') + '\n_paintHead(){ this.n++; }\n}\nglobalThis.P = P;', ctx);
+  vm.runInContext(lay.replace('const hgRoomsLayout', 'globalThis.hgRoomsLayout') + '\nclass P { constructor(){ this.n = 0; this._cards = []; }\n' + method(page, '_roomsHead') + '\n' + method(page, '_roomsViewSet') + '\n_paintTop(){ this.n++; }\n}\nglobalThis.P = P;', ctx);
   return ctx;
 }
 
-test('nagłówek Pokoje: tytuł, podtytuł, ikona domu, przełącznik z aria-pressed', () => {
+test('Pokoje: przełącznik siatka/lista bez tytułu nagłówka', () => {
   delete store['home-glass:rooms-layout'];
   const { P } = head(), h = new P()._roomsHead();
-  assert.match(h, /mdi:home-outline/); assert.match(h, /<h1>nav\.rooms<\/h1>/); assert.match(h, /<p>nav\.rooms_head_sub<\/p>/);
+  assert.doesNotMatch(h, /<h1>|rooms_head_sub|mdi:home-outline/);
   assert.match(h, /data-m="grid"[^>]*aria-pressed="true"|aria-pressed="true"[^>]*data-m="grid"/);
   assert.match(h, /mdi:view-grid-outline/); assert.match(h, /mdi:format-list-bulleted/);
 });
