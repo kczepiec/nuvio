@@ -2535,7 +2535,6 @@
     "calendar": "Agenda",
     "cams": "Camera's",
     "cams_sub": "Tik voor live beeld",
-    "climate": "Klimaat",
     "discord": "Discord",
     "energy": "Energie",
     "energy_sub": "Live vermogen",
@@ -2553,7 +2552,6 @@
     "na_req": "Geen entiteiten, vereist {x}",
     "outside": "Buiten",
     "panel": "Thuis",
-    "power": "Vermogen nu",
     "profile": "Profiel",
     "req_cal": "een agenda (calendar)",
     "req_cams": "een camera (camera)",
@@ -2565,9 +2563,7 @@
     "room": "Kamer",
     "rooms": "Kamers",
     "rooms_sub": "Elke kamer binnen handbereik",
-    "scenes": "Scènes",
-    "settings": "Instellingen",
-    "studio": "Studio"
+    "settings": "Instellingen"
   },
   "oss": {
     "cv": {

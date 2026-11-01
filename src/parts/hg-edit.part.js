@@ -13,7 +13,7 @@ const HGL = window.__hgL || (window.__hgL = {
   set(sc, v) { const o = { order: v.order || [], hidden: v.hidden || [], size: v.size || {}, added: v.added || [], names: v.names || {}, conf: v.conf || {} };
     for (const k of Object.keys(o.conf)) if (!o.conf[k] || !Object.keys(o.conf[k]).length) delete o.conf[k];
     if (!o.order.length && !o.hidden.length && !Object.keys(o.size).length && !o.added.length && !Object.keys(o.names).length && !Object.keys(o.conf).length) delete this.data.s[sc]; else this.data.s[sc] = o; },
-  SECS: ['app', 'wiz', 'pw', 'wall', 'assist', 'studio'],
+  SECS: ['app', 'wiz', 'pw', 'wall', 'assist', 'studio', 'studios'],
   /* zrzut stanu serwera (po load/save) – przy zapisie wysyłamy tylko to, co zmieniło się względem niego */
   _snap(v) { const x = v || { s: {} }, o = { s: Object.fromEntries(Object.entries(x.s || {}).map(([k, y]) => [k, JSON.stringify(y)])) }; for (const k of this.SECS) o[k] = JSON.stringify(x[k] || null); return o; },
   /* wspólny dashboard: edycja tylko dla admina; własny układ: każdy edytuje swój */
@@ -1278,7 +1278,7 @@ const HG_EDIT = {
     clearInterval(this._eGh); this._eGh = setInterval(() => { if (!this._editing) return clearInterval(this._eGh); if (this._drag && this._drag.on) return; this._eGhostSweep(); this._eDecorate(); }, 700);
   },
   _eStudioEditSync(on) {
-    if (!this._config || !this._config.studio) return;
+    if (!this._studioGrid || !this._studioGrid()) return;
     for (const c of this._cards || []) { try { if (c._lay) c._lay(); else if (c.rerender) c.rerender(); } catch (e) { /* */ } }
     if (on) requestAnimationFrame(() => { for (const c of this._cards || []) { try { if (c._scaleSoon) c._scaleSoon(); } catch (e) { /* */ } } });
   },
@@ -1311,7 +1311,7 @@ const HG_EDIT = {
     if (!this._editing) return;
     HG_FREEZE.on = true;
     /* Studio ma własną edycję widżetów. Zwykłe uchwyty (kiwanie, X, „Dodaj”) siedzą na całej siatce i ją ściskają. */
-    if (this._config && this._config.studio) { this._eBar(); return; }
+    if (this._studioGrid && this._studioGrid()) { this._eBar(); return; }
     const lite = this.hasAttribute('lite');
     for (const ct of this._eConts()) {
       if (!ct.root.querySelector('style[data-hge]')) { const st = document.createElement('style'); st.dataset.hge = '1'; st.textContent = HGE_CSS; ct.root.appendChild(st); }
@@ -1345,7 +1345,7 @@ const HG_EDIT = {
   _eBar() {
     if (!this._editing) return;
     let b = this._eBarEl; if (b && !b.isConnected) this.shadowRoot.appendChild(b); if (!b) { b = this._eBarEl = document.createElement('div'); b.className = 'hge-bar'; b.setAttribute('role', 'toolbar'); b.setAttribute('aria-label', hgT('edit.edit_layout')); this.shadowRoot.appendChild(b); }
-    const nh = this._eHidden().length, st = !!(this._config && this._config.studio);
+    const nh = this._eHidden().length, st = !!(this._studioGrid && this._studioGrid());
     b.innerHTML = `<span class="hgt">${H.icon('mdi:pencil')}<b>${hgT('edit.edit_layout')}</b></span>`
       + (st ? `<button data-hge="stadd">${H.icon('mdi:plus')}<span>${hgT('edit.add_component')}</span></button>` : '')
       + `<button data-hge="hidden" ${nh ? '' : 'disabled'}>${H.icon('mdi:eye-outline')}<span>${hgT('edit.restore_hidden')}${nh ? ` · ${nh}` : ''}</span></button>

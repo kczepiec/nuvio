@@ -1,4 +1,4 @@
-/* Studio view: opt-in view in hgGenerate, first-layout seed from the home model, seed-once rule. */
+/* Panel (dashboard): hg-studio-card in hgGenerate, per-view layout seed (studios.dashboard), seed-once rule. */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadParts, fixture } from './harness.mjs';
@@ -13,7 +13,7 @@ function mk() {
     sessionStorage: { getItem: () => null, setItem() {}, removeItem() {} },
     HTMLElement: El, customElements: { get() {}, define() {} }, matchMedia: stub(), requestAnimationFrame: () => 0, setInterval: () => 0, MutationObserver: class { observe() {} },
     CustomEvent, Event, fetch: () => Promise.reject(new Error('offline')), getComputedStyle: stub(), hgFlowDef: () => ({}), hgFlowCfg: () => ({}) };
-  return loadParts(['hg-i18n.part.js', 'hg-select.part.js', 'hg-oss.part.js', 'hg-core.part.js', 'shared/studio-widgets.part.js'], g, ['hgGenerate', 'hgViewHas', 'hgCdn', 'HG_STUDIO_W', 'hgStudioSeed', 'hgStudioEnsure'],
+  return loadParts(['hg-i18n.part.js', 'hg-select.part.js', 'hg-oss.part.js', 'hg-core.part.js', 'shared/studio-widgets.part.js', 'shared/grid-engine.part.js'], g, ['hgGenerate', 'hgViewHas', 'hgCdn', 'HG_STUDIO_W', 'hgStudioSeed', 'hgStudioEnsure', 'hgStudioGet'],
     { EN, MANIFEST: [{ code: 'en', name: 'English', locale: 'en-GB', file: null }], text: [['import.meta.url', 'undefined']] });
 }
 const st = (state = 'on', attributes = {}) => ({ state, attributes });
@@ -22,24 +22,41 @@ const hass = (extra = {}) => ({ config: { location_name: 'Dom' }, user: { id: 'u
     'camera.front': st('idle'), 'camera.back': st('idle'), 'sensor.pv': st('1200', { device_class: 'power', unit_of_measurement: 'W' }), 'scene.evening': st('unknown', { friendly_name: 'Evening' }), ...extra } });
 const model = (h) => ({ sun: 'sun.sun', weather: 'weather.home', climate: ['climate.salon'], persons: ['person.ola'], media: ['media_player.tv'], cams: ['camera.front', 'camera.back'], power: ['sensor.pv'], scenes: ['scene.evening'], all: Object.keys(h.states) });
 
-test('hgGenerate: no studio view unless wiz.views lists it', async () => {
+const stPage = (pg) => pg && pg.cards && pg.cards[0] && pg.cards[0].type === 'custom:hg-studio-card';
+
+test('hgGenerate: every view uses hg-studio-card; no separate studio tab', async () => {
   const { hgGenerate } = mk(), h = hass();
-  const a = await hgGenerate(h, { _wiz: { views: ['dashboard', 'rooms'] } });
+  const a = await hgGenerate(h, { _wiz: { views: ['dashboard', 'rooms', 'energia', 'multimedia'] } });
   assert.ok(!a.views.some((v) => v.path === 'studio'));
+  for (const path of ['dashboard', 'rooms', 'energia', 'multimedia']) {
+    const pg = a.views.find((x) => x.path === path).cards[0];
+    assert.ok(stPage(pg), path);
+    assert.equal(pg.view, path);
+  }
+  const pokoj = a.views.find((x) => x.path === 'pokoj').cards[0];
+  assert.ok(stPage(pokoj));
+  assert.equal(pokoj.room_head, true);
+  assert.ok(!pokoj.cards.some((c) => c.type === 'custom:hg-power-card'), 'no legacy energia cards in lovelace');
   const d = await hgGenerate(h, { _wiz: {} });
-  assert.ok(!d.views.some((v) => v.path === 'studio'), 'off by default');
-  const b = await hgGenerate(h, { _wiz: { views: ['dashboard', 'studio'] } });
-  const v = b.views.find((x) => x.path === 'studio');
-  assert.ok(v);
-  assert.equal(v.cards[0].view, 'studio');
-  assert.equal(v.cards[0].studio, true);
-  assert.deepEqual(v.cards[0].cards, [{ type: 'custom:hg-studio-card', area: 'st' }]);
-  assert.ok(b.views.find((x) => x.path === 'dashboard').cards[0].tabs.some((t) => /studio/.test(t.path)));
+  assert.ok(!d.views.some((v) => v.path === 'studio'));
 });
 
-test('hgViewHas lists studio as available; hgCdn accepts beta versions', () => {
+test('hgStudioSeed: per-view first layouts', () => {
+  const { hgStudioSeed } = mk(), h = hass(), M = model(h);
+  const en = Object.fromEntries(hgStudioSeed(M, h, 'energia').items.map((i) => [i.id, i.type]));
+  assert.equal(en.w_energy, 'energy');
+  assert.equal(en.w_scenes, 'scenes');
+  const rooms = hgStudioSeed(M, h, 'rooms').items[0];
+  assert.equal(rooms.type, 'card');
+  assert.equal(rooms.settings.card.type, 'custom:hg-areas-card');
+  const fam = hgStudioSeed(M, h, 'family').items;
+  assert.ok(fam.some((i) => i.settings && i.settings.card && i.settings.card.type === 'custom:hg-person-card'));
+});
+
+test('hgViewHas no longer lists studio as a separate view', () => {
   const { hgViewHas } = mk();
-  assert.equal(hgViewHas({ media: [], cams: [], persons: [], power: [] }).studio, true);
+  assert.equal(hgViewHas({ media: [], cams: [], persons: [], power: [] }).studio, undefined);
+  assert.equal(hgViewHas({ media: [], cams: [], persons: [], power: [] }).dashboard, true);
 });
 
 test('seed: sizes, positions and entities from the model; missing entity gives hidden widget', () => {
@@ -68,17 +85,18 @@ test('widget cfg builds card config', () => {
   assert.deepEqual([...HG_STUDIO_W.cameras.cfg('camera.front', {}).entities], ['camera.front']);
 });
 
-test('hgStudioEnsure seeds once, never replaces, skips when not loaded or failed', () => {
-  const { hgStudioEnsure } = mk(), h = hass(), M = model(h);
+test('hgStudioEnsure seeds once per view into studios, never replaces, skips when not loaded or failed', () => {
+  const { hgStudioEnsure, hgStudioGet } = mk(), h = hass(), M = model(h);
   const L = { loaded: true, failed: false, data: { s: {} } };
-  assert.equal(hgStudioEnsure(L, M, h), true);
-  assert.ok(L.data.studio && L.data.studio.items.length === 8);
-  const keep = L.data.studio; keep.custom = 1;
-  assert.equal(hgStudioEnsure(L, M, h), false);
-  assert.equal(L.data.studio, keep);
+  assert.equal(hgStudioEnsure(L, M, h, 'dashboard'), true);
+  const root = hgStudioGet(L.data, 'dashboard');
+  assert.ok(root && root.items.length === 8);
+  root.custom = 1;
+  assert.equal(hgStudioEnsure(L, M, h, 'dashboard'), false);
+  assert.equal(hgStudioGet(L.data, 'dashboard'), root);
   const nl = { loaded: false, failed: false, data: { s: {} } }, fl = { loaded: true, failed: true, data: { s: {} } };
-  assert.equal(hgStudioEnsure(nl, M, h), false); assert.equal(nl.data.studio, undefined);
-  assert.equal(hgStudioEnsure(fl, M, h), false); assert.equal(fl.data.studio, undefined);
+  assert.equal(hgStudioEnsure(nl, M, h, 'dashboard'), false); assert.equal(hgStudioGet(nl.data, 'dashboard'), null);
+  assert.equal(hgStudioEnsure(fl, M, h, 'dashboard'), false); assert.equal(hgStudioGet(fl.data, 'dashboard'), null);
 });
 
 test('hgCdn version regex accepts X.Y.Z and X.Y.Z-beta.N only', async () => {

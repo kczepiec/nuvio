@@ -2535,7 +2535,6 @@
     "calendar": "Calendar",
     "cams": "Cameras",
     "cams_sub": "Tap for live view",
-    "climate": "Climate",
     "discord": "Discord",
     "energy": "Energy",
     "energy_sub": "Live power",
@@ -2553,7 +2552,6 @@
     "na_req": "No entities, needs {x}",
     "outside": "Outside",
     "panel": "Home",
-    "power": "Power now",
     "profile": "Profile",
     "req_cal": "a calendar (calendar)",
     "req_cams": "a camera (camera)",
@@ -2565,9 +2563,7 @@
     "room": "Room",
     "rooms": "Rooms",
     "rooms_sub": "Every room at your fingertips",
-    "scenes": "Scenes",
-    "settings": "Settings",
-    "studio": "Studio"
+    "settings": "Settings"
   },
   "oss": {
     "cv": {

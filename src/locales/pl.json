@@ -2613,7 +2613,6 @@
     "calendar": "Kalendarz",
     "cams": "Kamery",
     "cams_sub": "Podgląd na żywo po dotknięciu",
-    "climate": "Klimatyzacja",
     "discord": "Discord",
     "energy": "Energia",
     "energy_sub": "Moc na żywo",
@@ -2631,7 +2630,6 @@
     "na_req": "Brak encji, wymaga {x}",
     "outside": "Na zewnątrz",
     "panel": "Panel",
-    "power": "Moc teraz",
     "profile": "Profil",
     "req_cal": "kalendarza (calendar)",
     "req_cams": "kamery (camera)",
@@ -2643,9 +2641,7 @@
     "room": "Pokój",
     "rooms": "Pokoje",
     "rooms_sub": "Każdy pokój w zasięgu ręki",
-    "scenes": "Sceny",
-    "settings": "Ustawienia",
-    "studio": "Studio"
+    "settings": "Ustawienia"
   },
   "oss": {
     "cv": {

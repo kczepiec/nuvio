@@ -274,7 +274,7 @@ class HGPage extends HTMLElement {
     this.toggleAttribute('lite', hgLite());
     this._onPerf = this._onPerf || (() => { const l = hgLite(); if (l !== this.hasAttribute('lite')) { this.toggleAttribute('lite', l); if (this._built && !this._editing) this._build(); } });
     window.addEventListener('hg-perf', this._onPerf);
-    this._onScheme = this._onScheme || (() => { this._syncScheme(); if (this._config && this._config.studio) this._paintRail(true); });
+    this._onScheme = this._onScheme || (() => { this._syncScheme(); if (this._studioUI()) this._paintRail(true); });
     window.addEventListener('hg-scheme', this._onScheme);
     this._syncScheme();
     this._ro = new ResizeObserver(() => this._layout()); this._ro.observe(this);
@@ -491,7 +491,7 @@ class HGPage extends HTMLElement {
       w.appendChild(el); this._panelEl.appendChild(w);
       this._cards.push(el); this._cardWraps.push(w);
     }
-    this.toggleAttribute('norail', !(c.rail || []).length); this.toggleAttribute('studio', !!c.studio); this._stIds = null; this._navParam();
+    this.toggleAttribute('norail', !(c.rail || []).length); this.toggleAttribute('studio', this._studioUI(c)); this._stIds = null; this._navParam();
     this._built = true; this._building = false; this._lsig = this._layoutSig();
     if (window.HGVLock) HGVLock.guard(this);   /* blokada widoku PIN-em (#17) */
     if (this._rebuild || this._config !== c) { this._rebuild = false; return this._build(); }   /* setConfig w trakcie pierwszej (asynchronicznej) budowy */
@@ -733,14 +733,18 @@ class HGPage extends HTMLElement {
     const l = kind === 'bt' ? hgT('page.studio_bluetooth') : hgT('page.studio_wifi');
     return `<button type="button" class="si" data-act="stent" data-e="${H.esc(id)}" aria-label="${H.esc(l)}" title="${H.esc(l)}">${H.icon(icon)}</button>`;
   }
+  /* domyślny chrome jak Studio (ukryty nagłówek, status, motyw na szynie); wyłączony tylko na widoku pokoju (room_head) */
+  _studioUI(c) { c = c || this._config; if (!c || c.room_head || c.studio === false) return false; return true; }
+  _hasStudioCard() { return (this._cards || []).some((el) => el.tagName === 'HG-STUDIO-CARD'); }
+  _studioGrid() { return this._studioUI() && this._hasStudioCard(); }
   _stChrome() {
     const o = this._stDev(), lang = typeof HG_LOC === 'function' ? HG_LOC() : undefined, tf = this._hass.locale && this._hass.locale.time_format, d = new Date();
     return `<div class="sst">${this._stLink(o.wifi, 'wf')}${this._stLink(o.bt, 'bt')}`
       + `<time class="sdt">${H.esc(d.toLocaleDateString(lang, { weekday: 'short', month: 'short', day: 'numeric' }))}&nbsp; ${H.esc(d.toLocaleTimeString(lang, Object.assign({ hour: '2-digit', minute: '2-digit' }, tf === '12' ? { hour12: true } : tf === '24' ? { hour12: false } : {})))}</time></div>`;
   }
-  /* Studio: edycja, Assist, poczta i powiadomienia w menu użytkownika, nie obok avatara */
+  /* edycja, Assist, poczta i powiadomienia w menu użytkownika, nie obok avatara */
   _stMenuActs(nCount) {
-    if (!this._config || !this._config.studio) return '';
+    if (!this._studioUI()) return '';
     const bits = [];
     if (this._canEdit()) bits.push(`<button role="menuitem" data-act="edit" aria-pressed="${!!this._editing}">${H.icon(this._editing ? 'mdi:check' : 'mdi:pencil')}<span>${H.esc(this._editing ? hgT('page.finish_editing_layout') : hgT('page.edit_layout'))}</span></button>`);
     if (window.HGAssistUI && HGAssistUI.get().button) bits.push(`<button role="menuitem" data-act="assist">${H.icon('mdi:microphone-message')}<span>${H.esc(hgT('page.assist_a'))}</span></button>`);
@@ -765,7 +769,7 @@ class HGPage extends HTMLElement {
     const tabs = c.tabs.map((t) => ({ ...t, act: path === t.path || (t.match && hgMatch(t.match, path)), b: badgeOf(t) }));
     /* cheap signature: primitives compared with === instead of JSON.stringify over the whole user object, which ran on every state update */
     const ps0 = ui.person && H.st(this._hass, ui.person), sig = [!!this._editing, this._canEdit(), nCount, ui.person || '', ui.first || '', this._menuOpen,
-      ps0 ? ps0.attributes.entity_picture || '' : '', !!(window.HGAssistUI && HGAssistUI.get().button), tabs.map((t) => (t.act ? 'a' : '_') + t.b).join('|'), ...(c.studio ? [Math.floor(Date.now() / 6e4), ...['wifi', 'bt'].map((k) => { const e = this._stDev()[k], s = e && this._hass.states[e]; return s ? s.state : ''; })] : [])];
+      ps0 ? ps0.attributes.entity_picture || '' : '', !!(window.HGAssistUI && HGAssistUI.get().button), tabs.map((t) => (t.act ? 'a' : '_') + t.b).join('|'), ...(this._studioUI(c) ? [Math.floor(Date.now() / 6e4), ...['wifi', 'bt'].map((k) => { const e = this._stDev()[k], s = e && this._hass.states[e]; return s ? s.state : ''; })] : [])];
     /* _sigTop bywa null (reset przy dotyku/edycji/rebuildzie) - bez guardu pierwsze malowanie rzuca TypeError */
     if (!force && this._sigTop && sig.length === this._sigTop.length && sig.every((v, i) => v === this._sigTop[i])) return; this._sigTop = sig;
     const ps = ui.person && H.st(this._hass, ui.person);
@@ -774,15 +778,15 @@ class HGPage extends HTMLElement {
       <button class="brand" data-act="nav" data-i="0" aria-label="${H.esc(brand)}">${HG_LOGO}<span>${H.esc(brand)}</span></button>
       <div class="tabs" role="tablist">${tabs.map((t, i) => `<button role="tab" aria-selected="${!!t.act}" class="tab ${t.act ? 'act' : ''}" data-act="nav" data-i="${i}" title="${H.esc(t.label)}" aria-label="${H.esc(t.label)}">${t.icon ? H.icon(t.icon) : ''}<span class="tl">${H.esc(t.label)}</span>${t.b ? `<sup class="nb" aria-label="${hgT('page.active_count', { count: t.b })}">${t.b > 9 ? '9+' : t.b}</sup>` : ''}</button>`).join('')}<i class="ind" aria-hidden="true"></i></div>
       <div class="right">
-        ${this._topQuickActs(nCount, c.studio)}
-        ${c.studio ? this._stChrome() : ''}
+        ${this._topQuickActs(nCount, this._studioUI(c))}
+        ${this._studioUI(c) ? this._stChrome() : ''}
         <div class="user">
           <button class="uin" data-act="profile" aria-label="${hgT('page.profile')}" title="${hgT('page.profile')}">${av}<span class="un"><b>${H.esc(ui.full)}</b><small>${H.esc(ui.handle)}</small></span></button>
           <button class="chev" data-act="menu" aria-haspopup="menu" aria-expanded="${!!this._menuOpen}" aria-label="${this._updDot() ? hgT('page.menu_update_available') : hgT('page.menu')}" title="${hgT('page.menu')}">${H.icon('mdi:chevron-down')}${this._updDot() ? '<i class="udot" aria-hidden="true"></i>' : ''}</button>
         </div>
       </div>`);
     this._menuEl = this._topEl.querySelector('.user');
-    if (c.studio && !this._stT) this._stT = setInterval(() => { if (this.isConnected && this._config.studio && !document.hidden) this._paintTop(); }, 30000);
+    if (this._studioUI(c) && !this._stT) this._stT = setInterval(() => { if (this.isConnected && this._studioUI() && !document.hidden) this._paintTop(); }, 30000);
     if (this._hass && !this._updT) { setTimeout(() => this._updCheck(), 1500); if (window.HGBackup) setTimeout(() => HGBackup.offer(this), 1200); }
     this._paintMenu();
     this._tabsFit();
@@ -927,7 +931,7 @@ class HGPage extends HTMLElement {
     delete this._railEl.dataset.pn;
     const all = c.rail.map((r, i) => ({ ...r, i, act: r.match ? hgMatch(r.match, path) : false }));
     // szyna nie mieści wszystkiego: nadmiar (najpierw wg rail_overflow, potem od końca, bez ostatniej = Ustawienia) do „Więcej”
-    const st = c.studio && this.getAttribute('mode') !== 'phone' ? 1 : 0, fit = st ? this._railFit(all.length + 1) - 1 : this._railFit(all.length), ov = new Set();
+    const st = this._studioUI(c) && this.getAttribute('mode') !== 'phone' ? 1 : 0, fit = st ? this._railFit(all.length + 1) - 1 : this._railFit(all.length), ov = new Set();
     if (fit < all.length) {
       const need = all.length - (fit - 1), order = [...(c.rail_overflow || []).map(function (l) { const u = this; const i = all.findIndex((r, j) => !u.has(j) && ((r.action && r.action.navigate === l) || r.label === l)); if (i >= 0) u.add(i); return i; }, new Set()).filter((i) => i >= 0 && i < all.length - 1),
         ...all.map((r, i) => i).slice(0, -1).reverse()];
@@ -1301,7 +1305,7 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 :host([mode=wide][scroll]) .panel::-webkit-scrollbar{ width:6px; } :host([mode=wide][scroll]) .panel::-webkit-scrollbar-track{ background:transparent; margin:var(--s3) 0; }
 :host([mode=wide][scroll]) .panel::-webkit-scrollbar-thumb{ background:rgba(0,0,0,.28); border-radius:3px; }
 .more{ display:none; }
-/* ----- Studio (view cfg studio:true): ta sama góra, szyna i menu co zawsze; szkło daje każdy widżet, nie panel ----- */
+/* ----- chrome Studio (domyślnie): ukryty nagłówek widoku, siatka widżetów w hg-studio-card ----- */
 .sst{ display:flex; align-items:center; gap:12px; margin-right:4px; font-size:12u; font-weight:500; white-space:nowrap; font-variant-numeric:tabular-nums; } .sst .si{ display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; padding:0; border:0; background:none; color:inherit; cursor:pointer; } .sst .si ha-icon, .sst .si svg{ width:18px; height:18px; --mdc-icon-size:18px; }
 .rth{ margin-top:auto; }
 :host([studio]) .head{ display:none; }
@@ -1313,11 +1317,11 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 :host([studio][mode=wide]) .panel{ margin:0 !important; padding:0 !important; align-self:stretch !important; height:100%; min-height:0;
   grid-template-rows:minmax(0,1fr) !important; grid-auto-rows:minmax(0,1fr) !important; }
 :host([studio]) .cw{ height:100%; min-height:0 !important; }
-/* edycja strony nie kiwa całej siatki i nie ściska jej do połowy wysokości: karta rośnie w dół, panel się przewija */
+/* edycja: panel trzyma wysokość viewportu; siatka ma stałą liczbę wierszy, przewijanie w panelu */
 :host([studio][editing]) .panel > .cw{ display:block; width:auto; animation:none; outline:none; }
-:host([studio][editing][mode=wide]) .panel{ grid-template-rows:auto !important; overflow:auto; }
-:host([studio][editing]) .cw{ height:auto; min-height:100% !important; align-self:start; }
-:host([studio][editing]) .cw > *{ height:auto; min-height:100%; }
+:host([studio][editing][mode=wide]) .panel{ grid-template-rows:minmax(0,1fr) !important; overflow:auto; height:100%; min-height:0; align-self:stretch !important; }
+:host([studio][editing]) .cw{ height:100%; min-height:0 !important; align-self:stretch; }
+:host([studio][editing]) .cw > *{ height:100%; min-height:0; }
 :host([studio][mode=phone]) .sst, :host([studio][mode=phone]) .rth{ display:none; }
 :host([mode=wide][scroll]) .more:not([hidden]){ display:flex; position:absolute; z-index:5; width:36px; height:36px; border-radius:50%; align-items:center; justify-content:center;
   color: var(--hg-chrome-fg); }

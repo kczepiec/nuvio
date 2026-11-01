@@ -118,7 +118,6 @@ async function hgGenerate(hass, opt) {
     ['multimedia', hgT('nav.media'), 'mdi:play-box-multiple-outline', M.media.length > 0], ['kamery', hgT('nav.cams'), 'mdi:cctv', M.cams.length > 0],
     ['family', hgT('nav.family'), 'mdi:account-group-outline', M.persons.length > 0], ['energia', hgT('nav.energy'), 'mdi:lightning-bolt-outline', M.power.length > 0],
     ['mapa', hgT('nav.map'), 'mdi:map-outline', M.persons.length + M.trackers.length > 0], ['kalendarz', hgT('nav.calendar'), 'mdi:calendar-month-outline', M.calendars.length > 0],
-    ['studio', hgT('nav.studio'), 'mdi:view-dashboard-variant-outline', false],   /* Studio: tylko gdy włączone w Wyglądzie → Widoki (wiz.views) */
     ...((wiz && wiz.custom) || []).map((c) => [c.p, c.n, c.i || 'mdi:view-grid-outline', true])]
     /* jawna lista z kreatora / Wyglądu: kolejność wg listy, widok włączony nawet bez encji; bez listy – tylko dostępne */
     .filter((x) => (wiz && wiz.views ? x[0] === 'dashboard' || wiz.views.includes(x[0]) : x[3]) && !vOff(x[0])).sort((a, b) => (wiz && wiz.views ? (a[0] === 'dashboard' ? -1 : b[0] === 'dashboard' ? 1 : wiz.views.indexOf(a[0]) - wiz.views.indexOf(b[0])) : 0));
@@ -144,7 +143,6 @@ async function hgGenerate(hass, opt) {
   const rail = railOff ? [] : [...RV.map(nav), set], phone = { main: PH.map(nav), more: [...V.filter((v) => !PH.includes(v)).map(nav), set] };
   /* pokoje: wiz.areas (Wygląd → Pokoje) = nazwy, ikony, kolejność, czujniki temp./wilg., pokoje własne z listą encji, CWU, schody */
   /* karty pokoi czytają wiz.areas na żywo (HGAreas.glob), więc zmiana w Wyglądzie działa bez przebudowy widoków */
-  const areasCfg = { hide: (wiz && wiz.hiddenRooms) || [] };
   const HUB = wiz && wiz.hub;
   const WZ = (wiz && wiz.weather) || {}, wxE = (WZ.entity && hass.states[WZ.entity]) ? WZ.entity : M.weather;
   const weather = wxE ? { entity: wxE, ...(WZ.forecast_sensor ? { forecast_sensor: WZ.forecast_sensor } : {}), ...(WZ.size === 's' || WZ.size === 'l' ? { size: WZ.size } : {}), sun: M.sun, hours: 24, variant: 'hero', title: hgT('nav.outside') } : null;
@@ -153,38 +151,23 @@ async function hgGenerate(hass, opt) {
     menu: [...(railOff ? V.slice(5).map((v) => ({ label: v[1], icon: v[2], action: { navigate: HG_P(v[0]) } })) : []), { label: hgT('nav.profile'), icon: 'mdi:account-circle-outline', action: { navigate: '/profile' } }, { label: hgT('nav.settings'), icon: 'mdi:cog-outline', action: { navigate: '/config/dashboard' } }, { label: hgT('nav.discord'), icon: 'mdi:discord', svg: 'discord', action: { url: 'https://discord.gg/rFG9y2hFMJ' } }],
     hub: HUB === false ? null : HUB && typeof HUB === 'object' && (HUB.persons || M.persons).length ? { title: HUB.title || hgT('nav.hub'), subtitle: HUB.subtitle ?? hgT('nav.hub_sub'), persons: HUB.persons || M.persons.slice(0, 6), ...(want('family') ? { plus: { navigate: HG_P('family') } } : {}) } : M.persons.length ? { title: hgT('nav.hub'), subtitle: hgT('nav.hub_sub'), persons: M.persons.slice(0, 6), ...(want('family') ? { plus: { navigate: HG_P('family') } } : {}) } : null,
     back: { back: true, fallback: HG_P('dashboard') }, panel, cards, background: {}, _hgAuto: true, _hgLang: lang, _hgCode: HGI18n.code, _hgLangOpt: opt.language || '', ...(extra || {}), badges: (tabBadge(view) || {}).chips || [] });
-  const scroll = { scroll: true, columns: '1fr 1fr', auto_rows: 'auto', phone_columns: '1fr', tablet: { columns: '1fr 1fr' } };
   const one = (a) => ({ wide: true, scroll: true, columns: '1fr', auto_rows: 'auto', areas: `"${a}"`, phone_areas: `"${a}"`, phone_columns: '1fr', tablet: { columns: '1fr' } });
-  const dash = [];
-const hint = (k) => ({ type: 'custom:hg-hint-card', hint: k });
-    if (!M.weather) dash.push(hint('weather'));
-  if (M.climate[0]) dash.push({ type: 'custom:hg-ac-card', entity: M.climate[0], title: hgT('nav.climate'), min_h: 253 });
-  if (M.scenes.length) dash.push({ type: 'custom:hg-scenes-card', _hgid: 'scenes', title: hgT('nav.scenes'), min_h: 0, scripts: M.scenes.map((e) => ({ entity: e, name: (hass.states[e].attributes.friendly_name || e), icon: hass.states[e].attributes.icon || (e.startsWith('scene.') ? 'mdi:palette' : 'mdi:play') })) });
-  if (M.power.length) dash.push({ type: 'custom:hg-power-card', _hgid: 'power', title: hgT('nav.power'), min_h: 130, entities: [M.power[0]], max_power: 10000, hours: 6, ...(want('energia') ? { expand: { navigate: HG_P('energia') } } : {}) });
-  if (!M.scenes.length) dash.push(hint('scenes'));
-  if (!M.power.length) dash.push(hint('power'));
-  if (!M.persons.length) dash.push(hint('people'));
+  const stCard = [{ type: 'custom:hg-studio-card', area: 'st', min_h: 400 }];
+  const studio = (view, title, sub, extra) => base(view, title, sub, stCard, one('st'), extra || {});
   const views = [];
   const view = (path, title, card, sub) => ({ title, path, type: 'panel', ...(sub ? { subview: true } : {}), cards: [card] });
-  views.push(view('dashboard', hgT('nav.panel'), base('dashboard', hgT('nav.hello', { name: '{name}' }), hgT('nav.hello_sub'), dash, scroll, { ...(weather ? { weather } : {}), ...(wiz && Array.isArray(wiz.fuel) && wiz.fuel.length ? { fuel: wiz.fuel.filter((f) => f && f.entity) } : {}) })));
+  views.push(view('dashboard', hgT('nav.panel'), studio('dashboard', hgT('nav.hello', { name: '{name}' }), hgT('nav.hello_sub'), { ...(weather ? { weather } : {}), ...(wiz && Array.isArray(wiz.fuel) && wiz.fuel.length ? { fuel: wiz.fuel.filter((f) => f && f.entity) } : {}) })));
   if (V.some((v) => v[0] === 'rooms')) {
-    views.push(view('rooms', hgT('nav.rooms'), base('rooms', hgT('nav.rooms'), hgT('nav.rooms_sub'), [{ type: 'custom:hg-areas-card', area: 'grid', min_h: 200, room_path: HG_P('pokoj'), areas: areasCfg }], one('grid'))));
-    views.push(view('pokoj', hgT('nav.room'), base('pokoj', hgT('nav.room'), '', [{ type: 'custom:hg-room-card', area: 'room', min_h: 200, areas: areasCfg }], one('room'), { room_back: HG_P('rooms'), room_head: true }), true));
+    views.push(view('rooms', hgT('nav.rooms'), studio('rooms', hgT('nav.rooms'), hgT('nav.rooms_sub'))));
+    views.push(view('pokoj', hgT('nav.room'), studio('pokoj', hgT('nav.room'), '', { room_back: HG_P('rooms'), room_head: true }), true));
   }
-  if (V.some((v) => v[0] === 'multimedia')) views.push(view('multimedia', hgT('nav.media'), base('multimedia', hgT('nav.media'), hgT('nav.media_sub'), [M.media.length ? { type: 'custom:hg-players-card', area: 'm', entities: M.media } : { ...hint('media'), area: 'm' }], one('m'))));
-  if (V.some((v) => v[0] === 'kamery')) views.push(view('kamery', hgT('nav.cams'), base('kamery', hgT('nav.cams'), hgT('nav.cams_sub'), [M.cams.length ? { type: 'custom:hg-cameras-card', area: 'c', entities: M.cams } : { ...hint('cams'), area: 'c' }], one('c'))));
-  if (V.some((v) => v[0] === 'family')) views.push(view('family', hgT('nav.family'), base('family', hgT('nav.family'), hgT('nav.family_sub'), (M.persons.length ? M.persons.map((p) => ({ type: 'custom:hg-person-card', entity: p })) : [hint('people')]), scroll)));
-  if (V.some((v) => v[0] === 'studio')) views.push(view('studio', hgT('nav.studio'), base('studio', hgT('nav.studio'), '', [{ type: 'custom:hg-studio-card', area: 'st' }], one('st'), { studio: true })));
-  /* przepływ energii na górze widoku Energia, gdy widać sieć i panele albo baterię (zgadywanie po nazwach) */
-  /* jak karta z galerii: te same wartości startowe (najpierw panel Energia HA, najwyżej 3 s czekania) i ta sama konfiguracja */
-  let ESrc = null; if (V.some((v) => v[0] === 'energia')) { try { ESrc = (await Promise.race([HGEnergyPrefs.get(hass), new Promise((ok) => setTimeout(() => ok(null), 3000))]) || {}).src || null; } catch (e) { /* brak panelu Energia */ } }
-  const hgFlowAuto = (h) => { const v = hgFlowDef(h, ESrc); return v.grid && (v.solar || v.battery.length) ? [{ type: 'custom:hg-flow-card', span: 'full', min_h: 300, ...hgFlowCfg(v, h) }] : []; };
-  if (V.some((v) => v[0] === 'energia')) views.push(view('energia', hgT('nav.energy'), base('energia', hgT('nav.energy'), hgT('nav.energy_sub'), (M.power.length ? [...hgFlowAuto(hass), ...M.power.slice(0, 4).map((e) => ({ type: 'custom:hg-power-card', title: hass.states[e].attributes.friendly_name || e, entities: [e], max_power: 10000, hours: 24 }))] : [hint('power')]), scroll)));
-  if (V.some((v) => v[0] === 'mapa')) { const ents = [...M.persons, ...M.trackers.slice(0, 12), ...(M.zones.includes('zone.home') ? ['zone.home'] : [])];
-    views.push(view('mapa', hgT('nav.map'), base('mapa', hgT('nav.map'), hgT('nav.map_sub'), [ents.length ? { type: 'custom:hg-map-card', area: 'm', min_h: 560, title: hgT('nav.map'), entities: ents, theme_mode: 'auto', hours_to_show: 0 } : { ...hint('map'), area: 'm' }], one('m')))); }
-  if (V.some((v) => v[0] === 'kalendarz')) views.push(view('kalendarz', hgT('nav.calendar'), base('kalendarz', hgT('nav.calendar'), hgT('nav.cal_sub'), (M.calendars.length
-    ? [{ type: 'custom:hg-month-card', calendars: M.calendars, min_h: 380 }, { type: 'custom:hg-agenda-card', calendars: M.calendars, days: 14, min_h: 380 }] : [hint('calendar')]), scroll)));
-  for (const c of (wiz && wiz.custom) || []) if (V.some((v) => v[0] === c.p)) views.push(view(c.p, c.n, base(c.p, c.n, c.s || '', [{ ...hint('custom'), hint_sc: c.p + ':tiles', min_h: 150, span: 'full' }], hgViewLay(c, one), c.lay === 'panel' && weather ? { weather } : {})));
+  if (V.some((v) => v[0] === 'multimedia')) views.push(view('multimedia', hgT('nav.media'), studio('multimedia', hgT('nav.media'), hgT('nav.media_sub'))));
+  if (V.some((v) => v[0] === 'kamery')) views.push(view('kamery', hgT('nav.cams'), studio('kamery', hgT('nav.cams'), hgT('nav.cams_sub'))));
+  if (V.some((v) => v[0] === 'family')) views.push(view('family', hgT('nav.family'), studio('family', hgT('nav.family'), hgT('nav.family_sub'))));
+  if (V.some((v) => v[0] === 'energia')) views.push(view('energia', hgT('nav.energy'), studio('energia', hgT('nav.energy'), hgT('nav.energy_sub'))));
+  if (V.some((v) => v[0] === 'mapa')) views.push(view('mapa', hgT('nav.map'), studio('mapa', hgT('nav.map'), hgT('nav.map_sub'))));
+  if (V.some((v) => v[0] === 'kalendarz')) views.push(view('kalendarz', hgT('nav.calendar'), studio('kalendarz', hgT('nav.calendar'), hgT('nav.cal_sub'))));
+  for (const c of (wiz && wiz.custom) || []) if (V.some((v) => v[0] === c.p)) views.push(view(c.p, c.n, studio(c.p, c.n, c.s || '', c.lay === 'panel' && weather ? { weather } : {})));
   views.sort((a, b) => (a.subview ? 1 : 0) - (b.subview ? 1 : 0) || V.findIndex((v) => v[0] === a.path) - V.findIndex((v) => v[0] === b.path));
   /* kolumny widoku z Wyglądu (wiz.vx[path].cd / ct) – także dla widoków wbudowanych; widoki z jednym obszarem (areas) zostają bez zmian */
   const rp = (n) => `repeat(${Math.max(1, Math.min(6, n))}, minmax(0, 1fr))`;
@@ -428,9 +411,8 @@ window.HGWizard = HGWizard;
 const HG_VIEW_DEF = [['dashboard', hgTLazy('nav.panel'), 'mdi:view-dashboard-outline', ''], ['rooms', hgTLazy('nav.rooms'), 'mdi:sofa-outline', hgTLazy('nav.req_rooms')],
   ['multimedia', hgTLazy('nav.media'), 'mdi:play-box-multiple-outline', hgTLazy('nav.req_media')], ['kamery', hgTLazy('nav.cams'), 'mdi:cctv', hgTLazy('nav.req_cams')],
   ['family', hgTLazy('nav.family'), 'mdi:account-group-outline', hgTLazy('nav.req_family')], ['energia', hgTLazy('nav.energy'), 'mdi:lightning-bolt-outline', hgTLazy('nav.req_energy')],
-  ['mapa', hgTLazy('nav.map'), 'mdi:map-outline', hgTLazy('nav.req_map')], ['kalendarz', hgTLazy('nav.calendar'), 'mdi:calendar-month-outline', hgTLazy('nav.req_cal')],
-  ['studio', hgTLazy('nav.studio'), 'mdi:view-dashboard-variant-outline', '']];
-const hgViewHas = (M) => ({ dashboard: true, rooms: Object.keys(M.areas || {}).length > 0, multimedia: M.media.length > 0, kamery: M.cams.length > 0, family: M.persons.length > 0, energia: M.power.length > 0, mapa: M.persons.length + (M.trackers || []).length > 0, kalendarz: (M.calendars || []).length > 0, studio: true });
+  ['mapa', hgTLazy('nav.map'), 'mdi:map-outline', hgTLazy('nav.req_map')], ['kalendarz', hgTLazy('nav.calendar'), 'mdi:calendar-month-outline', hgTLazy('nav.req_cal')]];
+const hgViewHas = (M) => ({ dashboard: true, rooms: Object.keys(M.areas || {}).length > 0, multimedia: M.media.length > 0, kamery: M.cams.length > 0, family: M.persons.length > 0, energia: M.power.length > 0, mapa: M.persons.length + (M.trackers || []).length > 0, kalendarz: (M.calendars || []).length > 0 });
 /* pakiety: wykrycie po zarejestrowanym zasobie ORAZ faktycznie wczytanym kodzie (globalna / element) */
 /* HACS: strona repozytorium w aplikacji (/hacs/repository/<id GitHub>); bez HACS -> GitHub w nowej karcie */
 const hgHasHacs = (h) => !!(h && h.panels && h.panels.hacs);
@@ -457,7 +439,7 @@ const HGLookX = {
   views() { const w = (HGL.data && HGL.data.wiz) || {}, has = this.M ? hgViewHas(this.M) : {};
     if (this.pend) return this.pend;
     const all = [...HG_VIEW_DEF.map((v) => v[0]), ...(w.custom || []).map((c) => c.p)];
-    const on = w.views ? w.views.filter((v) => all.includes(v)) : all.filter((v) => (v !== 'studio' && has[v]) || (w.custom || []).some((c) => c.p === v));
+    const on = w.views ? w.views.filter((v) => all.includes(v)) : all.filter((v) => has[v] || (w.custom || []).some((c) => c.p === v));
     const ord = [...on, ...all.filter((v) => !on.includes(v))].filter((v) => v !== 'dashboard');
     return { order: ['dashboard', ...ord], on: new Set(['dashboard', ...on]) }; },
   cvForm() { const c = this.cv, ed = !!c.old, L = HG_LAYS, num = (k, l, d) => `<label class="lcv-n"><span>${l}</span><select data-cv="${k}">${[1, 2, 3, 4, 5, 6].map((i) => `<option ${(+c[k] || d) === i ? 'selected' : ''}>${i}</option>`).join('')}</select></label>`;

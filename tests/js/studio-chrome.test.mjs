@@ -1,6 +1,6 @@
 /* studio-chrome.test.mjs
-   Studio view chrome (cfg studio:true): status icons + date/time in the top bar, theme toggle on the rail.
-   Runs the real _stDev/_stChrome cut from hg-page.part.js against a fake hass; other views must stay untouched. */
+   Default page chrome (_studioUI): status icons + date/time in the top bar, theme toggle on the rail.
+   Runs the real _stDev/_stChrome cut from hg-page.part.js against a fake hass; room_head stays without chrome. */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -42,10 +42,11 @@ test('studio chrome: no tablet entities -> no status icons, clock stays', () => 
   assert.doesNotMatch(h, /class="si /); assert.match(h, /<time class="sdt">/);
 });
 
-test('studio chrome is gated on cfg.studio; normal views render no chrome', () => {
-  assert.match(src, /\$\{c\.studio \? this\._stChrome\(\) : ''\}/, 'status block only when studio');
-  assert.match(src, /toggleAttribute\('studio', !!c\.studio\)/, 'host attribute follows cfg');
-  assert.match(src, /const st = c\.studio && this\.getAttribute\('mode'\) !== 'phone' \? 1 : 0/, 'theme toggle only studio, not phone');
+test('studio chrome is gated on _studioUI; room_head and studio:false opt out', () => {
+  assert.match(src, /\$\{this\._studioUI\(c\) \? this\._stChrome\(\) : ''\}/, 'status block when studio UI on');
+  assert.match(src, /toggleAttribute\('studio', this\._studioUI\(c\)\)/, 'host attribute follows _studioUI');
+  assert.match(src, /const st = this\._studioUI\(c\) && this\.getAttribute\('mode'\) !== 'phone' \? 1 : 0/, 'theme toggle when studio UI, not phone');
+  assert.match(src, /room_head \|\| c\.studio === false/, 'room view and explicit opt-out disable chrome');
   const css = src.split('\n').filter((l) => /^:host\(\[studio\]/.test(l));
   assert.ok(css.length >= 5 && css.every((l) => l.startsWith(':host([studio]')), 'studio CSS is scoped to [studio]');
   assert.ok(/:host\(\[studio\]\[mode=phone\]\) \.sst/.test(src), 'rail theme/status hidden on phone');
@@ -55,9 +56,9 @@ test('studio chrome is gated on cfg.studio; normal views render no chrome', () =
   assert.doesNotMatch(src, /width:calc\(var\(--k\) \* 438\)/, 'legacy narrow panel width removed');
   assert.match(src, /\.panel\{[^}]*gap:24px/, 'panel uses 24px widget gap on all breakpoints');
   assert.doesNotMatch(src, /:host\(\[studio\]\[mode=wide\]:not\(\[wide-panel\]\)\)/, 'narrow studio panel layout removed');
-  assert.match(src, /:host\(\[studio\]\[editing\]\) \.cw\{[^}]*height:auto/, 'edit lets the studio card grow and scroll');
+  assert.match(src, /:host\(\[studio\]\[editing\]\) \.cw\{[^}]*height:100%/, 'edit keeps studio card filling the panel height');
   const edit = readFileSync(new URL('../../src/parts/hg-edit.part.js', import.meta.url), 'utf8');
-  assert.match(edit, /_config\.studio\) \{ this\._eBar\(\); return; \}/, 'page edit chrome stays off the studio grid');
+  assert.match(edit, /_studioGrid\(\)\) \{ this\._eBar\(\); return; \}/, 'page edit chrome stays off the studio grid');
   assert.doesNotMatch(edit, /edit\.panel_width/, 'panel width picker removed from edit header');
   assert.doesNotMatch(edit, /_ePbgHtml/, 'panel backdrop setting removed from appearance');
   assert.match(src, /_syncScheme\(\)/, 'scheme mirrored on page host for glass tokens');
@@ -68,6 +69,6 @@ test('studio chrome is gated on cfg.studio; normal views render no chrome', () =
   assert.match(edit, /data-hge="stadd"/, 'studio edit bar can open component gallery');
   assert.match(edit, /_eStudioEditSync\(/, 'studio grid refreshes when layout edit toggles');
   assert.match(src, /_stMenuActs\(/, 'studio quick actions live in the user menu');
-  assert.match(src, /_topQuickActs\(nCount, c\.studio\)/, 'studio hides top quick-action buttons');
+  assert.match(src, /_topQuickActs\(nCount, this\._studioUI\(c\)\)/, 'studio UI hides top quick-action buttons');
   assert.match(src, /:host\(\[mode=wide\]\) \.rind\{ border-radius:10u/, 'desktop rail active pill is rounded square');
 });
