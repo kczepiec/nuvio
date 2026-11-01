@@ -20,7 +20,7 @@ class HGStudioGrid extends HGBase {
 .st-w{ position:relative; min-width:0; min-height:0; max-height:100%; z-index:1; border-radius:var(--r-lg); outline:none; align-self:stretch; justify-self:stretch; overflow:hidden; }
 .st-k{ position:absolute; inset:0; container-type:size; overflow:hidden; }
 .st-k > *{ display:block; width:100%; height:100%; min-height:0; max-height:100%; box-sizing:border-box; }
-.st-k > hg-stack-card, .st-k > hg-grid-card{ height:auto; max-height:100%; align-self:start; overflow:auto; }
+.st-k > hg-stack-card, .st-k > hg-grid-card, .st-k > nuvio-stack-card, .st-k > nuvio-grid-card{ height:auto; max-height:100%; align-self:start; overflow:auto; }
 .st-bg{ display:grid; height:100%; grid-template-columns:repeat(var(--st-cols, 12), minmax(0, 1fr)); grid-template-rows:repeat(var(--st-rows, 1), var(--st-ch, 83.2px)); grid-auto-rows:var(--st-ch, 83.2px); gap:${HG_ST_GAP}px; z-index:0; pointer-events:none; opacity:.18; }
 .st-bg i{ border:1.5px dashed currentColor; border-radius:var(--r-md); }
 .ed .st-k{ pointer-events:none; }
@@ -149,7 +149,7 @@ class HGStudioGrid extends HGBase {
   _tileU(el, it) {
     if (!el.querySelector) return;
     const inner = el.querySelector('.st-k > *');
-    if (inner && (inner.localName === 'hg-stack-card' || inner.localName === 'hg-grid-card')) {
+    if (inner && /^(hg|nuvio)-(stack|grid)-card$/.test(inner.localName)) {
       el.style.removeProperty('--hg-u'); return;
     }
     const dh = it.h * HG_ST_ROW + Math.max(0, it.h - 1) * HG_ST_GAP;

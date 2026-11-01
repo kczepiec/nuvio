@@ -241,3 +241,16 @@ test('tile --hg-u follows cell height', async () => {
   c._tileU(a, { h: 3 }); c._tileU(b, { h: 3 });
   assert.equal(b.s['--hg-u'], '1.0000px'); assert.equal(a.s['--hg-u'], '0.6500px');
 });
+
+test('tile --hg-u is not set on stack/grid containers, for both hg-* and branded nuvio-* tags', async () => {
+  const HGL = hgl({ studios: { dashboard: { v: 1, items: [
+    { id: 'w_card_3', type: 'card', x: 0, y: 0, w: 4, h: 3, settings: { card: 'hg-stack-card', name: '' } },
+  ], bps: {}, custom: 1 } } });
+  const P = mk(HGL, { M }), c = new P.HGStudioGrid();
+  for (const tag of ['hg-stack-card', 'nuvio-stack-card', 'hg-grid-card', 'nuvio-grid-card']) {
+    const cleared = [];
+    const el = { clientHeight: 300, querySelector: () => ({ localName: tag }), style: { removeProperty: (k) => cleared.push(k), setProperty: () => {} } };
+    c._tileU(el, { h: 3 });
+    assert.deepEqual(cleared, ['--hg-u'], tag + ' must not get a scaled --hg-u');
+  }
+});
