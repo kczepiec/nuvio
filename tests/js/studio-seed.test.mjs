@@ -13,7 +13,7 @@ function mk() {
     sessionStorage: { getItem: () => null, setItem() {}, removeItem() {} },
     HTMLElement: El, customElements: { get() {}, define() {} }, matchMedia: stub(), requestAnimationFrame: () => 0, setInterval: () => 0, MutationObserver: class { observe() {} },
     CustomEvent, Event, fetch: () => Promise.reject(new Error('offline')), getComputedStyle: stub(), hgFlowDef: () => ({}), hgFlowCfg: () => ({}) };
-  return loadParts(['hg-i18n.part.js', 'hg-select.part.js', 'hg-oss.part.js', 'hg-core.part.js', 'studio/registry.part.js', 'studio/seed.part.js', 'shared/grid-engine.part.js'], g, ['hgGenerate', 'hgViewHas', 'hgCdn', 'HG_STUDIO_W', 'hgStudioSeed', 'hgStudioEnsure', 'hgStudioGet'],
+  return loadParts(['hg-i18n.part.js', 'hg-select.part.js', 'hg-oss.part.js', 'hg-core.part.js', 'studio/registry.part.js', 'studio/seed.part.js', 'shared/grid-engine.part.js'], g, ['hgGenerate', 'hgViewHas', 'hgCdn', 'HG_STUDIO_W', 'hgStudioSeed', 'hgStudioEnsure', 'hgStudioGet', 'hgStudioSet'],
     { EN, MANIFEST: [{ code: 'en', name: 'English', locale: 'en-GB', file: null }], text: [['import.meta.url', 'undefined']] });
 }
 const st = (state = 'on', attributes = {}) => ({ state, attributes });
@@ -108,6 +108,18 @@ test('hgStudioEnsure seeds per view; seedV bump replaces stale layout, skips whe
   const nl = { loaded: false, failed: false, data: { s: {} } }, fl = { loaded: true, failed: true, data: { s: {} } };
   assert.equal(hgStudioEnsure(nl, M, h, 'dashboard'), false); assert.equal(hgStudioGet(nl.data, 'dashboard'), null);
   assert.equal(hgStudioEnsure(fl, M, h, 'dashboard'), false); assert.equal(hgStudioGet(fl.data, 'dashboard'), null);
+});
+
+test('hgStudioGet dedupes duplicate item ids; legacy studio migrates to dashboard only', () => {
+  const { hgStudioGet, hgStudioSet } = mk();
+  const data = { studios: { bezpieczenstwo: { v: 1, items: [{ id: 'w_alarm', type: 'card', x: 0, y: 0, w: 12, h: 5 }, { id: 'w_alarm', type: 'card', x: 0, y: 5, w: 12, h: 5 }], bps: {} } } };
+  assert.equal(hgStudioGet(data, 'bezpieczenstwo').items.length, 1);
+  const leg = { studio: { v: 1, items: [{ id: 'w_greeting', type: 'greeting', x: 0, y: 0, w: 4, h: 3 }], bps: {} } };
+  hgStudioGet(leg, 'dashboard');
+  assert.ok(leg.studios.dashboard);
+  assert.equal(leg.studios.studio, undefined);
+  hgStudioSet(leg, 'dashboard', { v: 1, items: [{ id: 'a', x: 0, y: 0, w: 1, h: 1 }, { id: 'a', x: 1, y: 0, w: 1, h: 1 }], bps: {} });
+  assert.equal(leg.studios.dashboard.items.length, 1);
 });
 
 test('hgCdn version regex accepts X.Y.Z and X.Y.Z-beta.N only', async () => {

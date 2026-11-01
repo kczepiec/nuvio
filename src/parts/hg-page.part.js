@@ -1289,6 +1289,7 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 .head .rvb.on{ background:var(--hg-accent); color:var(--hg-on-accent, #fff); } .head .rvb:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 :host([studio][mode=phone]) .head .rsh h1{ font-size:26px; } :host([studio][mode=phone]) .head .rshi{ width:30px; height:30px; }
 :host([studio]) .brand > span:not(.logo){ display:none; }
+:host([studio][mode=wide]) .tabs, :host([studio][mode=tablet]) .tabs{ display:none !important; }
 :host([studio]) .back{ display:none; }
 :host([studio]) .right{ gap:12px; }
 :host([studio]) .right .cir{ display:none; }

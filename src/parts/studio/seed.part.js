@@ -15,7 +15,13 @@ const hgStudioWidgetItem = (type, x, y, M, hass, size) => {
   return { id: 'w_' + type, type, x, y, w: (size && size.w) || d.def.w, h: (size && size.h) || d.def.h, minW: d.min.w, minH: d.min.h, maxW: d.max.w, maxH: d.max.h, hidden: !e, settings };
 };
 const hgStudioCardItem = (id, card, x, y, w, h, name) => ({ id, type: 'card', x, y, w, h, minW: 2, minH: 2, maxW: 12, maxH: 10, hidden: false, settings: { card, name: name != null ? String(name) : '' } });
-const hgStudioFinish = (layout) => Object.assign(layout, { seedV: HG_STUDIO_SEED_V, custom: 0 });
+const hgStudioDedupeItems = (items) => {
+  if (!Array.isArray(items)) return items;
+  const seen = new Set(), out = [];
+  for (const it of items) { if (!it || seen.has(it.id)) continue; seen.add(it.id); out.push(it); }
+  return out;
+};
+const hgStudioFinish = (layout) => Object.assign(layout, { seedV: HG_STUDIO_SEED_V, custom: 0, items: hgStudioDedupeItems(layout.items) });
 const hgStudioFromRecipe = (recipe, M, hass) => {
   const items = recipe.map((row) => {
     if (row[0] === 'card') { const [, id, card, x, y, w, h, name] = row; return hgStudioCardItem(id, card, x, y, w, h, name); }
@@ -90,20 +96,23 @@ const hgStudioSeedForView = (view, M, hass) => {
 const hgStudioSeed = (M, hass, view) => hgStudioSeedForView(view, M, hass);
 const hgStudioMigrate = (data) => {
   if (!data || data.studios || !data.studio) return;
-  const s = data.studio;
-  data.studios = { dashboard: s, studio: JSON.parse(JSON.stringify(s)) };
+  data.studios = { dashboard: data.studio };
 };
 const hgStudioGet = (data, view) => {
   if (!data) return null;
   hgStudioMigrate(data);
   const v = hgStudioViewKey(view || 'dashboard');
-  return (data.studios && data.studios[v]) || null;
+  const L = (data.studios && data.studios[v]) || null;
+  if (!L || !Array.isArray(L.items)) return L;
+  const items = hgStudioDedupeItems(L.items);
+  return items.length === L.items.length ? L : Object.assign({}, L, { items });
 };
 /* widok Pokoje: siatka (3 kolumny wysokich kart) albo lista (1 kolumna niskich wierszy); wybór per urządzenie w localStorage */
 const hgRoomsLayout = (v) => { try { if (v === undefined) return localStorage.getItem('home-glass:rooms-layout') === 'list' ? 'list' : 'grid'; if (v === 'list') localStorage.setItem('home-glass:rooms-layout', 'list'); else localStorage.removeItem('home-glass:rooms-layout'); } catch (e) { /* tryb prywatny */ } return v === 'list' ? 'list' : 'grid'; };
 const hgStudioSet = (data, view, layout) => {
   if (!data.studios) data.studios = {};
-  data.studios[hgStudioViewKey(view || 'dashboard')] = layout;
+  const L = layout && Array.isArray(layout.items) ? Object.assign({}, layout, { items: hgStudioDedupeItems(layout.items) }) : layout;
+  data.studios[hgStudioViewKey(view || 'dashboard')] = L;
 };
 /* seed raz na widok; seedV < HG_STUDIO_SEED_V podmienia zapisany układ startowy (nowe makiety widoków) */
 const hgStudioEnsure = (L, M, hass, view = 'dashboard') => {
