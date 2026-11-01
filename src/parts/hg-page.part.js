@@ -1314,6 +1314,11 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 :host([studio][mode=wide]:not([wide-panel])) .panel{ left:70u; right:18u; width:auto; }
 :host([studio][mode=wide][wide-panel]) .panel{ position:relative; left:auto; right:auto; top:auto; bottom:auto; width:auto; max-width:100%; margin:0 !important; padding:0 !important; min-height:0; align-self:stretch; grid-column:1; grid-row:2; grid-template-rows:minmax(0,1fr) !important; grid-auto-rows:minmax(0,1fr) !important; }
 :host([studio]) .cw{ height:100%; min-height:0 !important; }
+/* edycja strony nie kiwa całej siatki i nie ściska jej do połowy wysokości: karta rośnie w dół, panel się przewija */
+:host([studio][editing]) .panel > .cw{ display:block; width:auto; animation:none; outline:none; }
+:host([studio][editing][mode=wide][wide-panel]) .panel{ grid-template-rows:auto !important; overflow:auto; }
+:host([studio][editing]) .cw{ height:auto; min-height:100% !important; align-self:start; }
+:host([studio][editing]) .cw > *{ height:auto; min-height:100%; }
 :host([studio][mode=phone]) .sst, :host([studio][mode=phone]) .rth{ display:none; }
 :host([mode=wide][scroll]) .more:not([hidden]){ display:flex; position:absolute; z-index:5; width:36px; height:36px; border-radius:50%; align-items:center; justify-content:center;
   color: var(--hg-chrome-fg); }

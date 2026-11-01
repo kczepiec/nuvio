@@ -54,4 +54,7 @@ test('studio chrome is gated on cfg.studio; normal views render no chrome', () =
   assert.match(src, /calc\(56u \+ 16px\)/, 'content starts at the rail edge plus the widget gap');
   assert.match(src, /:host\(\[studio\]\[mode=wide\]\[wide-panel\]\) \.panel\{[^}]*left:auto/, 'wide studio panel stays in its grid column');
   assert.doesNotMatch(src, /:host\(\[studio\]\[mode=wide\]\) \.panel\{[^}]*left:70u/, 'left offset must not apply to every wide studio page');
+  assert.match(src, /:host\(\[studio\]\[editing\]\) \.cw\{[^}]*height:auto/, 'edit lets the studio card grow and scroll');
+  const edit = readFileSync(new URL('../../src/parts/hg-edit.part.js', import.meta.url), 'utf8');
+  assert.match(edit, /_config\.studio\) \{ this\._eBar\(\); return; \}/, 'page edit chrome stays off the studio grid');
 });

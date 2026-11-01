@@ -11,6 +11,10 @@ class HGStudioGrid extends HGBase {
 .st-root{ position:relative; height:100%; min-height:0; }
 .st-g{ position:relative; display:grid; height:100%; min-height:0; grid-template-columns:repeat(var(--st-cols, 12), minmax(0, 1fr)); grid-template-rows:repeat(var(--st-rows, 1), minmax(32px, 1fr));
   grid-auto-rows:minmax(32px, 1fr); gap:${HG_ST_GAP}px; }
+/* edycja: wiersz zostaje taki jak w podglądzie. Kafelek „Dodaj” dokładany jest niżej i panel się przewija, zamiast ściskać resztę. */
+.st-root:has(.ed){ height:auto; min-height:100%; }
+.st-g.ed{ height:auto; min-height:100%; align-content:start; padding-bottom:76px; box-sizing:border-box; grid-template-rows:repeat(var(--st-rows, 1), var(--st-ch, 64px)); grid-auto-rows:var(--st-ch, 64px); }
+.st-g.ed .st-bg{ grid-template-rows:repeat(var(--st-rows, 1), var(--st-ch, 64px)); grid-auto-rows:var(--st-ch, 64px); }
 .st-w{ position:relative; min-width:0; min-height:0; z-index:1; border-radius:var(--r-lg); outline:none; }
 .st-k{ position:absolute; inset:0; container-type:size; }
 .st-k > *{ display:block; height:100%; min-height:0; }
@@ -122,6 +126,11 @@ class HGStudioGrid extends HGBase {
   _scale() {
     const g = this.$ && this.$.querySelector && this.$.querySelector('.st-g'); if (!g || !g.querySelectorAll) return;
     const cur = this._cur();
+    if (g.classList.contains('ed')) {
+      const viewRows = Math.max(1, ...cur.filter((i) => !i.hidden).map((i) => i.y + i.h));
+      const box = this.parentElement ? this.parentElement.clientHeight : 0;
+      if (box > 40) g.style.setProperty('--st-ch', Math.max(32, (box - HG_ST_GAP * (viewRows - 1)) / viewRows).toFixed(2) + 'px');
+    }
     for (const el of g.querySelectorAll('.st-w')) {
       const it = cur.find((i) => i.id === el.dataset.id); if (!it || !el.clientHeight) continue;
       const dh = it.h * HG_ST_ROW + Math.max(0, it.h - 1) * HG_ST_GAP, u = Math.min(2, Math.max(0.65, el.clientHeight / dh)), v = u.toFixed(4) + 'px';

@@ -13,6 +13,7 @@ Alle belangrijke wijzigingen in Nuvio staan hier, de nieuwste eerst. Versies vol
 - Opgelost: Studio-kader. Het logo is weer zichtbaar, de rail is een afgeronde balk zonder terugpijl, en de pictogrammen rechtsboven hebben meer ruimte. Wifi en Bluetooth tonen de tabletstatus en openen de entiteit; het batterijpictogram is weg.
 - Opgelost: het Studio-raster sluit aan op de rail, zonder lege strook, en in bewerkmodus kun je dezelfde componenten toevoegen als op de andere weergaven.
 - Opgelost: Studio heeft geen lege rasterkolom meer links, en widgets schalen mee met de hoogte van hun cel.
+- Opgelost: Studio-bewerken laat het raster niet meer wiebelen en knijpt widgets niet samen om de toevoegtegel te passen.
 
 ### 2.31.0
 - Toegevoegd: de titel en ondertitel van de kop kunnen de actuele status van een entiteit tonen met `{state:sensor.jouw_entiteit}`, bijvoorbeeld de status van een wasmachine. De regel verdwijnt als de status leeg is, `off`, `unavailable` of `unknown`, en de kop werkt bij wanneer de entiteit verandert.

@@ -1319,6 +1319,8 @@ const HG_EDIT = {
   _eDecorate() {
     if (!this._editing) return;
     HG_FREEZE.on = true;
+    /* Studio ma własną edycję widżetów. Zwykłe uchwyty (kiwanie, X, „Dodaj”) siedzą na całej siatce i ją ściskają. */
+    if (this._config && this._config.studio) { this._eBar(); return; }
     const lite = this.hasAttribute('lite');
     for (const ct of this._eConts()) {
       if (!ct.root.querySelector('style[data-hge]')) { const st = document.createElement('style'); st.dataset.hge = '1'; st.textContent = HGE_CSS; ct.root.appendChild(st); }
