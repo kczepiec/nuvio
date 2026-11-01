@@ -119,13 +119,11 @@ test('Rooms tile mode-only label is the plain mode name', () => {
   const ac = readFileSync(new URL('../../src/parts/cards/areas-card.part.js', import.meta.url), 'utf8');
   assert.doesNotMatch(ac, /mode_label/);
   assert.match(ac, /ci\.conf === 'mode' \? \(HG_AC_MODE\[ci\.mode\] \|\| \{\}\)\.l \|\| H\.stateLabel\(ci\.mode\)/);
-  assert.match(ac, /\.cl\.cm \.dot\{ background:transparent; box-shadow:inset 0 0 0 1\.5px var\(--c\); \}/);
   // no '~' in visible labels, dot colour from the mode tokens, never HG_AC_MODE.off grey for a running or idle device
   assert.doesNotMatch(ac, /'~'/);
   assert.doesNotMatch(readFileSync(new URL('../../src/parts/cards/ac-card.part.js', import.meta.url), 'utf8'), /'~'/);
   assert.match(ac, /hgClimCol\(/);
   assert.doesNotMatch(ac, /HG_AC_MODE\.off/);
-  assert.match(ac, /ci\.act === 'idle' \? 'ci'/);
   for (const l of ['en', 'pl', 'fr']) {
     const d = JSON.parse(readFileSync(new URL(`../../src/locales/${l}.json`, import.meta.url), 'utf8'));
     assert.equal(d.cards.areas.mode_label, undefined, l);

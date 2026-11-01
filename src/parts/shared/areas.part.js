@@ -45,7 +45,7 @@ const HGAreas = {
       const a = { id, name, icon: icon || (HG_AREA_ICONS.find(([re]) => re.test(hgNorm(name) + ' ' + id)) || [0, 'mdi:home-outline'])[1], virtual: !!virtual, ents: [], strip: [name] };
       byId[id] = a; list.push(a);
     };
-    for (const a of Object.values(areasReg)) if (!merge[a.area_id]) add(a.area_id, names[a.area_id] || a.name, icons[a.area_id] || a.icon);
+    for (const a of Object.values(areasReg)) if (!merge[a.area_id]) { add(a.area_id, names[a.area_id] || a.name, icons[a.area_id] || a.icon); if (a.picture && byId[a.area_id]) byId[a.area_id].picture = a.picture; }
     for (const [from, to] of Object.entries(merge)) { const a = areasReg[from]; if (a && byId[to]) byId[to].strip.push(a.name); }
     for (const v of cfg.virtual || []) add(v.id, v.name, v.icon, true);
     for (const v of cfg.virtual || []) for (const e of v.entities || []) if (!assign[e]) assign[e] = v.id;
