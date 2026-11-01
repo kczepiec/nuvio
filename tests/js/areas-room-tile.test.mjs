@@ -58,3 +58,11 @@ test('room photo from Wygląd overrides the HA area picture', () => {
   assert.match(syp, /\/local\/bed\.webp/);
   assert.doesNotMatch(syp, /class="tile lift\s+ nop"/);
 });
+test('unsaved room photo draft appears on tiles before save', () => {
+  const { HGAreasCard: C, HGL } = mk();
+  HGL.data.wiz.areas = { pictures: { salon: '/local/saved.webp' } };
+  globalThis.HGRoomsX = { draft: { pictures: { salon: '/local/draft.webp' } }, dirty: true };
+  try {
+    const out = new C(); out._config = out.defaults(); out._hass = hass(); assert.match(out.render(), /\/local\/draft\.webp/);
+  } finally { delete globalThis.HGRoomsX; }
+});

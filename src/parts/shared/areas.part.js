@@ -27,12 +27,15 @@ const HGAreas = {
   _cnt(h) { const c = this._sc; if (c.s !== h.states && Date.now() - c.t > 5000) { c.s = h.states; c.n = Object.keys(h.states).length; c.t = Date.now(); } return c.n; },
   /* model liczony tylko gdy zmieni się rejestr (obiekty hass.entities / devices / areas), konfiguracja albo liczba encji */
   /* pokoje z układu (Wygląd → Pokoje, HGL.data.wiz.areas); karta z własnym „areas” ma pierwszeństwo, pola z układu uzupełniają */
-  glob(cfg) { const w = (typeof HGL !== 'undefined' && HGL.data && HGL.data.wiz && HGL.data.wiz.areas) || null; if (!w || (cfg && cfg._own) || (cfg && this._gs && this._gs.has(cfg))) return cfg;
+  glob(cfg) { let w = (typeof HGL !== 'undefined' && HGL.data && HGL.data.wiz && HGL.data.wiz.areas) || null;
+    const dp = typeof HGRoomsX !== 'undefined' && HGRoomsX.draft && HGRoomsX.dirty && HGRoomsX.draft.pictures;
+    if (dp) w = Object.assign({}, w || {}, { pictures: Object.assign({}, (w && w.pictures) || {}, HGRoomsX.draft.pictures) });
+    if (!w || (cfg && cfg._own) || (cfg && this._gs && this._gs.has(cfg))) return cfg;
     const k = JSON.stringify(w) + '|' + JSON.stringify(cfg || {}), G = this._gm || (this._gm = new Map()); let v = G.get(k);
     if (!v) { if (G.size > 40) G.clear(); v = Object.assign({}, w, cfg || {}, { hide: [...new Set([...(w.hide || []), ...((cfg && cfg.hide) || [])])] }); G.set(k, v); (this._gs || (this._gs = new WeakSet())).add(v); } return v; },
   model(h, cfg) {
     cfg = this.glob(cfg) || this._e;
-    const key = [h.entities, h.devices, h.areas, this._cnt(h), HGI18n.code, HGI18n.cache[HGI18n.code]];   /* język i katalog w kluczu: nazwa pokoju „Bez pokoju” jest tłumaczona */
+    const key = [h.entities, h.devices, h.areas, this._cnt(h), HGI18n.code, HGI18n.cache[HGI18n.code], JSON.stringify((cfg && cfg.pictures) || null)];   /* język i katalog w kluczu: nazwa pokoju „Bez pokoju” jest tłumaczona */
     const m0 = this._memo.get(cfg);
     if (m0 && m0.key.every((x, i) => x === key[i])) return m0;
     const reg = h.entities || {}, dev = h.devices || {}, areasReg = h.areas || {};

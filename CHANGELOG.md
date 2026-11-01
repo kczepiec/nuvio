@@ -5,6 +5,7 @@
 All notable changes to Nuvio are listed here, newest first. Versions follow [semantic versioning](https://semver.org). The Polish changelog is in [CHANGELOG.pl.md](CHANGELOG.pl.md).
 
 ### Unreleased
+- Added: **room photo** — camera button on each room in Settings → Rooms, row thumbnail, “Photo” shortcut on the Rooms view in edit mode; tile preview updates as soon as you pick a file (before “Save rooms”).
 - Fixed: Rooms tiles in dark mode and list view use theme text colours; metric labels no longer jump; hover ring follows the accent colour from Settings.
 - Fixed: Rooms grid in Studio matches the mockup layout (three columns on typical desktop width, blue tile highlight, Offline when there is no room data, no “Other” row in grid view). The Rooms view title stays hidden in Studio.
 - Added: opt-in **Studio view** (beta), off by default and switched on in **Settings > Views**. It has a mockup-style frame (full-height rail with a light/dark toggle, pill tabs, optional Wi-Fi, Bluetooth and battery icons from a wall tablet, date and time) and a free 2D widget grid of 12 columns (8 on tablets, 4 on phones). In edit mode widgets can be dragged, resized, hidden and added with the "Add widget" tile; other widgets move aside and compact, and every widget has its own minimum and maximum size. The first layout is seeded from your entities, each screen width keeps its own layout, and a saved layout is never regenerated. It is included in the layout backup.

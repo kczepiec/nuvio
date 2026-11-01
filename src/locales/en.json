@@ -2430,7 +2430,7 @@
     "manually_assigned_entities_independent": "Manually assigned entities (independent of HA areas)",
     "move_down": "Move down",
     "move_up": "Move up",
-    "names_icons_order_temperature": "Names, icons, order, temperature and humidity sensors on the tile, custom rooms with any entities",
+    "names_icons_order_temperature": "Names, icons, tile background photos, order, temperature and humidity sensors on the tile, custom rooms with any entities",
     "new_room": "New room",
     "new_room_name": "New room name",
     "next_to_the_panel": "Next to the panel (right)",

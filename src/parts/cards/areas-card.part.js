@@ -10,7 +10,7 @@ class HGAreasCard extends HGBase {
   _m() { return HGAreas.model(this._hass, this._config.areas); }
   connectedCallback() { super.connectedCallback(); this._lsub = this._lsub || (() => { this._entsC = null; this.rerender(); }); HGL.subs.add(this._lsub); }
   disconnectedCallback() { if (this._lsub) HGL.subs.delete(this._lsub); }
-  _extraSig() { return [HGL.data.s.rooms || null, (HGL.data.wiz || {}).areas || null]; }
+  _extraSig() { const d = typeof HGRoomsX !== 'undefined' && HGRoomsX.draft; return [HGL.data.s.rooms || null, (HGL.data.wiz || {}).areas || null, d && HGRoomsX.dirty ? d.pictures : null]; }
   /* pokoje po nadpisaniach układu: kolejność, ukryte, dodane obszary HA */
   _rooms(m) { const L = HGL.get('rooms'), hid = new Set(L.hidden);
     const add = L.added.map((x) => m.byId[x.e]).filter((a) => a && !m.rooms.includes(a));

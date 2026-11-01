@@ -656,7 +656,8 @@ class HGPage extends HTMLElement {
   _roomsHead() {
     const cur = typeof hgRoomsLayout === 'function' ? hgRoomsLayout() : 'grid';
     const b = (m, ic, l) => `<button type="button" class="rvb${cur === m ? ' on' : ''}" data-act="roomsview" data-m="${m}" aria-pressed="${cur === m}" aria-label="${H.esc(l)}" title="${H.esc(l)}">${H.icon(ic)}</button>`;
-    return `<div class="rvt" role="group" aria-label="${H.esc(hgT('page.rooms_view'))}">${b('grid', 'mdi:view-grid-outline', hgT('page.rooms_view_grid'))}${b('list', 'mdi:format-list-bulleted', hgT('page.rooms_view_list'))}</div>`;
+    const pics = this._canEdit && this._canEdit() ? `<button type="button" class="rvp" data-act="roompics" aria-label="${H.esc(hgT('lookr.room_photo'))}" title="${H.esc(hgT('lookr.room_photo'))}">${H.icon('mdi:image-edit-outline')}<span>${H.esc(hgT('lookr.room_photo'))}</span></button>` : '';
+    return `<div class="rvh">${pics}<div class="rvt" role="group" aria-label="${H.esc(hgT('page.rooms_view'))}">${b('grid', 'mdi:view-grid-outline', hgT('page.rooms_view_grid'))}${b('list', 'mdi:format-list-bulleted', hgT('page.rooms_view_list'))}</div></div>`;
   }
   _roomsViewSet(m) {
     if (typeof hgRoomsLayout !== 'function') return; hgRoomsLayout(m === 'list' ? 'list' : 'grid'); if (this._paintTop) this._paintTop(true);
@@ -976,6 +977,7 @@ class HGPage extends HTMLElement {
       case 'fuel': return H.fire(this, 'hass-more-info', { entityId: t.dataset.e });
       case 'roomback': return go({ navigate: c.room_back || HG_P('rooms') });
       case 'roomsview': return this._roomsViewSet(t.dataset.m);
+      case 'roompics': { if (window.HGRoomsX) HGRoomsX.open = null; this._lkTab = 'rooms'; this._lkDD = 'page'; if (!this._editing && this._editEnter) this._editEnter(); return this._editing && this._eLook ? this._eLook() : undefined; }
       case 'roomsens': return this._roomSens(t);
       case 'sheetnav': { const m = (this._sheetItems || c.phone_nav.more)[i]; this._openSheet(false); return go(m.action); }
       case 'scheme': try { localStorage.setItem('home-glass:scheme', HGTheme.dark ? 'light' : 'dark'); } catch (e) { /* */ } HGTheme.apply(!HGTheme.dark); this._syncScheme(); return this._paintRail(true);
@@ -1277,6 +1279,9 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 .sst{ display:flex; align-items:center; gap:12px; margin-right:4px; font-size:12u; font-weight:500; white-space:nowrap; font-variant-numeric:tabular-nums; } .sst .si{ display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; padding:0; border:0; background:none; color:inherit; cursor:pointer; } .sst .si ha-icon, .sst .si svg{ width:18px; height:18px; --mdc-icon-size:18px; }
 .rth{ margin-top:auto; }
 :host([studio]) .head{ display:none; }
+.rvh{ display:flex; align-items:center; justify-content:flex-end; gap:10px; flex-wrap:wrap; }
+.rvp{ all:unset; cursor:pointer; display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:14px; font-size:12px; font-weight:600; background:rgba(255,255,255,.12); backdrop-filter:blur(38px); -webkit-backdrop-filter:blur(38px); white-space:nowrap; }
+.rvp ha-icon{ width:18px; height:18px; --mdc-icon-size:18px; } .rvp:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 .rvt{ display:inline-flex; gap:2px; padding:3px; border-radius:14px; background:rgba(255,255,255,.12); backdrop-filter:blur(38px); -webkit-backdrop-filter:blur(38px); }
 .rvb{ all:unset; cursor:pointer; box-sizing:border-box; width:32px; height:32px; border-radius:11px; display:inline-grid; place-items:center; color:inherit; } .rvb ha-icon{ width:18px; height:18px; --mdc-icon-size:18px; }
 .rvb.on{ background:var(--hg-accent); color:var(--hg-on-accent, #fff); } .rvb:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
