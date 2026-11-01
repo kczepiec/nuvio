@@ -288,8 +288,8 @@ test('_seed runs hgStudioEnsure even when the view already has a saved layout', 
 });
 
 test('stack in a Studio tile fills tile height and shares it between children (stt)', async () => {
-  const fs = await import('node:fs'); const s = fs.readFileSync(new URL('../../src/parts/cards/stack-card.part.js', import.meta.url), 'utf8');
-  assert.match(s, /\.stt:not\(\.h\) \.bd\{[^}]*overflow:auto/);
-  assert.match(s, /ha-card\.stt:not\(\.h\) \.sl\{ flex:1 0 auto/);
+  const fs = await import('node:fs'); const s = fs.readFileSync(new URL('../../v3/src/cards/host-cards.ts', import.meta.url), 'utf8');
+  assert.match(s, /ha-card\.stt \.bd \{[^}]*overflow: auto/);
+  assert.match(s, /ha-card\.stt \.sl \{ flex: 1 0 auto/);
   assert.match(s, /this\.style\.height = '100%'/);
 });

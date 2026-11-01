@@ -178,11 +178,6 @@
       "turn_on_air_conditioning": "Airco inschakelen",
       "unavailable": "Niet beschikbaar"
     },
-    "actions": {
-      "add_actions_in_the": "Voeg acties toe in de kaartinstellingen",
-      "picker_description": "Een rij ronde knoppen: scènes, scripts, services",
-      "picker_name": "Nuvio – Snelle acties"
-    },
     "agenda": {
       "all_day": "hele dag",
       "days_count_one": "{count} dag",
@@ -260,11 +255,6 @@
       "picker_description": "Wasmachine, droger, waterkoker en andere apparaten: status, programma, resterende tijd, voortgang",
       "picker_name": "Home Glass – Huishoudtoestel"
     },
-    "arc": {
-      "choose_a_light_fan": "Kies een lamp, ventilator of getal",
-      "picker_description": "Helderheid, snelheid of niveau op een sleepbare boog",
-      "picker_name": "Nuvio – Boog"
-    },
     "areas": {
       "climate_states": {
         "auto": "Auto",
@@ -338,25 +328,6 @@
       "picker_description": "Dagelijks verbruik uit de statistieken (staven)",
       "picker_name": "Home Glass – Staven"
     },
-    "battery": {
-      "all_good": "Alles in orde",
-      "batteries": "Batterijen",
-      "low_one": "{count} bijna leeg",
-      "low_other": "{count} bijna leeg",
-      "no_battery_sensors": "Geen batterijsensoren",
-      "pick_sensors_or_leave": "Kies sensoren of laat leeg om ze automatisch te vinden",
-      "picker_description": "Batterijniveaus van sensoren, zwakste eerst",
-      "picker_name": "Home Glass – Batterijen"
-    },
-    "button": {
-      "button": "Knop",
-      "choose_an_entity_or": "Kies een entiteit of actie",
-      "done": "Klaar",
-      "picker_description": "Knop voor een script, scène, button.press of een andere actie",
-      "picker_name": "Home Glass – Knop",
-      "script_scene_button_or": "Script, scène, knop of tap_action",
-      "tap_to_run": "Tik om uit te voeren"
-    },
     "camera": {
       "camera_details": "Cameradetails",
       "camera_unavailable": "Camera niet beschikbaar",
@@ -391,27 +362,6 @@
       "title": "Camera's",
       "view_all": "Alles bekijken"
     },
-    "chart": {
-      "choose_a_numeric_sensor": "Kies een numerieke sensor",
-      "not_enough_history_yet": "Nog niet genoeg geschiedenis",
-      "picker_description": "Lijn, vlak of staven uit de sensorgeschiedenis",
-      "picker_name": "Nuvio – Grafiek"
-    },
-    "clock": {
-      "picker_description": "Tijd en datum",
-      "picker_name": "Home Glass – Klok"
-    },
-    "conditional": {
-      "picker_description": "Kaarten die alleen verschijnen als aan een voorwaarde is voldaan",
-      "picker_name": "Nuvio – Voorwaardelijk"
-    },
-    "cover": {
-      "choose_a_cover_or": "Kies een rolluik of poort",
-      "open": "open",
-      "picker_description": "Positie, openen, stoppen, sluiten",
-      "picker_name": "Nuvio – Rolluik / poort",
-      "position": "Positie"
-    },
     "cwu": {
       "choose_a_water_heater": "Kies een boiler.",
       "hot_water": "Warm water",
@@ -419,15 +369,7 @@
       "picker_name": "Home Glass – Warm water"
     },
     "energy": {
-      "energy": "Energie",
-      "high_usage": "Hoog verbruik",
-      "load": "Belasting",
-      "low_usage": "Laag verbruik",
-      "medium_usage": "Gemiddeld verbruik",
-      "picker_description": "Belasting in procent (som van fasen / max. vermogen)",
-      "picker_name": "Home Glass – Energie",
-      "power_sensors_unavailable": "Vermogenssensoren niet beschikbaar",
-      "sum_of_phases_vs": "Som van fasen t.o.v. maximaal vermogen"
+      "energy": "Energie"
     },
     "energy_stats": {
       "consumption": "verbruik",
@@ -451,14 +393,6 @@
       "tab_week": "Week",
       "this_month": "Deze maand",
       "this_week": "Deze week"
-    },
-    "entities": {
-      "a_list_with_toggles": "Een lijst met schakelaars en waarden",
-      "add_entities": "Entiteiten toevoegen",
-      "entities": "Entiteiten",
-      "picker_description": "Entiteitrijen met een schakelaar, knop of waarde",
-      "picker_name": "Home Glass – Entiteiten",
-      "run": "Uitvoeren"
     },
     "eprice": {
       "avg": "gem.",
@@ -486,17 +420,6 @@
       "the_sensor_has_no": "De sensor heeft geen uurprijzen in zijn attributen",
       "tomorrow": "Morgen",
       "tomorrow_lower": "morgen"
-    },
-    "family": {
-      "family": "Gezin",
-      "home_of_total": "{home} van {total} thuis",
-      "no_people_in_home": "Geen personen in Home Assistant",
-      "picker_description": "Avatars en wie er nu thuis is",
-      "picker_name": "Nuvio – Gezin"
-    },
-    "fan": {
-      "picker_description": "Snelheid op een boog en voorinstellingen",
-      "picker_name": "Nuvio – Ventilator"
     },
     "flow": {
       "batteries_title": "Batterijen",
@@ -534,8 +457,6 @@
       "tomorrow_no_data": "morgen: geen gegevens"
     },
     "gauge": {
-      "any_numeric_sensor": "Elke numerieke sensor",
-      "choose_a_sensor": "Kies een sensor",
       "device_classes": {
         "battery": "Batterij",
         "carbon_dioxide": "CO₂",
@@ -546,52 +467,7 @@
         "power": "Vermogen",
         "pressure": "Luchtdruk",
         "temperature": "Temperatuur"
-      },
-      "picker_description": "Boog met de waarde van een numerieke sensor",
-      "picker_name": "Home Glass – Meter"
-    },
-    "glance": {
-      "choose_entities": "Kies entiteiten",
-      "missing": "ontbreekt",
-      "picker_description": "Meerdere entiteiten op een rij: pictogram, naam en status",
-      "picker_name": "Nuvio – Overzicht"
-    },
-    "grid": {
-      "picker_description": "Kaarten in kolommen, zoals het HA-raster",
-      "picker_name": "Nuvio – Raster"
-    },
-    "hero": {
-      "all_set": "Je huis is helemaal in orde.",
-      "attention_one": "{count} ding vraagt aandacht",
-      "attention_other": "{count} dingen vragen aandacht",
-      "greeting_afternoon": "Goedemiddag, {name}!",
-      "greeting_evening": "Goedenavond, {name}!",
-      "greeting_morning": "Goedemorgen, {name}!",
-      "greeting_night": "Goedenacht, {name}!",
-      "greeting_title": "Hoi, {name}!",
-      "picker_description": "Grote begroeting met je naam en een slogan",
-      "picker_name": "Nuvio – Begroeting",
-      "your_whole_home_in": "Je hele huis op één plek"
-    },
-    "history": {
-      "choose_sensors": "Kies sensoren",
-      "history": "Geschiedenis",
-      "history_chart": "Geschiedenisgrafiek",
-      "last_h": "Afgelopen {hrs} u",
-      "one_or_more_numeric": "Eén of meer numerieke sensoren",
-      "picker_description": "Meerdere sensoren in één grafiek",
-      "picker_name": "Home Glass – Geschiedenis"
-    },
-    "humidifier": {
-      "picker_description": "Doelvochtigheid op een boog en modi",
-      "picker_name": "Nuvio – Luchtbevochtiger"
-    },
-    "image": {
-      "enter_an_address": "Voer een adres in",
-      "https_or_local": "https://… of /local/…",
-      "page": "Pagina",
-      "picker_description": "Afbeelding, grafiek van een URL of een pagina in een kader",
-      "picker_name": "Home Glass – Afbeelding of pagina"
+      }
     },
     "kid": {
       "away": "Afwezig",
@@ -607,41 +483,10 @@
       "picker_name": "Nuvio – Kind (LiveKid)",
       "unread": "Ongelezen"
     },
-    "lamp": {
-      "any_light_entity": "Elke light-entiteit",
-      "choose_a_light": "Kies een lamp",
-      "cool": "Koel",
-      "picker_description": "Schakelaar, helderheid en kleurtemperatuur",
-      "picker_name": "Home Glass – Lamp",
-      "warm": "Warm"
-    },
-    "light": {
-      "lighting": "Verlichting",
-      "picker_description": "Schuifregelaar voor helderheid",
-      "picker_name": "Home Glass – Lamp",
-      "toggle": "Schakelen",
-      "unavailable": " – niet beschikbaar"
-    },
-    "link": {
-      "picker_description": "Navigatie- of actietegel",
-      "picker_name": "Home Glass – Link"
-    },
     "lock": {
-      "choose_a_lock": "Kies een slot",
-      "enter_the_lock_code": "Voer de code van het slot in.",
-      "lock": "Vergrendelen",
-      "picker_description": "Status van het slot en ontgrendelen met bevestiging",
-      "picker_name": "Nuvio – Slot",
       "the_door_can_be": "De deur kan dan zonder sleutel worden geopend.",
       "unlock": "Ontgrendelen",
       "unlock_confirm_title": "{nm} ontgrendelen?"
-    },
-    "logbook": {
-      "choose_entities_for_the": "Kies entiteiten voor het logboek",
-      "no_activity_in_this": "Geen activiteit in deze periode",
-      "picker_description": "Recente wijzigingen van gekozen entiteiten",
-      "picker_name": "Nuvio – Logboek",
-      "recent_activity": "Recente activiteit"
     },
     "map": {
       "map_unavailable": "Kaart niet beschikbaar",
@@ -657,13 +502,6 @@
       "picker_description": "Speler in glasstijl",
       "picker_name": "Home Glass – Media",
       "play_pause": "Afspelen/pauzeren"
-    },
-    "media_mini": {
-      "any_media_player": "Elke media_player",
-      "choose_a_player": "Kies een speler",
-      "picker_description": "Hoes, titel en knoppen op één rij",
-      "picker_name": "Home Glass – Minispeler",
-      "play": "Afspelen"
     },
     "month": {
       "add_a_calendar_integration": "Voeg een agenda-integratie toe in Home Assistant.",
@@ -770,57 +608,6 @@
       "wi_fi_networks": "Wifi-netwerken",
       "wired": "bekabeld"
     },
-    "note": {
-      "add_text_in_the": "Voeg tekst toe in het veld ‘Tekst’",
-      "empty_note": "Lege notitie",
-      "picker_description": "Tekst met eenvoudige opmaak",
-      "picker_name": "Home Glass – Notitie"
-    },
-    "openings": {
-      "all_closed": "Alles gesloten",
-      "closed": "Gesloten",
-      "doors_and_windows": "Deuren en ramen",
-      "no_opening_sensors": "Geen openingssensoren",
-      "nothing_is_open": "Niets staat open",
-      "open": "Open",
-      "open_count_one": "Open: {count}",
-      "open_count_other": "Open: {count}",
-      "pick_door_and_window": "Kies sensoren voor deuren en ramen",
-      "picker_description": "Openingssensoren, open eerst",
-      "picker_name": "Home Glass – Deuren en ramen"
-    },
-    "people": {
-      "away": "Afwezig",
-      "details": "details",
-      "last_changed": "Laatst gewijzigd",
-      "people": "personen",
-      "picker_description": "Lijst van personen met avatar, zone en tijd sinds wijziging",
-      "picker_name": "Home Glass – Huisgenoten",
-      "unknown_location": "Onbekende locatie",
-      "zones": "Zones"
-    },
-    "person": {
-      "away": "Afwezig",
-      "days_count_one": "{count} dag",
-      "days_count_other": "{count} dagen",
-      "entity_not_found": "entiteit niet gevonden",
-      "for": "sinds",
-      "hours_count_one": "{count} u",
-      "hours_count_other": "{count} u",
-      "picker_description": "Persoon met avatar en zone",
-      "picker_name": "Home Glass – Persoon"
-    },
-    "phases": {
-      "high": "hoog",
-      "level_load": "{level} belasting",
-      "load": "Belasting",
-      "load_suffix": "belasting",
-      "low": "laag",
-      "medium": "gemiddeld",
-      "picker_description": "Vermogen, spanning en stroom per fase",
-      "picker_name": "Home Glass – Fasen",
-      "unavailable": "niet beschikbaar"
-    },
     "plant": {
       "a_plant_entity_or": "Een plant-entiteit of een bodemvochtsensor (bijv. Mi Flora)",
       "alerts": {
@@ -877,13 +664,6 @@
       "power_sensors_unavailable": "Vermogenssensoren niet beschikbaar",
       "reports": "Rapporten",
       "sensors_unavailable": "Sensoren niet beschikbaar"
-    },
-    "progress": {
-      "choose_a_sensor": "Kies een sensor",
-      "high": "Hoog",
-      "low": "Laag",
-      "picker_description": "Een waarde op een dikke balk met drempels",
-      "picker_name": "Nuvio – Voortgangsbalk"
     },
     "purifier": {
       "aq_levels": {
@@ -1255,12 +1035,6 @@
       "whole_tank_heating": "Hele boiler verwarmen",
       "yes": "Ja"
     },
-    "room_compact": {
-      "hum": "vocht.",
-      "living_room": "Woonkamer",
-      "picker_description": "Temperatuur, schakelaar en een helderheidsliniaal",
-      "picker_name": "Nuvio – Compacte kamer"
-    },
     "scenes": {
       "add": "Toevoegen",
       "picker_description": "Scripts als knoppen met een bevestigingsanimatie",
@@ -1269,19 +1043,6 @@
       "running": "bezig…",
       "scenes": "Scènes",
       "started": "gestart"
-    },
-    "script": {
-      "picker_description": "Tegel die een script uitvoert met een bevestigingsanimatie",
-      "picker_name": "Home Glass – Script",
-      "running": "Bezig…",
-      "script_unavailable": "Script niet beschikbaar",
-      "started": "Gestart",
-      "tap_to_run": "Tik om uit te voeren"
-    },
-    "select": {
-      "input_select_or_select": "input_select of select",
-      "picker_description": "Opties van input_select en select als knoppen of een lijst",
-      "picker_name": "Home Glass – Keuze"
     },
     "sensors": {
       "active_label_one": "actief",
@@ -1361,13 +1122,6 @@
       "unavailable_label_one": "niet beschikbaar",
       "unavailable_label_other": "niet beschikbaar"
     },
-    "slider": {
-      "mute": "Dempen",
-      "picker_description": "Schuifregelaar voor helderheid, volume, ventilator, rolluik en input_number",
-      "picker_name": "Home Glass – Schuifregelaar",
-      "the_slider_works_with": "De schuifregelaar werkt met lampen, mediaspelers, ventilatoren, rolluiken en input_number",
-      "toggle": "Schakelen"
-    },
     "smartlock": {
       "check_the_door_and": "Controleer de deur en probeer opnieuw",
       "choose_a_lock": "Kies een slot",
@@ -1402,40 +1156,11 @@
       "picker_name": "Home Glass – Zonnepanelen",
       "solar_energy_today": "Zonne-energie vandaag"
     },
-    "stack": {
-      "add_cards_to_the": "Voeg kaarten toe aan de container",
-      "picker_description": "Meerdere kaarten in één glas, verticaal of horizontaal",
-      "picker_name": "Nuvio – Stapel",
-      "too_many_container_levels": "Te veel containerniveaus (maximaal 3)"
-    },
     "stairs": {
       "picker_description": "Lichtreeks voor de trap met sensoren beneden en boven",
       "picker_name": "Home Glass – Trap",
       "set_the_bottom_and": "Stel de lampen en sensoren beneden en boven in.",
       "stairs": "Trap"
-    },
-    "stat": {
-      "30_days": "30 dagen",
-      "7_days": "7 dagen",
-      "average": "Gemiddelde",
-      "change": "Verandering",
-      "choose_a_numeric_sensor": "Kies een numerieke sensor",
-      "maximum": "Maximum",
-      "minimum": "Minimum",
-      "no_history_in_this": "Geen geschiedenis in deze periode",
-      "period": "Periode",
-      "picker_description": "Minimum, gemiddelde, maximum en verandering van een sensor",
-      "picker_name": "Nuvio – Statistieken"
-    },
-    "stepper": {
-      "counter": "Teller",
-      "counter_input_number_or": "counter, input_number of number",
-      "decrease": "Verlagen",
-      "increase": "Verhogen",
-      "picker_description": "Plus en min voor counter, input_number en number",
-      "picker_name": "Home Glass – Teller",
-      "reset": "Resetten",
-      "step_value": "Stap {value}"
     },
     "studio_climate": {
       "picker_name": "Nuvio Studio: Airco",
@@ -1472,92 +1197,6 @@
       "nothing_to_show": "Voeg een slot, temperatuursensor of lampen toe om hier te tonen",
       "lights_on_one": "{count} van {total} lamp aan",
       "lights_on_other": "{count} van {total} lampen aan"
-    },
-    "sun": {
-      "above_the_horizon": "Boven de horizon",
-      "below_the_horizon": "Onder de horizon",
-      "enable_the_sun_integration": "Schakel de Zon-integratie in HA in",
-      "no_sun_sun_entity": "Geen sun.sun-entiteit",
-      "picker_description": "Zonsopgang en zonsondergang",
-      "picker_name": "Home Glass – Zon"
-    },
-    "switch": {
-      "connected": "verbonden",
-      "disconnected": "verbroken",
-      "internet_status": "Internet: {status}",
-      "picker_description": "Schakelaar in glasstijl (rij of tegel)",
-      "picker_name": "Home Glass – Schakelaar"
-    },
-    "tabs": {
-      "chart": "Grafiek",
-      "dashboard": "Dashboard",
-      "picker_description": "Knoppen die wisselen tussen sets kaarten",
-      "picker_name": "Nuvio – Tabbladen",
-      "tab_number": "Tabblad {number}",
-      "tabs": "Tabbladen"
-    },
-    "thermo": {
-      "a_climate_or_water": "Een climate- of water_heater-entiteit",
-      "choose_a_thermostat": "Kies een thermostaat",
-      "cool": "Koel",
-      "dry": "Droog",
-      "heat": "Verwarmen",
-      "higher": "Hoger",
-      "lower": "Lager",
-      "mode_auto": "Auto",
-      "picker_description": "Doeltemperatuur en modus",
-      "picker_name": "Home Glass – Thermostaat"
-    },
-    "timer": {
-      "choose_a_timer": "Kies een timer",
-      "paused": "Gepauzeerd",
-      "picker_description": "Resterende tijd op een boog, starten en pauzeren",
-      "picker_name": "Nuvio – Timer",
-      "ready": "Klaar",
-      "remaining": "Resterend",
-      "running": "Bezig",
-      "start": "Start"
-    },
-    "todo": {
-      "add_a_task": "Taak toevoegen",
-      "choose_a_to_do": "Kies een takenlijst",
-      "done": "Klaar",
-      "new_task": "Nieuwe taak",
-      "nothing_to_do": "Niets te doen",
-      "picker_description": "Taken toevoegen en afvinken",
-      "picker_name": "Nuvio – Takenlijst"
-    },
-    "toggle": {
-      "choose_a_device": "Kies een apparaat",
-      "picker_description": "Naam, status en schakelaar op één rij",
-      "picker_name": "Nuvio – Schakeltegel"
-    },
-    "updates": {
-      "available_count_one": "Beschikbaar: {count}",
-      "available_count_other": "Beschikbaar: {count}",
-      "everything_up_to_date": "Alles is up-to-date",
-      "picker_description": "Beschikbare updates in HA",
-      "picker_name": "Home Glass – Updates",
-      "updates": "Updates"
-    },
-    "vacuum": {
-      "a_vacuum_or_lawn": "Een vacuum- of lawn_mower-entiteit",
-      "choose_a_vacuum": "Kies een stofzuiger",
-      "dock": "Naar dock",
-      "docked": "In dock",
-      "error": "Fout",
-      "idle": "Inactief",
-      "mowing": "Maait",
-      "paused": "Gepauzeerd",
-      "picker_description": "Status, batterij en bediening van de robot",
-      "picker_name": "Home Glass – Stofzuiger",
-      "returning": "Keert terug",
-      "start": "Start"
-    },
-    "value": {
-      "a_sensor_or_any": "Een sensor of elke entiteit met een status",
-      "picker_description": "Eén getal met waarschuwingsdrempels",
-      "picker_name": "Home Glass – Grote waarde"
     },
     "weather": {
       "24_h_and_daily": "Voorspelling per uur en per dag",
@@ -1599,12 +1238,6 @@
         "wednesday": "Woensdag"
       },
       "wind": "Wind"
-    },
-    "webpage": {
-      "enter_a_page_address": "Voer een paginaadres in (https://… of /…)",
-      "open_in_a_new": "Openen in nieuw tabblad",
-      "picker_description": "Elk adres in een kader",
-      "picker_name": "Nuvio – Webpagina"
     },
     "week": {
       "consumption": "Verbruik",

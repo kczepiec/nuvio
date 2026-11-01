@@ -1,4 +1,4 @@
-/* WP-D2: hero / weather / media / cameras / scenes: default config renders the old structure, new opt-in flags the studio structure. */
+/* WP-D2: weather / media / cameras / scenes: default config renders the old structure, new opt-in flags the studio structure. Hero is covered by the Lit card tests. */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -20,26 +20,6 @@ const G = {
 const load = (n, cls) => new Function(...Object.keys(G), rd(n) + `; return ${cls};`)(...Object.values(G));
 const mk = (C, cfg, hass) => { const c = new C(); c.setConfig(cfg); c._hass = hass; return c; };
 const cls = (html) => new Set([...html.matchAll(/class="([^"]+)"/g)].flatMap((m) => m[1].split(/\s+/)));
-
-test('hero: default unchanged, studio adds time-of-day greeting + status', () => {
-  const C = load('hero', 'HGHeroCard'), hass = { states: {} };
-  const a = mk(C, {}, hass).render();
-  assert.match(a, /<ha-card class="glass hero"><h1 class="t">cards\.hero\.greeting_title/); assert.ok(a.includes('<p class="s">')); assert.ok(!a.includes('stl'));
-  const c = mk(C, { studio: true }, hass); c._hour = () => 20;
-  const b = c.render();
-  assert.ok(b.includes('greeting_evening')); assert.ok(b.includes('class="dot"')); assert.ok(b.includes('cards.hero.all_set')); assert.ok(!b.includes('<p class="s">')); assert.ok(b.includes('class="l2"'));
-  c._hour = () => 8; assert.ok(c.render().includes('greeting_morning'));
-  c._hour = () => 2; assert.ok(c.render().includes('greeting_night'));
-  c._hour = () => 14; assert.ok(c.render().includes('greeting_afternoon'));
-});
-test('hero: status counts attention, explicit title wins, status alone keeps the old greeting', () => {
-  const C = load('hero', 'HGHeroCard');
-  const hass = { states: { 'lock.a': { state: 'unlocked', attributes: {} }, 'binary_sensor.d': { state: 'on', attributes: { device_class: 'door' } }, 'binary_sensor.m': { state: 'on', attributes: { device_class: 'motion' } } } };
-  const c = mk(C, { status: true }, hass), h = c.render();
-  assert.ok(h.includes('class="dot warn"')); assert.ok(h.includes('&quot;count&quot;:2')); assert.ok(h.includes('greeting_title')); assert.ok(h.includes('<p class="s">'));
-  assert.ok(mk(C, { studio: true, title: 'Yo {name}' }, hass).render().includes('Yo Kris'));
-  assert.ok(mk(C, { status: true, status_entities: ['lock.zzz'] }, hass).render().includes('all_set'));
-});
 
 const W = { state: 'rainy', attributes: { temperature: 4, templow: 4, forecast: [] } };
 const wcard = (cfg) => { const C = load('weather', 'HGWeatherCard'), c = mk(C, { entity: 'weather.x', ...cfg }, { states: { 'weather.x': W } });

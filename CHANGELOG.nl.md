@@ -5,7 +5,10 @@
 Alle belangrijke wijzigingen in Nuvio staan hier, de nieuwste eerst. Versies volgen [semantic versioning](https://semver.org). De volledige Engelse lijst staat in [CHANGELOG.md](CHANGELOG.md); het Poolse en Franse wijzigingslogboek staan in [CHANGELOG.pl.md](CHANGELOG.pl.md) en [CHANGELOG.fr.md](CHANGELOG.fr.md).
 
 ### Unreleased
+- Gewijzigd: kaarten die Lit al tekent hebben geen tweede kopie meer in de legacy-bundel. Storybook voor die kaarten laadt de Lit-elementen. Kamer, studio, weer, camera's en de overige huiskaarten blijven op de legacy-runtime.
 - Gewijzigd: 3.0.0-beta.1 tekent de lichtkaart met de Lit-runtime uit `v3/`. De andere kaarten en de opgeslagen indeling blijven gelijk.
+- Gewijzigd: klok, schakelaar, waarde, link, energie en begroeting worden door dezelfde Lit-runtime getekend. De opgeslagen indeling blijft gelijk.
+- Gewijzigd: Lit tekent nu de dagelijkse kaarten en de stapel, het raster, de tabbladen en de voorwaarde. Kamer, studio, weer, camera’s en de overige huiskaarten blijven op de legacy-runtime. De opgeslagen indeling blijft gelijk.
 - Toegevoegd: **kamersfoto** — cameraknop per kamer in Instellingen → Kamers, miniatuur in de rij, snelkoppeling « Foto » op de Kamers-weergave in bewerkingsmodus; tegelvoorbeeld direct na het kiezen van een bestand (vóór « Kamers opslaan »).
 - Opgelost: **Kamers**-tegels in donker thema en lijstweergave volgen themakleuren; metrieklabels lopen niet uit elkaar; hoverring gebruikt de accentkleur uit Instellingen.
 - Opgelost: het **Kamers**-raster in Studio sluit aan bij het ontwerp (drie kolommen op typische desktopbreedte, blauwe tegelmarkering, Offline zonder kamergegevens, geen rij « Overig » in rasterweergave). De titel van de Kamers-weergave blijft in Studio verborgen.

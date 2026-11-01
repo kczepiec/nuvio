@@ -31,6 +31,10 @@ const SB_CARD_PIN = `
 ha-card, ha-card.glass{ display:flex !important; flex-direction:column !important; width:100% !important; height:100% !important; min-width:0 !important; min-height:0 !important; max-height:100% !important; overflow:auto !important; box-sizing:border-box !important; }
 `;
 
+function litCard(el) {
+  return !!(el && el.updateComplete && typeof el.updateComplete.then === 'function');
+}
+
 function pinCardLayout(el) {
   const sr = el.shadowRoot;
   if (!sr || sr.querySelector('style[data-sb-pin]')) return;
@@ -51,15 +55,20 @@ export function mountCard(tagName, config, hass, boot, { width = 920, minHeight 
     wrap.textContent = `Nie zarejestrowano ${tag} — czy bundel się wczytał?`;
     return wrap;
   }
+  const el = document.createElement(tag);
+  const lit = litCard(el);
   const wrap = document.createElement('div');
   wrap.className = 'nuvio-sb-card-host';
-  if (frame) {
+  if (lit) {
+    wrap.style.cssText = `position:relative;width:${frame ? '100%' : width + 'px'};max-width:100%;box-sizing:border-box;container-type:inline-size`;
+    el.style.cssText = 'display:block;width:100%';
+  } else if (frame) {
     wrap.style.cssText = `position:relative;width:100%;height:${minHeight}px;container-type:size;overflow:hidden;border-radius:24px`;
+    el.style.cssText = 'display:block;position:absolute;inset:0;width:100%;height:100%';
   } else {
     wrap.style.cssText = `position:relative;width:${width}px;max-width:100%;height:${minHeight}px;box-sizing:border-box;container-type:size;overflow:hidden`;
+    el.style.cssText = 'display:block;position:absolute;inset:0;width:100%;height:100%';
   }
-  const el = document.createElement(tag);
-  el.style.cssText = 'display:block;position:absolute;inset:0;width:100%;height:100%';
   wrap.appendChild(el);
   requestAnimationFrame(() => {
     try {
@@ -67,7 +76,7 @@ export function mountCard(tagName, config, hass, boot, { width = 920, minHeight 
     } catch (e) {
       console.error('setConfig', tag, e);
     }
-    pinCardLayout(el);
+    if (!lit) pinCardLayout(el);
     el.hass = hass;
     window.__nuvioHass = window.__hgHass = hass;
     const th = window.__nuvioTheme || window.__hgTheme;

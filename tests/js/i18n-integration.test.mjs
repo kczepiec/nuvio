@@ -154,9 +154,9 @@ test('standalone card (no strategy): first render triggers the catalog, its arri
 });
 
 test('hgAgoRel formats with HG_LOC()', () => {
-  const m = mk({ lang: 'fr', manifest: MAN_FR, parts: ['cards/logbook-card.part.js'], names: ['hgAgoRel'] });
+  const m = mk({ lang: 'fr', manifest: MAN_FR, parts: ['shared/relative-time.part.js'], names: ['hgAgoRel'] });
   assert.equal(m.hgAgoRel(Date.now() - 2 * 3600e3), new Intl.RelativeTimeFormat('fr-FR', { numeric: 'auto' }).format(-2, 'hour'));
-  assert.equal(mk({ lang: 'pl', parts: ['cards/logbook-card.part.js'], names: ['hgAgoRel'] }).hgAgoRel(Date.now() - 5 * 60e3), '5 minut temu');
+  assert.equal(mk({ lang: 'pl', parts: ['shared/relative-time.part.js'], names: ['hgAgoRel'] }).hgAgoRel(Date.now() - 5 * 60e3), '5 minut temu');
 });
 
 test('edit mode: language switch repaints the edit bar, Look sheet and cards only once the catalog is active', async () => {

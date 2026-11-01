@@ -1,9 +1,9 @@
 {
   "name": "@nuvio/v3",
-  "version": "3.0.0-beta.1",
+  "version": "3.0.0-beta.2",
   "private": true,
   "type": "module",
-  "description": "Nuvio 3 platform. Not wired into dist/nuvio.js yet.",
+  "description": "Nuvio 3 Lit runtime. The build prepends it to dist/nuvio.js.",
   "scripts": {
     "check": "tsc --noEmit",
     "test": "vitest run",

@@ -30,7 +30,7 @@ NUVIO_URL=https://twoj-ha NUVIO_TOKEN_FILE=~/.ha_token python3 tools/mobile_chec
 |---|---|
 | `src/parts/hg-core`, `hg-styles`, `hg-select`, `hg-oss` | klasa bazowa `HGBase`, tokeny motywu, szklany select, wspólne funkcje |
 | `src/parts/shared/` | funkcje używane przez więcej niż jedną kartę (pogoda, kalendarz, model pokoi, kontrolki ogólne…) |
-| `src/parts/cards/` | jedna karta w jednym pliku, na przykład `cards/light-card.part.js` |
+| `src/parts/cards/` | jedna karta legacy w jednym pliku, na przykład `cards/room-card.part.js`. Karty na Lit są w `v3/src/cards/` |
 | `src/parts/hg-page`, `hg-edit`, `hg-wall`, `hg-users`… | strona pulpitu, tryb edycji, tryb tabletu ściennego, użytkownicy wspólnego dashboardu, kopia zapasowa, Assist |
 
 Nową kartę dodajesz jako `src/parts/cards/<nazwa>-card.part.js` i dopisujesz do listy `CARDS` w `tools/build.py`. Kolejność ma znaczenie: kod wykonywany przy ładowaniu bundla (na przykład `class X extends Y`) może używać tylko tego, co definiuje wcześniejszy plik.

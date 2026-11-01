@@ -33,18 +33,13 @@ SHARED = [
     'studio/seed.part.js',
 ]
 CARDS = [
-    'cards/energy-card.part.js',
+    'cards/stack-card.part.js',
     'cards/ac-card.part.js',
     'cards/remote-card.part.js',
-    'cards/light-card.part.js',
-    'cards/switch-card.part.js',
     'cards/solar-card.part.js',
     'cards/bars-card.part.js',
     'cards/media-card.part.js',
-    'cards/person-card.part.js',
-    'cards/link-card.part.js',
     'cards/map-card.part.js',
-    'cards/people-card.part.js',
     'cards/month-card.part.js',
     'cards/agenda-card.part.js',
     'cards/camera-card.part.js',
@@ -53,11 +48,9 @@ CARDS = [
     'cards/sensors-card.part.js',
     'cards/scenes-card.part.js',
     'cards/power-card.part.js',
-    'cards/script-card.part.js',
     'cards/week-card.part.js',
     'cards/yield-card.part.js',
     'cards/players-card.part.js',
-    'cards/phases-card.part.js',
     'cards/energy-stats-card.part.js',
     'cards/pv-card.part.js',
     'cards/flow-card.part.js',
@@ -69,54 +62,13 @@ CARDS = [
     'cards/cwu-card.part.js',
     'cards/weather-card.part.js',
     'cards/net-card.part.js',
-    'cards/slider-card.part.js',
-    'cards/button-card.part.js',
-    'cards/entities-card.part.js',
-    'cards/select-card.part.js',
-    'cards/stepper-card.part.js',
-    'cards/gauge-card.part.js',
     'cards/fuel-card.part.js',
-    'cards/clock-card.part.js',
-    'cards/note-card.part.js',
-    'cards/image-card.part.js',
-    'cards/battery-card.part.js',
-    'cards/openings-card.part.js',
-    'cards/lamp-card.part.js',
-    'cards/history-card.part.js',
-    'cards/thermo-card.part.js',
-    'cards/vacuum-card.part.js',
-    'cards/media-mini-card.part.js',
-    'cards/value-card.part.js',
-    'cards/sun-card.part.js',
-    'cards/updates-card.part.js',
     'cards/assist-card.part.js',
-    'cards/hero-card.part.js',
-    'cards/toggle-card.part.js',
-    'cards/progress-card.part.js',
-    'cards/arc-card.part.js',
-    'cards/fan-card.part.js',
-    'cards/chart-card.part.js',
-    'cards/room-compact-card.part.js',
-    'cards/actions-card.part.js',
-    'cards/family-card.part.js',
-    'cards/cover-card.part.js',
-    'cards/lock-card.part.js',
-    'cards/todo-card.part.js',
-    'cards/stack-card.part.js',
-    'cards/tabs-card.part.js',
-    'cards/grid-card.part.js',
-    'cards/conditional-card.part.js',
-    'cards/glance-card.part.js',
-    'cards/stat-card.part.js',
-    'cards/humidifier-card.part.js',
     'cards/purifier-card.part.js',
     'cards/airq-card.part.js',
     'cards/plant-card.part.js',
     'cards/eprice-card.part.js',
     'cards/smartlock-card.part.js',
-    'cards/timer-card.part.js',
-    'cards/logbook-card.part.js',
-    'cards/webpage-card.part.js',
     'cards/kid-card.part.js',
     'cards/studio-climate-card.part.js',
     'cards/studio-energy-card.part.js',
@@ -180,6 +132,11 @@ const HG_BUILD = '__V__';
   }).catch((e) => console.error('Nuvio: could not load the bundle', e));
 })();
 """
+def v3_tag_list():
+    """Tags registered by v3. The list lives in v3/src/cards/tags.ts so the bundle check cannot drift."""
+    path = os.path.join(R, 'v3', 'src', 'cards', 'tags.ts')
+    if not os.path.exists(path): return ['nuvio-light-card']
+    return re.findall(r"'(nuvio-[a-z0-9-]+)'", open(path, encoding='utf-8').read())
 def v3_js():
     """Lit runtime prepended to the legacy core so nuvio-light-card registers first.
     Empty when v3/src/ha-entry.ts is absent, so a fixture tree of tools/ and src/ still builds."""
@@ -197,7 +154,9 @@ def v3_js():
     js = open(os.path.join(dist, cands[0]), encoding='utf-8').read()
     js = re.sub(r'\n//# sourceMappingURL=\S+\s*$', '', js)
     if re.search(r'(^|\n)\s*import[\s*{]', js): sys.exit('v3: bundle still imports a module; lit has to be inlined')
-    if 'nuvio-v3-runtime' not in js or 'nuvio-light-card' not in js: sys.exit('v3: bundle is missing the light card')
+    need = v3_tag_list()
+    missing = [t for t in need if t not in js]
+    if 'nuvio-v3-runtime' not in js or missing: sys.exit('v3: bundle is missing %s' % ', '.join(missing or ['nuvio-v3-runtime']))
     return js
 def minify(js):
     """esbuild (npm install, devDependency): spaces, comments and local names out of the code; strings (CSS, HTML) stay as written.
@@ -219,7 +178,9 @@ def main():
         subprocess.run([sys.executable, os.path.join(w, 'theme_tokens.py')], check=True, cwd=w)
         js = '\n'.join(open(os.path.join(w, 'www', p)).read() for p in PARTS)
         ver = json.load(open(os.path.join(R, 'package.json')))['version'] if os.path.exists(os.path.join(R, 'package.json')) else '0.0.0'
-        tags = brand_tags(js); js = brand(js, tags)
+        # hgReg no longer exists for cards that Lit registers. The editor and studio still write hg-*-card, so those names stay on the brand list.
+        tags = sorted(set(brand_tags(js)) | {'hg-' + tag[len('nuvio-'):] for tag in v3_tag_list() if tag.startswith('nuvio-')}, key=len, reverse=True)
+        js = brand(js, tags)
         # i18n: compile the catalogs, turn the static keys into integer indexes, embed the manifest and English (spec 3.1 bis); before the hash, which covers all of it.
         # Catalog texts are branded like the code (same tags), before their own hash is taken.
         # Nothing is written to dist/ before every check below has passed (catalogs, core, version file and loader are written together at the end).
@@ -237,8 +198,10 @@ def main():
         v3 = v3_js()
         if v3:
             js = v3 + '\n' + js
-            mark, reg = js.find('nuvio-v3-runtime'), js.find("hgReg('nuvio-light-card'")
-            if mark < 0 or reg < 0 or mark > reg: sys.exit('v3: Lit card is not registered before the legacy light card')
+            mark = js.find('nuvio-v3-runtime')
+            for tag in v3_tag_list():
+                reg = js.find("hgReg('%s'" % tag)
+                if reg >= 0 and (mark < 0 or mark > reg): sys.exit('v3: %s legacy card is registered before the Lit card' % tag)
         # hash after branding: a build-only change must also give a new content-hashed core name
         # the version is part of the hash: a release that only bumps package.json must still get a new core file name,
         # or browsers and HA's service worker keep serving the previous build's core under the same immutable URL

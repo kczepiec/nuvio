@@ -30,7 +30,7 @@ De bron bestaat uit gewone JavaScript-bestanden die `tools/build.py` in een vast
 |---|---|
 | `src/parts/hg-core`, `hg-styles`, `hg-select`, `hg-oss` | basisklasse `HGBase`, themawaarden, glazen keuzelijst, gedeelde hulpfuncties |
 | `src/parts/shared/` | hulpfuncties die door meer dan één kaart worden gebruikt (weer, agenda, kamermodel, generieke bediening…) |
-| `src/parts/cards/` | één kaart per bestand, bijvoorbeeld `cards/light-card.part.js` |
+| `src/parts/cards/` | één legacy-kaart per bestand, bijvoorbeeld `cards/room-card.part.js`. Kaarten op Lit staan in `v3/src/cards/` |
 | `src/parts/hg-page`, `hg-edit`, `hg-wall`, `hg-users`… | dashboardpagina, bewerkmodus, wandtabletmodus, gedeelde dashboardgebruikers, back-up, Assist |
 
 Een nieuwe kaart komt in `src/parts/cards/<name>-card.part.js` en wordt toegevoegd aan de lijst `CARDS` in `tools/build.py`. De laadvolgorde telt: code die draait wanneer de bundel laadt (bijvoorbeeld `class X extends Y`) mag alleen gebruiken wat een eerder bestand definieert.

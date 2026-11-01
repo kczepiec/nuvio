@@ -1,11 +1,7 @@
 /** Atrapy ha-card i ha-icon na Storybook i testy. W Home Assistant elementów nie podmieniamy. */
 export function installHaStubs() {
   if (!customElements.get('ha-card')) {
-    customElements.define('ha-card', class extends HTMLElement {
-      connectedCallback() {
-        this.style.display = 'block';
-      }
-    });
+    customElements.define('ha-card', class extends HTMLElement {});
   }
   if (!customElements.get('ha-icon')) {
     customElements.define('ha-icon', class extends HTMLElement {

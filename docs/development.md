@@ -31,7 +31,7 @@ The source is plain JavaScript files that `tools/build.py` joins, in a fixed ord
 |---|---|
 | `src/parts/hg-core`, `hg-styles`, `hg-select`, `hg-oss` | base class `HGBase`, theme tokens, glass select, shared helpers |
 | `src/parts/shared/` | helpers used by more than one card (weather, calendar, rooms model, generic controls…) |
-| `src/parts/cards/` | one card per file, for example `cards/light-card.part.js` |
+| `src/parts/cards/` | one legacy card per file, for example `cards/room-card.part.js`. Cards already on Lit live in `v3/src/cards/` |
 | `src/parts/hg-page`, `hg-edit`, `hg-wall`, `hg-users`… | dashboard page, edit mode, wall tablet mode, shared dashboard users, backup, Assist |
 
 A new card goes into `src/parts/cards/<name>-card.part.js` and is added to the `CARDS` list in `tools/build.py`. Load order matters: code that runs when the bundle loads (for example `class X extends Y`) may only use what an earlier file defines.

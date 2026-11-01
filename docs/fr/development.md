@@ -30,7 +30,7 @@ Les sources sont des fichiers JavaScript ordinaires que `tools/build.py` assembl
 |---|---|
 | `src/parts/hg-core`, `hg-styles`, `hg-select`, `hg-oss` | classe de base `HGBase`, jetons du thème, liste déroulante en verre, fonctions partagées |
 | `src/parts/shared/` | fonctions utilisées par plusieurs cartes (météo, calendrier, modèle des pièces, contrôles génériques…) |
-| `src/parts/cards/` | une carte par fichier, par exemple `cards/light-card.part.js` |
+| `src/parts/cards/` | une carte legacy par fichier, par exemple `cards/room-card.part.js`. Les cartes déjà en Lit sont dans `v3/src/cards/` |
 | `src/parts/hg-page`, `hg-edit`, `hg-wall`, `hg-users`… | page du tableau de bord, mode édition, mode tablette murale, utilisateurs du tableau de bord partagé, sauvegarde, Assist |
 
 Une nouvelle carte va dans `src/parts/cards/<nom>-card.part.js` et s’ajoute à la liste `CARDS` de `tools/build.py`. L’ordre de chargement compte : le code exécuté au chargement du bundle (par exemple `class X extends Y`) ne peut utiliser que ce qu’un fichier précédent définit.

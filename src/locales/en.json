@@ -178,11 +178,6 @@
       "turn_on_air_conditioning": "Turn on air conditioning",
       "unavailable": "Unavailable"
     },
-    "actions": {
-      "add_actions_in_the": "Add actions in the card settings",
-      "picker_description": "A row of round buttons: scenes, scripts, services",
-      "picker_name": "Nuvio – Quick actions"
-    },
     "agenda": {
       "all_day": "all day",
       "days_count_one": "{count} days",
@@ -260,11 +255,6 @@
       "picker_description": "Washer, dryer, kettle and other devices: state, program, time left, progress",
       "picker_name": "Home Glass – Appliance"
     },
-    "arc": {
-      "choose_a_light_fan": "Choose a light, fan or number",
-      "picker_description": "Brightness, speed or level on a draggable arc",
-      "picker_name": "Nuvio – Arc"
-    },
     "areas": {
       "climate_states": {
         "auto": "Auto",
@@ -338,25 +328,6 @@
       "picker_description": "Dzienne zużycie z statystyk (słupki)",
       "picker_name": "Home Glass – Bars"
     },
-    "battery": {
-      "all_good": "All good",
-      "batteries": "Batteries",
-      "low_one": "{count} low",
-      "low_other": "{count} low",
-      "no_battery_sensors": "No battery sensors",
-      "pick_sensors_or_leave": "Pick sensors or leave empty to detect automatically",
-      "picker_description": "Sensor battery levels, weakest first",
-      "picker_name": "Home Glass – Batteries"
-    },
-    "button": {
-      "button": "Button",
-      "choose_an_entity_or": "Choose an entity or action",
-      "done": "Done",
-      "picker_description": "Button for a script, scene, button.press or any action",
-      "picker_name": "Home Glass – Button",
-      "script_scene_button_or": "Script, scene, button or tap_action",
-      "tap_to_run": "Tap to run"
-    },
     "camera": {
       "camera_details": "Camera details",
       "camera_unavailable": "Camera unavailable",
@@ -391,27 +362,6 @@
       "title": "Cameras",
       "view_all": "View all"
     },
-    "chart": {
-      "choose_a_numeric_sensor": "Choose a numeric sensor",
-      "not_enough_history_yet": "Not enough history yet",
-      "picker_description": "Line, area or bars from sensor history",
-      "picker_name": "Nuvio – Chart"
-    },
-    "clock": {
-      "picker_description": "Time and date",
-      "picker_name": "Home Glass – Clock"
-    },
-    "conditional": {
-      "picker_description": "Cards shown only when a condition is met",
-      "picker_name": "Nuvio – Conditional"
-    },
-    "cover": {
-      "choose_a_cover_or": "Choose a cover or gate",
-      "open": "open",
-      "picker_description": "Position, open, stop, close",
-      "picker_name": "Nuvio – Cover / gate",
-      "position": "Position"
-    },
     "cwu": {
       "choose_a_water_heater": "Choose a water heater.",
       "hot_water": "Hot water",
@@ -419,15 +369,7 @@
       "picker_name": "Home Glass – Hot water"
     },
     "energy": {
-      "energy": "Energy",
-      "high_usage": "High usage",
-      "load": "Load",
-      "low_usage": "Low usage",
-      "medium_usage": "Medium usage",
-      "picker_description": "Power load percentage (sum of phases / max power)",
-      "picker_name": "Home Glass – Energy",
-      "power_sensors_unavailable": "Power sensors unavailable",
-      "sum_of_phases_vs": "Sum of phases vs. maximum power"
+      "energy": "Energy"
     },
     "energy_stats": {
       "consumption": "consumption",
@@ -451,14 +393,6 @@
       "tab_week": "Week",
       "this_month": "This month",
       "this_week": "This week"
-    },
-    "entities": {
-      "a_list_with_toggles": "A list with toggles and values",
-      "add_entities": "Add entities",
-      "entities": "Entities",
-      "picker_description": "Entity rows with a toggle, button or value",
-      "picker_name": "Home Glass – Entities",
-      "run": "Run"
     },
     "eprice": {
       "avg": "avg",
@@ -486,17 +420,6 @@
       "the_sensor_has_no": "The sensor has no hourly prices in its attributes",
       "tomorrow": "Tomorrow",
       "tomorrow_lower": "tomorrow"
-    },
-    "family": {
-      "family": "Family",
-      "home_of_total": "{home} of {total} at home",
-      "no_people_in_home": "No people in Home Assistant",
-      "picker_description": "Avatars and who is home right now",
-      "picker_name": "Nuvio – Family"
-    },
-    "fan": {
-      "picker_description": "Speed on an arc and preset modes",
-      "picker_name": "Nuvio – Fan"
     },
     "flow": {
       "batteries_title": "Batteries",
@@ -534,8 +457,6 @@
       "tomorrow_no_data": "tomorrow: no data"
     },
     "gauge": {
-      "any_numeric_sensor": "Any numeric sensor",
-      "choose_a_sensor": "Choose a sensor",
       "device_classes": {
         "battery": "Battery",
         "carbon_dioxide": "CO₂",
@@ -546,52 +467,7 @@
         "power": "Power",
         "pressure": "Pressure",
         "temperature": "Temperature"
-      },
-      "picker_description": "Arc with the value of a numeric sensor",
-      "picker_name": "Home Glass – Gauge"
-    },
-    "glance": {
-      "choose_entities": "Choose entities",
-      "missing": "missing",
-      "picker_description": "Several entities in a row: icon, name and state",
-      "picker_name": "Nuvio – Glance"
-    },
-    "grid": {
-      "picker_description": "Cards in columns, like the HA grid",
-      "picker_name": "Nuvio – Grid"
-    },
-    "hero": {
-      "all_set": "Your home is all set.",
-      "attention_one": "{count} thing needs attention",
-      "attention_other": "{count} things need attention",
-      "greeting_afternoon": "Good afternoon, {name}!",
-      "greeting_evening": "Good evening, {name}!",
-      "greeting_morning": "Good morning, {name}!",
-      "greeting_night": "Good night, {name}!",
-      "greeting_title": "Hey, {name}!",
-      "picker_description": "Large greeting with your name and a tagline",
-      "picker_name": "Nuvio – Greeting",
-      "your_whole_home_in": "Your whole home in one place"
-    },
-    "history": {
-      "choose_sensors": "Choose sensors",
-      "history": "History",
-      "history_chart": "History chart",
-      "last_h": "Last {hrs} h",
-      "one_or_more_numeric": "One or more numeric sensors",
-      "picker_description": "Several sensors on one chart",
-      "picker_name": "Home Glass – History"
-    },
-    "humidifier": {
-      "picker_description": "Target humidity on an arc and modes",
-      "picker_name": "Nuvio – Humidifier"
-    },
-    "image": {
-      "enter_an_address": "Enter an address",
-      "https_or_local": "https://… or /local/…",
-      "page": "Page",
-      "picker_description": "Picture, chart from a URL or a page in a frame",
-      "picker_name": "Home Glass – Image or page"
+      }
     },
     "kid": {
       "away": "Away",
@@ -607,41 +483,10 @@
       "picker_name": "Nuvio – Child (LiveKid)",
       "unread": "Unread"
     },
-    "lamp": {
-      "any_light_entity": "Any light entity",
-      "choose_a_light": "Choose a light",
-      "cool": "Cool",
-      "picker_description": "Switch, brightness and colour temperature",
-      "picker_name": "Home Glass – Light",
-      "warm": "Warm"
-    },
-    "light": {
-      "lighting": "Lighting",
-      "picker_description": "Light brightness slider",
-      "picker_name": "Home Glass – Light",
-      "toggle": "Toggle",
-      "unavailable": " – unavailable"
-    },
-    "link": {
-      "picker_description": "Kafel nawigacji / akcji",
-      "picker_name": "Home Glass – Link"
-    },
     "lock": {
-      "choose_a_lock": "Choose a lock",
-      "enter_the_lock_code": "Enter the lock code.",
-      "lock": "Lock",
-      "picker_description": "Lock state and unlock with confirmation",
-      "picker_name": "Nuvio – Lock",
       "the_door_can_be": "The door can be opened without a key.",
       "unlock": "Unlock",
       "unlock_confirm_title": "Unlock {nm}?"
-    },
-    "logbook": {
-      "choose_entities_for_the": "Choose entities for the logbook",
-      "no_activity_in_this": "No activity in this period",
-      "picker_description": "Recent changes of chosen entities",
-      "picker_name": "Nuvio – Logbook",
-      "recent_activity": "Recent activity"
     },
     "map": {
       "map_unavailable": "Map unavailable",
@@ -657,13 +502,6 @@
       "picker_description": "Odtwarzacz w stylu glass",
       "picker_name": "Home Glass – Media",
       "play_pause": "Play/pause"
-    },
-    "media_mini": {
-      "any_media_player": "Any media_player",
-      "choose_a_player": "Choose a player",
-      "picker_description": "Artwork, title and buttons in one row",
-      "picker_name": "Home Glass – Mini player",
-      "play": "Play"
     },
     "month": {
       "add_a_calendar_integration": "Add a calendar integration in Home Assistant.",
@@ -770,57 +608,6 @@
       "wi_fi_networks": "Wi‑Fi networks",
       "wired": "wired"
     },
-    "note": {
-      "add_text_in_the": "Add text in the \"Text\" field",
-      "empty_note": "Empty note",
-      "picker_description": "Text with simple formatting",
-      "picker_name": "Home Glass – Note"
-    },
-    "openings": {
-      "all_closed": "All closed",
-      "closed": "Closed",
-      "doors_and_windows": "Doors and windows",
-      "no_opening_sensors": "No opening sensors",
-      "nothing_is_open": "Nothing is open",
-      "open": "Open",
-      "open_count_one": "Open: {count}",
-      "open_count_other": "Open: {count}",
-      "pick_door_and_window": "Pick door and window sensors",
-      "picker_description": "Opening sensors, open ones first",
-      "picker_name": "Home Glass – Doors and windows"
-    },
-    "people": {
-      "away": "Away",
-      "details": "details",
-      "last_changed": "Last changed",
-      "people": "people",
-      "picker_description": "Lista osób z awatarem, strefą i czasem zmiany",
-      "picker_name": "Home Glass – Domownicy",
-      "unknown_location": "Unknown location",
-      "zones": "Zones"
-    },
-    "person": {
-      "away": "Away",
-      "days_count_one": "{count} day",
-      "days_count_other": "{count} days",
-      "entity_not_found": "entity not found",
-      "for": "for",
-      "hours_count_one": "{count} h",
-      "hours_count_other": "{count} h",
-      "picker_description": "Osoba z awatarem i strefą",
-      "picker_name": "Home Glass – Person"
-    },
-    "phases": {
-      "high": "high",
-      "level_load": "{level} load",
-      "load": "Load",
-      "load_suffix": "load",
-      "low": "low",
-      "medium": "medium",
-      "picker_description": "Power, voltage and current per phase",
-      "picker_name": "Home Glass – Phases",
-      "unavailable": "unavailable"
-    },
     "plant": {
       "a_plant_entity_or": "A plant entity or a soil moisture sensor (e.g. Mi Flora)",
       "alerts": {
@@ -877,13 +664,6 @@
       "power_sensors_unavailable": "Power sensors unavailable",
       "reports": "Reports",
       "sensors_unavailable": "Sensors unavailable"
-    },
-    "progress": {
-      "choose_a_sensor": "Choose a sensor",
-      "high": "High",
-      "low": "Low",
-      "picker_description": "A value on a thick bar with thresholds",
-      "picker_name": "Nuvio – Progress bar"
     },
     "purifier": {
       "aq_levels": {
@@ -1255,12 +1035,6 @@
       "whole_tank_heating": "Whole tank heating",
       "yes": "Yes"
     },
-    "room_compact": {
-      "hum": "hum.",
-      "living_room": "Living room",
-      "picker_description": "Temperature, switch and a brightness ruler",
-      "picker_name": "Nuvio – Compact room"
-    },
     "scenes": {
       "add": "Add",
       "picker_description": "Scripts as buttons with a confirmation animation",
@@ -1269,19 +1043,6 @@
       "running": "running…",
       "scenes": "Scenes",
       "started": "started"
-    },
-    "script": {
-      "picker_description": "Tile that runs a script with a confirmation animation",
-      "picker_name": "Home Glass – Script",
-      "running": "Running…",
-      "script_unavailable": "Script unavailable",
-      "started": "Started",
-      "tap_to_run": "Tap to run"
-    },
-    "select": {
-      "input_select_or_select": "input_select or select",
-      "picker_description": "input_select and select options as buttons or a list",
-      "picker_name": "Home Glass – Select"
     },
     "sensors": {
       "active_label_one": "active",
@@ -1361,13 +1122,6 @@
       "unavailable_label_one": "unavailable",
       "unavailable_label_other": "unavailable"
     },
-    "slider": {
-      "mute": "Mute",
-      "picker_description": "Slider for brightness, volume, fan, cover and input_number",
-      "picker_name": "Home Glass – Slider",
-      "the_slider_works_with": "The slider works with lights, media players, fans, covers and input_number",
-      "toggle": "Toggle"
-    },
     "smartlock": {
       "check_the_door_and": "Check the door and try again",
       "choose_a_lock": "Choose a lock",
@@ -1402,40 +1156,11 @@
       "picker_name": "Home Glass – Solar",
       "solar_energy_today": "Solar energy today"
     },
-    "stack": {
-      "add_cards_to_the": "Add cards to the container",
-      "picker_description": "Several cards in one glass, vertical or horizontal",
-      "picker_name": "Nuvio – Stack",
-      "too_many_container_levels": "Too many container levels (3 at most)"
-    },
     "stairs": {
       "picker_description": "Stair light sequence with bottom and top sensors",
       "picker_name": "Home Glass – Stairs",
       "set_the_bottom_and": "Set the bottom and top lights and sensors.",
       "stairs": "Stairs"
-    },
-    "stat": {
-      "30_days": "30 days",
-      "7_days": "7 days",
-      "average": "Average",
-      "change": "Change",
-      "choose_a_numeric_sensor": "Choose a numeric sensor",
-      "maximum": "Maximum",
-      "minimum": "Minimum",
-      "no_history_in_this": "No history in this period",
-      "period": "Period",
-      "picker_description": "Minimum, average, maximum and change of a sensor",
-      "picker_name": "Nuvio – Statistics"
-    },
-    "stepper": {
-      "counter": "Counter",
-      "counter_input_number_or": "counter, input_number or number",
-      "decrease": "Decrease",
-      "increase": "Increase",
-      "picker_description": "Plus and minus for counter, input_number and number",
-      "picker_name": "Home Glass – Stepper",
-      "reset": "Reset",
-      "step_value": "Step {value}"
     },
     "studio_climate": {
       "picker_name": "Nuvio Studio: Climate",
@@ -1472,92 +1197,6 @@
       "nothing_to_show": "Add a lock, a temperature sensor or lights to show here",
       "lights_on_one": "{count} of {total} light on",
       "lights_on_other": "{count} of {total} lights on"
-    },
-    "sun": {
-      "above_the_horizon": "Above the horizon",
-      "below_the_horizon": "Below the horizon",
-      "enable_the_sun_integration": "Enable the Sun integration in HA",
-      "no_sun_sun_entity": "No sun.sun entity",
-      "picker_description": "Sunrise and sunset",
-      "picker_name": "Home Glass – Sun"
-    },
-    "switch": {
-      "connected": "connected",
-      "disconnected": "disconnected",
-      "internet_status": "Internet: {status}",
-      "picker_description": "Glass-style switch (row or tile)",
-      "picker_name": "Home Glass – Switch"
-    },
-    "tabs": {
-      "chart": "Chart",
-      "dashboard": "Dashboard",
-      "picker_description": "Pills that switch between sets of cards",
-      "picker_name": "Nuvio – Tabs",
-      "tab_number": "Tab {number}",
-      "tabs": "Tabs"
-    },
-    "thermo": {
-      "a_climate_or_water": "A climate or water_heater entity",
-      "choose_a_thermostat": "Choose a thermostat",
-      "cool": "Cool",
-      "dry": "Dry",
-      "heat": "Heat",
-      "higher": "Higher",
-      "lower": "Lower",
-      "mode_auto": "Auto",
-      "picker_description": "Target temperature and mode",
-      "picker_name": "Home Glass – Thermostat"
-    },
-    "timer": {
-      "choose_a_timer": "Choose a timer",
-      "paused": "Paused",
-      "picker_description": "Remaining time on an arc, start and pause",
-      "picker_name": "Nuvio – Timer",
-      "ready": "Ready",
-      "remaining": "Remaining",
-      "running": "Running",
-      "start": "Start"
-    },
-    "todo": {
-      "add_a_task": "Add a task",
-      "choose_a_to_do": "Choose a to-do list",
-      "done": "Done",
-      "new_task": "New task",
-      "nothing_to_do": "Nothing to do",
-      "picker_description": "Add and tick off tasks",
-      "picker_name": "Nuvio – To-do list"
-    },
-    "toggle": {
-      "choose_a_device": "Choose a device",
-      "picker_description": "Name, state and switch in one row",
-      "picker_name": "Nuvio – Toggle tile"
-    },
-    "updates": {
-      "available_count_one": "Available: {count}",
-      "available_count_other": "Available: {count}",
-      "everything_up_to_date": "Everything up to date",
-      "picker_description": "Available updates in HA",
-      "picker_name": "Home Glass – Updates",
-      "updates": "Updates"
-    },
-    "vacuum": {
-      "a_vacuum_or_lawn": "A vacuum or lawn_mower entity",
-      "choose_a_vacuum": "Choose a vacuum",
-      "dock": "Dock",
-      "docked": "Docked",
-      "error": "Error",
-      "idle": "Idle",
-      "mowing": "Mowing",
-      "paused": "Paused",
-      "picker_description": "Robot state, battery and controls",
-      "picker_name": "Home Glass – Vacuum",
-      "returning": "Returning",
-      "start": "Start"
-    },
-    "value": {
-      "a_sensor_or_any": "A sensor or any entity with a state",
-      "picker_description": "One number with warning thresholds",
-      "picker_name": "Home Glass – Big value"
     },
     "weather": {
       "24_h_and_daily": "24 h and daily forecast",
@@ -1599,12 +1238,6 @@
         "wednesday": "Wednesday"
       },
       "wind": "Wind"
-    },
-    "webpage": {
-      "enter_a_page_address": "Enter a page address (https://… or /…)",
-      "open_in_a_new": "Open in a new tab",
-      "picker_description": "Any address in a frame",
-      "picker_name": "Nuvio – Web page"
     },
     "week": {
       "consumption": "Consumption",

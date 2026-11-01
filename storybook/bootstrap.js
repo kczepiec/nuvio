@@ -10,6 +10,9 @@ function stubHaElements() {
       'ha-card',
       class extends HTMLElement {
         connectedCallback() {
+          const root = this.getRootNode();
+          const host = root instanceof ShadowRoot ? root.host : null;
+          if (host && host.updateComplete && typeof host.updateComplete.then === 'function') return;
           this.style.cssText = 'display:block;width:100%;height:100%;min-width:0;box-sizing:border-box';
         }
       },
