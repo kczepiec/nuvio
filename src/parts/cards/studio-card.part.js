@@ -80,16 +80,23 @@ class HGStudioGrid extends HGBase {
     if (!this._ro && typeof ResizeObserver !== 'undefined') this._ro = new ResizeObserver((es) => { this._width(es[0].contentRect.width); this._scale(); }); if (this._ro) this._ro.observe(this);
     this._watchEd(); }
   disconnectedCallback() { HGL.subs.delete(this._lsub); if (this._scF && typeof cancelAnimationFrame === 'function') cancelAnimationFrame(this._scF); this._scF = 0; if (this._ro) this._ro.disconnect(); if (this._pro) { this._pro.disconnect(); this._pro = null; this._proEl = null; } if (this._mo) { this._mo.disconnect(); this._mo = null; } }
-  /* pierwszy układ: raz, po wczytaniu HGL, z modelu domu; istniejący klucz studio nigdy nie jest nadpisywany (hgStudioEnsure) */
+  /* układ startowy / migracja seedV: hgStudioEnsure decyduje, czy nadpisać zapisany układ widoku */
   _model(h) { return this._Mp || (this._Mp = Promise.resolve(typeof HGModel !== 'undefined' && h ? HGModel.load(h) : {}).then((M) => (this._M = M || {}), () => (this._M = {}))); }
   _viewId() { const p = this._pageHost(); return (p && p._config && p._config.view) || 'dashboard'; }
   _layoutRoot() { return typeof hgStudioGet === 'function' ? hgStudioGet(HGL.data, this._viewId()) : null; }
   _saveLayout(L) { if (typeof hgStudioSet === 'function') hgStudioSet(HGL.data, this._viewId(), L); else HGL.data.studio = L; }
   _seed(h) {
-    if (!h || this._layoutRoot() || this._seeding || typeof hgStudioEnsure !== 'function') return;
+    if (!h || this._seeding || typeof hgStudioEnsure !== 'function') return;
     if (!HGL.loaded) { if (!this._lw && HGL.load) { this._lw = 1; Promise.resolve(HGL.load(h)).then(() => { this._lw = 0; this._seed(this._hass); }, () => { this._lw = 0; }); } return; }
     if (HGL.failed) return;
-    this._seeding = 1; this._model(h).then((M) => { this._seeding = 0; if (hgStudioEnsure(HGL, M, this._hass, this._viewId())) this._lay(); }, () => { this._seeding = 0; });
+    this._seeding = 1;
+    this._model(h).then((M) => {
+      this._seeding = 0;
+      const v = this._viewId();
+      if (!hgStudioEnsure(HGL, M, this._hass, v)) return;
+      this._lay();
+      if (typeof HGL.save === 'function') Promise.resolve(HGL.save(this._hass)).catch(() => {});
+    }, () => { this._seeding = 0; });
   }
   /* tryb edycji strony: HGL.editing; zmianę zgłasza atrybut editing na stronie (wejście) i HGL.notify (wyjście, Anuluj przywraca dane) */
   _edNow() { return !!HGL.editing; }

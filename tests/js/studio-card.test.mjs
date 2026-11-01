@@ -47,12 +47,23 @@ test('seed on first hass; seeded layout rendered at its grid positions', async (
   assert.equal(c.getGridOptions().columns, 'full');
 });
 
-test('existing studio key is never reseeded', async () => {
-  const own = { v: 1, items: [{ id: 'w_media', type: 'media', x: 2, y: 1, w: 3, h: 3, settings: {} }], bps: {}, custom: 1 };
+test('studio layout at current seedV is kept', async () => {
+  const own = { v: 1, seedV: 2, items: [{ id: 'w_media', type: 'media', x: 2, y: 1, w: 3, h: 3, settings: {} }], bps: {}, custom: 1 };
   const HGL = hgl({ studios: { dashboard: own } }), P = mk(HGL, { M }), c = new P.HGStudioGrid();
   c._width(1440); c.hass = hass; await tick(); await tick();
   assert.equal(lay(HGL, P), own);
   assert.equal(area(c._gridHtml(), 'w_media'), '2 / 3 / span 3 / span 3');
+});
+
+test('stale seedV layout is migrated on hass', async () => {
+  const own = { v: 1, items: [{ id: 'w_media', type: 'media', x: 2, y: 1, w: 3, h: 3, settings: {} }], bps: {}, custom: 1 };
+  const HGL = hgl({ studios: { dashboard: own } }), P = mk(HGL, { M }), c = new P.HGStudioGrid();
+  c._width(1440); c.hass = hass; await tick(); await tick();
+  const L = lay(HGL, P);
+  assert.notEqual(L, own);
+  assert.equal(L.seedV, 2);
+  assert.equal(L.custom, 0);
+  assert.equal(L.items.length, 8);
 });
 
 test('not loaded or failed layout: no seed', async () => {
@@ -254,6 +265,15 @@ test('tile --hg-u is not set on stack/grid containers, for both hg-* and branded
     c._tileU(el, { h: 3 });
     assert.deepEqual(cleared, ['--hg-u'], tag + ' must not get a scaled --hg-u');
   }
+});
+
+test('_seed runs hgStudioEnsure even when the view already has a saved layout', async () => {
+  const fs = await import('node:fs');
+  const s = fs.readFileSync(new URL('../../src/parts/cards/studio-card.part.js', import.meta.url), 'utf8');
+  const body = s.match(/_seed\(h\) \{[\s\S]*?\n  \}/)[0];
+  assert.doesNotMatch(body, /this\._layoutRoot\(\)/);
+  assert.match(body, /hgStudioEnsure\(HGL/);
+  assert.match(body, /HGL\.save/);
 });
 
 test('stack in a Studio tile fills tile height and shares it between children (stt)', async () => {
