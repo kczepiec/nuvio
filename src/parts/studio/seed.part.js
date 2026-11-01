@@ -22,7 +22,7 @@ const hgStudioSeedForView = (view, M, hass) => {
     const items = ps.slice(0, 9).map((e, i) => hgStudioCardItem('w_person_' + i, { type: 'custom:hg-person-card', entity: e }, (i % 3) * 4, Math.floor(i / 3) * 3, 4, 3, (hass.states[e] && hass.states[e].attributes.friendly_name) || e));
     return { v: 1, items: typeof HGGrid !== 'undefined' && HGGrid.norm ? HGGrid.norm(items, 12) : items, bps: {}, custom: 0 };
   }
-  if (v === 'rooms') return hgStudioFromRecipe([['card', 'w_rooms', { type: 'custom:hg-areas-card', area: 'grid', min_h: 200, room_path: P('pokoj') }, 0, 0, 12, 10, hgTLazy('nav.rooms')]], M, hass);
+  if (v === 'rooms') return hgStudioFromRecipe([['card', 'w_rooms', { type: 'custom:hg-areas-card', area: 'grid', min_h: 200, columns: 3, room_path: P('pokoj') }, 0, 0, 12, 10, hgTLazy('nav.rooms')]], M, hass);
   if (v === 'pokoj') return hgStudioFromRecipe([['card', 'w_room', { type: 'custom:hg-room-card', area: 'room', min_h: 200 }, 0, 0, 12, 10, hgTLazy('nav.room')]], M, hass);
   if (v === 'multimedia') return hgStudioFromRecipe([[ 'media', 0, 0, { w: 6, h: 5 } ], ['scenes', 6, 0, { w: 6, h: 4 }]], M, hass);
   if (v === 'kamery') return hgStudioFromRecipe([[ 'cameras', 0, 0, { w: 12, h: 6 } ]], M, hass);
@@ -55,6 +55,8 @@ const hgStudioGet = (data, view) => {
   const v = view || 'dashboard';
   return (data.studios && data.studios[v]) || null;
 };
+/* widok Pokoje: siatka (3 kolumny wysokich kart) albo lista (1 kolumna niskich wierszy); wybór per urządzenie w localStorage */
+const hgRoomsLayout = (v) => { try { if (v === undefined) return localStorage.getItem('home-glass:rooms-layout') === 'list' ? 'list' : 'grid'; if (v === 'list') localStorage.setItem('home-glass:rooms-layout', 'list'); else localStorage.removeItem('home-glass:rooms-layout'); } catch (e) { /* tryb prywatny */ } return v === 'list' ? 'list' : 'grid'; };
 const hgStudioSet = (data, view, layout) => {
   if (!data.studios) data.studios = {};
   data.studios[view || 'dashboard'] = layout;

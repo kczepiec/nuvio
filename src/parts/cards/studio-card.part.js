@@ -231,7 +231,9 @@ class HGStudioGrid extends HGBase {
     if (it.type === 'card') {
       const c = it.settings && it.settings.card; if (!c || !c.type) return null;
       const o = typeof hgFromHA === 'function' && typeof hgCardClean === 'function' ? hgCardClean(hgFromHA(Object.assign({}, c))) : Object.assign({}, c);
-      for (const k of Object.keys(o)) if (k.indexOf('nv_') === 0) delete o[k]; return o;
+      for (const k of Object.keys(o)) if (k.indexOf('nv_') === 0) delete o[k];
+      if (o.type === 'custom:hg-areas-card' && this._viewId() === 'rooms' && typeof hgRoomsLayout === 'function') { o.layout = hgRoomsLayout(); o.columns = o.layout === 'list' ? 1 : (o.columns || 3); }
+      return o;
     }
     const d = HG_STUDIO_W[it.type]; if (!d) return null; const s = it.settings || {}; try { return Object.assign({ type: 'custom:' + d.card }, d.cfg(s.entity || null, s, this._hass)); } catch (e) { return null; }
   }

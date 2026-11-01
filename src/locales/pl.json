@@ -304,7 +304,12 @@
       "turn_off_lights": "Wyłącz światła",
       "turn_on": "włącz",
       "turn_on_lights": "Włącz światła",
-      "estimated": "szacunek"
+      "estimated": "szacunek",
+      "status_active": "Aktywny",
+      "status_offline": "Offline",
+      "target": "Cel: {value}°C",
+      "humidity_label": "Wilgotność",
+      "lights_label": "Światła"
     },
     "assist": {
       "ask_or_give_a": "Zapytaj albo wydaj polecenie",
@@ -2641,6 +2646,7 @@
     "room": "Pokój",
     "rooms": "Pokoje",
     "rooms_sub": "Każdy pokój w zasięgu ręki",
+    "rooms_head_sub": "Twój dom, w jednym miejscu",
     "settings": "Ustawienia"
   },
   "oss": {
@@ -2772,6 +2778,9 @@
     "assist_a": "Assist (A)",
     "assist_voice_assistant_a": "Assist, asystent głosowy (A)",
     "back_to_rooms": "Wróć do pokoi",
+    "rooms_view": "Widok pokoi",
+    "rooms_view_grid": "Siatka",
+    "rooms_view_list": "Lista",
     "card_error": "Błąd karty: {error}",
     "change_sensor": "Zmień czujnik",
     "clear": "Pusto",

@@ -299,7 +299,12 @@
       "turn_off_lights": "Éteindre les lumières",
       "turn_on": "allumer",
       "turn_on_lights": "Allumer les lumières",
-      "estimated": "estimation"
+      "estimated": "estimation",
+      "status_active": "Actif",
+      "status_offline": "Hors ligne",
+      "target": "Cible : {value}°C",
+      "humidity_label": "Humidité",
+      "lights_label": "Lumières"
     },
     "assist": {
       "ask_or_give_a": "Posez une question ou donnez un ordre",
@@ -2602,6 +2607,7 @@
     "room": "Pièce",
     "rooms": "Pièces",
     "rooms_sub": "Chaque pièce à portée de main",
+    "rooms_head_sub": "Votre maison, en un seul endroit",
     "settings": "Paramètres"
   },
   "oss": {
@@ -2731,6 +2737,9 @@
     "assist_a": "Assist (A)",
     "assist_voice_assistant_a": "Assist, assistant vocal (A)",
     "back_to_rooms": "Retour aux pièces",
+    "rooms_view": "Affichage des pièces",
+    "rooms_view_grid": "Grille",
+    "rooms_view_list": "Liste",
     "card_error": "Erreur de carte : {error}",
     "change_sensor": "Changer de capteur",
     "clear": "Libre",

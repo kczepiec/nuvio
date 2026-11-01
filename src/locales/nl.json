@@ -294,7 +294,12 @@
       "turn_off_lights": "Lampen uitschakelen",
       "turn_on": "inschakelen",
       "turn_on_lights": "Lampen inschakelen",
-      "estimated": "schatting"
+      "estimated": "schatting",
+      "status_active": "Actief",
+      "status_offline": "Offline",
+      "target": "Doel: {value}°C",
+      "humidity_label": "Vochtigheid",
+      "lights_label": "Lichten"
     },
     "assist": {
       "ask_or_give_a": "Stel een vraag of geef een opdracht",
@@ -2563,6 +2568,7 @@
     "room": "Kamer",
     "rooms": "Kamers",
     "rooms_sub": "Elke kamer binnen handbereik",
+    "rooms_head_sub": "Je huis, op één plek",
     "settings": "Instellingen"
   },
   "oss": {
@@ -2690,6 +2696,9 @@
     "assist_a": "Assist (A)",
     "assist_voice_assistant_a": "Assist-spraakassistent (A)",
     "back_to_rooms": "Terug naar kamers",
+    "rooms_view": "Kamerweergave",
+    "rooms_view_grid": "Raster",
+    "rooms_view_list": "Lijst",
     "card_error": "Kaartfout: {error}",
     "change_sensor": "Sensor wijzigen",
     "clear": "Vrij",

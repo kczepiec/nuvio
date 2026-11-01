@@ -652,9 +652,22 @@ class HGPage extends HTMLElement {
     this._headT = setTimeout(() => { this._headT = null; if (this.isConnected && !document.hidden) this._paintHead(); else this._headTick(); }, 60500 - (Date.now() % 60000)); }
   _headVis(hd) { this._headEl.classList.toggle('hd-off', !!hd.hide); if (hd.hide) this._headEl.dataset.off = hgT('page.header_hidden'); else delete this._headEl.dataset.off;
     const md = this.getAttribute('mode'), sz = (hd.sz || {})[md] || ''; if (sz && sz !== 'm') this._headEl.dataset.sz = sz; else delete this._headEl.dataset.sz; }
+  /* Studio, widok Pokoje: tytuł + podtytuł z ikoną domu i przełącznik siatka / lista (aria-pressed) */
+  _roomsHead() {
+    const cur = typeof hgRoomsLayout === 'function' ? hgRoomsLayout() : 'grid';
+    const b = (m, ic, l) => `<button type="button" class="rvb${cur === m ? ' on' : ''}" data-act="roomsview" data-m="${m}" aria-pressed="${cur === m}" aria-label="${H.esc(l)}" title="${H.esc(l)}">${H.icon(ic)}</button>`;
+    return `<div class="rsh">${H.icon('mdi:home-outline', 'rshi')}<div class="rst"><h1>${H.esc(hgT('nav.rooms'))}</h1><p>${H.esc(hgT('nav.rooms_head_sub'))}</p></div>`
+      + `<div class="rvt" role="group" aria-label="${H.esc(hgT('page.rooms_view'))}">${b('grid', 'mdi:view-grid-outline', hgT('page.rooms_view_grid'))}${b('list', 'mdi:format-list-bulleted', hgT('page.rooms_view_list'))}</div></div>`;
+  }
+  _roomsViewSet(m) {
+    if (typeof hgRoomsLayout !== 'function') return; hgRoomsLayout(m === 'list' ? 'list' : 'grid'); this._paintHead();
+    for (const el of this._cards || []) if (el._lay) { el._lh = null; el._lay(); }
+    const n = this._headEl && this._headEl.querySelector('.rvb.on'); if (n && n.focus) n.focus();
+  }
   _paintHead() {
     const c = this._config; if (!this._hass) return; this._headClk = false; queueMicrotask(() => this._headTick());
     if (c.room_head) { const hd = this._headConf(); this._headVis(hd); this._bdgEl = null; this._setHTML(this._headEl, this._roomHead(hd)); if (this._editing && this._eHeadBtn) this._eHeadBtn(); this._railClear(); return; }
+    if (c.view === 'rooms' && this._studioUI(c)) { this._headVis({}); this._bdgEl = null; this._setHTML(this._headEl, this._roomsHead()); return; }
     const hd = this._headConf();
     const pick = (k, def) => this._headPick(hd, k, def);
     const ttl = pick('t', c.title ?? hgT('common.welcome', { name: '{name}' })), hic = /^mdi:[a-z0-9-]+$/.test(hd.i || '') ? H.icon(hd.i, 'hdi') : '';
@@ -963,6 +976,7 @@ class HGPage extends HTMLElement {
       case 'sheetclose': return this._openSheet(false);
       case 'fuel': return H.fire(this, 'hass-more-info', { entityId: t.dataset.e });
       case 'roomback': return go({ navigate: c.room_back || HG_P('rooms') });
+      case 'roomsview': return this._roomsViewSet(t.dataset.m);
       case 'roomsens': return this._roomSens(t);
       case 'sheetnav': { const m = (this._sheetItems || c.phone_nav.more)[i]; this._openSheet(false); return go(m.action); }
       case 'scheme': try { localStorage.setItem('home-glass:scheme', HGTheme.dark ? 'light' : 'dark'); } catch (e) { /* */ } HGTheme.apply(!HGTheme.dark); this._syncScheme(); return this._paintRail(true);
@@ -1264,6 +1278,15 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 .sst{ display:flex; align-items:center; gap:12px; margin-right:4px; font-size:12u; font-weight:500; white-space:nowrap; font-variant-numeric:tabular-nums; } .sst .si{ display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; padding:0; border:0; background:none; color:inherit; cursor:pointer; } .sst .si ha-icon, .sst .si svg{ width:18px; height:18px; --mdc-icon-size:18px; }
 .rth{ margin-top:auto; }
 :host([studio]) .head{ display:none; }
+:host([studio]) .head:has(.rsh){ display:block; }
+:host([studio][mode=wide]) .head:has(.rsh){ width:auto; justify-self:stretch; max-width:none; margin:0 0 28px; }
+:host([studio][mode=tablet]) .head:has(.rsh), :host([studio][mode=phone]) .head:has(.rsh){ margin-bottom:16px; }
+.head .rsh{ display:flex; align-items:center; gap:18px; width:100%; } .head .rshi{ width:40px; height:40px; flex:none; --mdc-icon-size:40px; color:var(--hg-chrome-fg, currentColor); }
+.head .rst{ flex:1; min-width:0; } .head .rsh h1{ font-size:36u; font-weight:600; display:block; } .head .rsh p{ font-size:15u; opacity:.7; margin-top:4px; display:block; }
+.head .rvt{ display:inline-flex; gap:4px; padding:4px; border-radius:16px; background:rgba(255,255,255,.12); backdrop-filter:blur(38px); -webkit-backdrop-filter:blur(38px); }
+.head .rvb{ all:unset; cursor:pointer; box-sizing:border-box; width:40px; height:40px; border-radius:12px; display:inline-grid; place-items:center; color:inherit; } .head .rvb ha-icon{ width:22px; height:22px; --mdc-icon-size:22px; }
+.head .rvb.on{ background:var(--hg-accent); color:var(--hg-on-accent, #fff); } .head .rvb:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
+:host([studio][mode=phone]) .head .rsh h1{ font-size:26px; } :host([studio][mode=phone]) .head .rshi{ width:30px; height:30px; }
 :host([studio]) .brand > span:not(.logo){ display:none; }
 :host([studio]) .back{ display:none; }
 :host([studio]) .right{ gap:12px; }
