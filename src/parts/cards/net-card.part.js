@@ -1,5 +1,5 @@
-/* ===== hg-net-card: widok „Sieć” (UniFi Network + Speedtest). Jedna klasa, sekcje: wan | gw | dev | wlan | cl.
-   Konfiguracja jawna w build.py (CFG['net']); brakujące/niedostępne encje są pomijane. ===== */
+/* --- hg-net-card: widok „Sieć” (UniFi Network + Speedtest). Jedna klasa, sekcje: wan | gw | dev | wlan | cl.
+   Konfiguracja jawna w build.py (CFG['net']); brakujące/niedostępne encje są pomijane. --- */
 const hgPlK = (n) => hgT('cards.net.clients_label', { count: n });
 const hgUp = (s) => { if (!s || !H.ok(s)) return null; const d = new Date(s.state); if (isNaN(d)) return null;
   const m = Math.max(0, (Date.now() - d) / 60000); if (m < 60) return `${Math.round(m)} min`; const hh = m / 60; if (hh < 48) return hgT('cards.net.hours_count', { count: Math.round(hh) }); return hgT('cards.net.days_count', { count: Math.round(hh / 24) }); };

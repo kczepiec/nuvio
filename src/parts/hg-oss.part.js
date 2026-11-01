@@ -99,8 +99,6 @@ const HGModel = {
 const HG_LAYS = [['grid', hgTLazy('oss.layouts.grid'), 'mdi:view-grid-outline', hgTLazy('oss.layouts.grid_desc')], ['cols', hgTLazy('oss.layouts.cols'), 'mdi:view-column-outline', hgTLazy('oss.layouts.cols_desc')],
   ['masonry', 'Masonry', 'mdi:view-dashboard-variant-outline', hgTLazy('oss.layouts.masonry_desc')], ['panel', 'Panel', 'mdi:view-agenda-outline', hgTLazy('oss.layouts.panel_desc')]];
 const HG_HINT_MIN = 3;
-const hgViewLay = (c, one) => { const n = (k, d) => Math.max(1, Math.min(6, +c[k] || d)), r = (k) => `repeat(${k}, minmax(0, 1fr))`, cm = n('cm', 1), ct = n('ct', 2), cd = n('cd', c.lay === 'panel' ? 2 : 3);
-  return { scroll: true, columns: r(cd), auto_rows: 'auto', phone_columns: r(cm), tablet: { columns: r(ct) }, ...(c.lay === 'cols' ? { flow: 'cols' } : {}), ...(c.lay === 'masonry' ? { masonry: true } : {}), ...(!c.lay || c.lay === 'grid' ? { flow: 'grid' } : {}), ...(+c.mw ? { max_w: +c.mw } : {}) }; };
 /* widok ukryty dla zalogowanej osoby: wiz.vu = { ścieżka: [user_id] } ze wspólnego dashboardu */
 const hgViewOff = (hass, w) => { const id = hass && hass.user && hass.user.id, VU = (w && w.vu) || {}; return (p) => p !== 'dashboard' && !!id && Array.isArray(VU[p]) && VU[p].includes(id); };
 /* --- generator konfiguracji (strategia pulpitu) --- */

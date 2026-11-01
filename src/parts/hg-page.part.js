@@ -53,10 +53,6 @@ const HG_EASE = 'cubic-bezier(.2,.8,.2,1)';
 const hgReduced = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 /* bez View Transitions API (na iPadzie/telefonie zacinało): zwykła nawigacja; wejście widoku = 150 ms przenikania samej treści (bez dotyku) */
 const hgTouch = () => !!(window.matchMedia && matchMedia('(pointer: coarse)').matches);
-// etykieta paliwa w stylu naklejki na dystrybutorze: PB95 zielona, PB98 ciemnozielona, ON czarna
-const hgFuelBadge = (l) => { const m = /^PB?\s*(\d+)/i.exec(l || ''); const on = /^ON/i.test(l || '');
-  const cls = m ? (m[1] === '98' ? 'b98' : 'b95') : on ? 'bon' : 'bx';
-  return `<span class="fb ${cls}" aria-hidden="true">${m ? `<small>Pb</small>${H.esc(m[1])}` : H.esc((l || '').slice(0, 3))}</span>`; };
 const HG_BG_OK = new Set();   // zdekodowane zdjęcia tła (kolejne widoki ustawiają je od razu)
 /* dopasowanie po całych segmentach ścieżki: /nuvio/test nie zapala się dla /nuvio/test2 (widoki o podobnych lub tych samych nazwach) */
 const hgMatch = (m, path) => [].concat(m).some((x) => x && (path === x || path.startsWith(x.endsWith('/') ? x : x + '/')));

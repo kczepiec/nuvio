@@ -564,10 +564,6 @@ const hgKidCfg = (C, R, h) => { const n = R.n, i = /^mdi:[a-z0-9-]+$/.test(R.i |
   if (C.id === 'hacard') { const c = hgHaCard(R.v); return c ? Object.assign({}, c, meta) : null; }
   if (C.tile) return Object.assign({ type: 'custom:hg-tiles-card', single: Object.assign({ e: R.v.e, t: R.t || C.tile }, n ? { n } : {}, i ? { i } : {}) }, meta, R.t ? { nv_t: R.t } : {});
   return Object.assign({ type: 'custom:' + hgCompCard(C, R.v) }, hgCompCfg(C, R.v, h), n ? { title: n, name: n } : {}, i ? { icon: i } : {}, meta); };
-/* pozycja panelu (L.added) -> dziecko kontenera i z powrotem */
-const hgAddedToKid = (x) => { const meta = { nv_comp: x.comp, nv_v: x.v ? JSON.parse(JSON.stringify(x.v)) : { e: x.e }, ...(x.n ? { nv_n: x.n } : {}), ...(x.i ? { nv_i: x.i } : {}), ...(x.t ? { nv_t: x.t } : {}) };
-  if (!x.c) return Object.assign({ type: 'custom:hg-tiles-card', single: Object.assign({ e: x.e }, x.t ? { t: x.t } : {}, x.n ? { n: x.n } : {}, x.i ? { i: x.i } : {}) }, meta);
-  return Object.assign({ type: 'custom:' + x.c }, x.cfg, x.n ? { title: x.n, name: x.n } : {}, x.i ? { icon: x.i } : {}, meta); };
 const hgKidToAdded = (k) => { const C = HG_COMP.find((c) => c.id === k.nv_comp), clean = (o) => { const r = {}; for (const q in o) if (!/^nv_/.test(q) && q !== 'type' && q !== 'span') r[q] = o[q]; return r; };
   if (C && C.tile && k.single) return Object.assign({ e: k.single.e, comp: C.id }, k.single.t ? { t: k.single.t } : {}, k.nv_n ? { n: k.nv_n } : {}, k.nv_i ? { i: k.nv_i } : {});
   const key = 'c:' + (C ? C.id : 'vstack') + ':' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
@@ -714,9 +710,6 @@ const hgMockHtml = (id) => { const I = (i) => H.icon(i), tag = `<span class="mk-
 /* makieta wyższa lub szersza niż miniatura (długie nazwy, mniejsza miniatura na telefonie): pomniejszenie zamiast ucięcia */
 const hgMkFit = (root) => { for (const el of root.querySelectorAll('.mk-in')) { el.style.zoom = ''; const h = el.clientHeight, w = el.clientWidth; if (!h || !w) continue;
   const z = Math.min(1, h / el.scrollHeight, w / el.scrollWidth); if (z < 0.99) el.style.zoom = Math.max(0.55, z).toFixed(3); } };
-/* podgląd na żywo tylko z dobrą encją: wszystkie domyślne encje mają znany stan */
-const hgPvGood = (h, v) => { if (window.__hgPvMock) return false; const es = []; for (const x of Object.values(v || {})) for (const y of [].concat(x)) { const e = typeof y === 'string' ? y : y && y.entity; if (e) es.push(e); }
-  return es.length > 0 && es.every((e) => { const s = h.states[e]; return s && !['unknown', 'unavailable', ''].includes(s.state); }); };
 const HG_COMP_CSS = `
 .cgh{ margin:18px 2px 10px; font-size:13px; font-weight:600; letter-spacing:.02em; display:flex; flex-direction:column; gap:2px; } .cgh small{ font-size:12px; font-weight:400; opacity:.62; letter-spacing:0; } .cq + .cgh{ margin-top:14px; }
 .cg{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; } @media (max-width:560px){ .cg{ grid-template-columns:repeat(2, minmax(0,1fr)); } }

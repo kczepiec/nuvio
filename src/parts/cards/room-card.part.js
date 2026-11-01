@@ -56,7 +56,6 @@ const HG_WM_JOB_KEYS = ['wash', 'ai_wash', 'pre_wash', 'air_wash', 'rinse', 'ai_
 const HG_WM_MS_KEYS = ['run', 'pause', 'stop'];
 const HG_WM_ANIM = { wash: 'wash', ai_wash: 'wash', pre_wash: 'wash', air_wash: 'wash', weight_sensing: 'wash', rinse: 'rinse', ai_rinse: 'rinse', spin: 'spin', ai_spin: 'spin', drying: 'wash', cooling: 'wash', wrinkle_prevent: 'wash' };
 /* --- szczegóły pokoju (<pulpit>/pokoj?area=<id>) --- */
-const hgWebKit = () => /AppleWebKit/.test(navigator.userAgent) && !/Chrome|Chromium|Edg|Android/.test(navigator.userAgent);
 class HGRoomCard extends HGBase {
   defaults() { return { areas: {}, robots_path: HG_P('roboty') }; }
   constructor() {
