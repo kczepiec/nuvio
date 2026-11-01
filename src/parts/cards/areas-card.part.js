@@ -22,12 +22,12 @@ class HGAreasCard extends HGBase {
   css() {
     return U(`
 :host{ height:auto; container-type:inline-size; }
-.grid{ display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:var(--s2); }
-/* wąski komponent (S, M w siatce): jedna kolumna, bo ikona i przyciski świateł nie mieszczą się w połowie szerokości */
-@container (max-width: 380px){ .grid{ grid-template-columns:minmax(0, 1fr); } .tile.hgsz-m, .tile.hgsz-l{ grid-column:auto; } }
-@container (min-width: 700px){ .grid{ grid-template-columns:repeat(3, minmax(0, 1fr)); } }
-@container (min-width: 1000px){ .grid{ grid-template-columns:repeat(4, minmax(0, 1fr)); } }
-.tile{ position:relative; display:flex; flex-direction:column; justify-content:space-between; min-width:0; box-sizing:border-box; aspect-ratio:465 / 285; min-height:190px; container-type:size; padding:5cqh 4.5cqi; border-radius:var(--r-md); overflow:hidden; cursor:pointer;
+.grid{ display:grid; grid-template-columns:minmax(0, 1fr); gap:26px; }
+/* kolumny po szerokosci karty obszarow: >=1100 px 3, 700-1100 px 2, ponizej 1; config columns ogranicza maksimum (1-3) */
+@container (min-width: 700px){ .grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); } }
+@container (min-width: 1100px){ .grid{ grid-template-columns:repeat(3, minmax(0, 1fr)); } .grid.cols2{ grid-template-columns:repeat(2, minmax(0, 1fr)); } }
+.grid.cols1{ grid-template-columns:minmax(0, 1fr) !important; }
+.tile{ position:relative; display:flex; flex-direction:column; justify-content:space-between; min-width:0; box-sizing:border-box; aspect-ratio:465 / 285; min-height:230px; container-type:size; padding:5cqh 4.5cqi; border-radius:var(--r-md); overflow:hidden; cursor:pointer;
   background:var(--hg-glass-lite, var(--hg-glass-bg)); border:0; box-shadow: var(--hg-edge, 0 0 0 transparent), var(--hg-card-sh, var(--hg-shadow-lg, 0 6px 20px var(--hg-glass-sh)));
   color:#fff; text-align:left; transition: transform .25s cubic-bezier(.2,0,0,1), box-shadow .25s; -webkit-tap-highlight-color:transparent; touch-action:manipulation; outline:none; }
 .tile .ph{ position:absolute; inset:0; background-size:cover; background-position:center; }
@@ -107,7 +107,7 @@ class HGAreasCard extends HGBase {
       const ic = /schod|stair/.test(e) ? 'mdi:stairs-down' : /taras|balkon|balcony|terrace/.test(e) ? 'mdi:balcony' : 'mdi:lightbulb-outline';
       return `<button class="pl ${on ? 'on' : ''}" data-act="tog" data-e="${H.esc(e)}" ${ok ? '' : 'disabled'} aria-pressed="${on}" aria-label="${H.esc(`${nm} – ${ok ? (on ? hgT('cards.areas.turn_off') : hgT('cards.areas.turn_on')) : hgT('common.state_unavailable')}`)}">${H.icon(ic)}<span>${H.esc(nm)}</span></button>`;
     }).join('')}</div>` : '';
-    return `<div class="grid ${c.layout === 'list' ? 'list' : ''}" role="list" aria-label="${hgT('common.rooms')}" data-hgl="rooms" data-hgsz="1">${tiles.join('')}</div>${oth}`;
+    return `<div class="grid ${c.layout === 'list' ? 'list' : ''} cols${Math.min(3, Math.max(1, parseInt(c.columns, 10) || 3))}" role="list" aria-label="${hgT('common.rooms')}" data-hgl="rooms" data-hgsz="1">${tiles.join('')}</div>${oth}`;
   }
   onAct(act, t) {
     const h = this._hass, c = this._config;
