@@ -1,4 +1,4 @@
-/* ===================== BARS (raport zużycia) ===================== */
+/* Raport zużycia: słupki energii ze statystyk */
 class HGBarsCard extends HGBase {
   defaults() { return { title: hgT('cards.bars.grid_consumption'), icon: 'mdi:transmission-tower', statistics: [], labels: [], colors: ['var(--hg-accent)', 'var(--hg-accent)', 'var(--hg-accent)', 'var(--hg-accent)'], days: 7, unit: 'kWh', locale: null, expand: null, no_data: hgT('common.no_data_source') }; }
   ents() { return []; }

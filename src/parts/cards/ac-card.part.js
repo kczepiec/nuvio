@@ -1,7 +1,7 @@
-/* etykiety trybów wentylatora / nawiewu z HA (fan_mode, swing_mode): katalog cards.ac.fan_modes.* / cards.ac.swing_modes.*, null gdy brak (też remote-card) */
+/* Etykiety trybów wentylatora i nawiewu z HA, null gdy brak */
 const hgFanL = (k) => hgTD('cards.ac.fan_modes.' + k, null);
 const hgSwingL = (k) => hgTD('cards.ac.swing_modes.' + k, null);
-/* Klimatyzacja w stylu aplikacji Tesla: duża temperatura z chevronami, pasek temperatury (przeciągany), rząd dużych przycisków trybów */
+/* Klimatyzacja: duża temperatura z chevronami, przeciągany pasek i przyciski trybów */
 class HGACCard extends HGBase {
   defaults() {
     return { title: hgT('common.air_conditioning'), compact: false,

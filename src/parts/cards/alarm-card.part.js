@@ -1,4 +1,4 @@
-/* ===================== BEZPIECZEŃSTWO: alarm + czujniki ===================== */
+/* Bezpieczeństwo: alarm i czujniki */
 /* [kolor, ikona]; etykieta stanu: hgTD('cards.alarm.states.' + stan) */
 const HG_ALARM_ST = {
   disarmed: ['var(--hg-accent)', 'mdi:shield-off-outline'], armed_home: ['var(--hg-accent)', 'mdi:shield-home'],

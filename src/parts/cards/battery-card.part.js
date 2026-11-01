@@ -1,4 +1,4 @@
-/* --- baterie --- */
+/* Baterie: lista czujników poziomu baterii */
 class HGBatteryCard extends HGBase {
   defaults() { return { title: null, entities: [], low: 20, limit: 0 }; }
   _list() { const c = this._config, h = this._hass; return (c.entities && c.entities.length ? c.entities : hgEnts(h, ['sensor'], ['battery'])).filter((e) => h.states[e]); }

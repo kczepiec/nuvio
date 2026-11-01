@@ -1,4 +1,4 @@
-/* ===================== WYKRES: linia, obszar albo słupki z historii dowolnego czujnika, dymek z ostatnią wartością ===================== */
+/* Wykres: linia, obszar lub słupki z historii czujnika */
 class HGChartCard extends HGBase {
   static getStubConfig(h) { return { entity: hgStub(h, ['sensor'], hgNum) || null }; }
   defaults() { return { entity: null, name: null, icon: null, hours: 24, style: 'area', tone: null, points: 48, decimals: 1 }; }

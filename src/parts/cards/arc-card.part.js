@@ -1,4 +1,4 @@
-/* ===================== ŁUK: wartość na łuku z kreskami, przeciągana palcem (jasność, wentylator, roleta, głośność, liczba) ===================== */
+/* Łuk: wartość na łuku z kreskami, przeciągana palcem */
 class HGArcCard extends HGBase {
   static getStubConfig(h) { return { entity: hgStub(h, ['light'], (s) => (s.attributes.supported_color_modes || []).some((m) => m !== 'onoff')) || hgStub(h, ['fan', 'input_number', 'number']) || null }; }
   defaults() { return { entity: null, name: null, icon: null }; }

@@ -1,3 +1,4 @@
+/* Grupa kamer: działające jako kafle, niedostępne jako chipy */
 class HGCamerasCard extends HGBase {
   defaults() { return { entities: [], names: {}, fs: {}, fb: {}, refresh_map: {}, nolive: [], pin: [], refresh: 10, studio: false, thumbs: false, max: 3, view_all: false, view_all_path: null }; }
   css() {

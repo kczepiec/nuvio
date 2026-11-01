@@ -1,4 +1,4 @@
-/* ===================== SZYBKIE AKCJE: rząd okrągłych przycisków (sceny, skrypty, usługi, przejścia) w jednej szklanej pigułce ===================== */
+/* Szybkie akcje: okrągłe przyciski (sceny, skrypty, usługi) w szklanej pigułce */
 class HGActionsCard extends HGBase {
   static getStubConfig(h) { const L = Object.keys((h && h.states) || {}).filter((e) => ['scene', 'script', 'light'].includes(hgDom(e))).slice(0, 4); return { actions: L.map((e) => ({ entity: e })) }; }
   defaults() { return { title: null, actions: [] }; }

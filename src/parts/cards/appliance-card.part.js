@@ -1,4 +1,4 @@
-/* --- urządzenie AGD jako osobny widżet (pralka, suszarka, czajnik, poidełko, dowolne urządzenie): ten sam widok co w pokoju --- */
+/* Urządzenie AGD jako osobny widżet, ten sam widok co w pokoju */
 class HGApplianceCard extends HGRoomCard {
   defaults() { return { entity: '', device: '', areas: {} }; }
   _dev() { const h = this._hass, c = this._config, r = (h.entities || {})[c.entity]; return c.device || (r && r.device_id) || ''; }

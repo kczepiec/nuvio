@@ -1,4 +1,4 @@
-/* --- jakość powietrza: CO2, PM2.5, PM10, LZO, wilgotność i AQI w jednym miejscu; kolor wg progów, ogólna ocena z najgorszego odczytu --- */
+/* Jakość powietrza: CO2, PM, LZO, wilgotność i AQI, kolor wg progów */
 /* [device_class, nazwa (tekst albo hgTLazy), ikona, progi (dobra / umiarkowana / słaba), skala paska, odwrotnie: wilgotność ma dobry zakres w środku] */
 const HG_AIRQ = [
   ['carbon_dioxide', 'CO₂', 'mdi:molecule-co2', [800, 1200, 1600], 2000],

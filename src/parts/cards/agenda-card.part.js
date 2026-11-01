@@ -1,4 +1,4 @@
-/* --- agenda: najbliższe wydarzenia pogrupowane po dniach --- */
+/* Agenda: najbliższe wydarzenia pogrupowane po dniach */
 class HGAgendaCard extends HGBase {
   defaults() { return { title: hgT('cards.agenda.upcoming'), icon: 'mdi:format-list-bulleted', calendars: [], days: 60 }; }
   ents() { return this._config.calendars.map((c) => (typeof c === 'string' ? c : c.entity)); }

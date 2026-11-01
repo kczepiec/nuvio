@@ -1,4 +1,4 @@
-/* --- siatka pokoi --- */
+/* Siatka pokoi */
 class HGAreasCard extends HGBase {
   defaults() { return { room_path: HG_P('pokoj'), areas: {} }; }
   constructor() {

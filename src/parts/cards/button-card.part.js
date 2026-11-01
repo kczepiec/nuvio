@@ -1,3 +1,4 @@
+/* Przycisk: kafel albo pigułka uruchamiająca akcję encji */
 class HGButtonCard extends HGBase {
   defaults() { return { entity: null, name: null, icon: null, mode: 'tile', tap_action: null, subtitle: null }; }
   ents() { return this._config.entity ? [this._config.entity] : []; }
