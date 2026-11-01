@@ -219,3 +219,9 @@ test('registration: all three cards appear in the picker', () => {
   const { window } = mk(); const t = (window.customCards || []).map((x) => x.type);
   for (const n of ['hg-studio-climate-card', 'hg-studio-energy-card', 'hg-studio-home-card']) assert.ok(t.includes(n), n);
 });
+
+/* mediamini w kaflu Studio: stopnie wysokosci (cqh), by tytul i play miescily sie w niskim kaflu */
+{
+  const fs = await import('node:fs'), src = fs.readFileSync(new URL('../../src/parts/cards/media-card.part.js', import.meta.url), 'utf8');
+  for (const re of [/@container \(max-height: 279px\)/, /@container \(max-height: 219px\)[^}]*\.np \.pb\{ display:none/, /@container \(max-height: 149px\)[^}]*\.np \.art/]) if (!re.test(src)) throw new Error('media-card: brak stopnia wysokosci ' + re);
+}

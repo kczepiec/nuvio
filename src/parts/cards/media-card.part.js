@@ -27,6 +27,10 @@ ha-card.np{ container-type:inline-size; height:100%; justify-content:flex-start;
 @container (max-width: 219px){ .np .pb, .np .src, .np .ctl .cb:not(.pp), .np .kebab{ display:none; } .np .tx span{ display:none; } }
 @container (min-width: 220px) and (max-width: 299px){ .np .src{ display:none; } }
 @container (min-width: 420px){ .np .tx b{ font-size:20px; } }
+/* kafel Studio ma stałą wysokość (container-type:size na .st-k): okładka maleje z cqh, potem znika pasek, okładka i podtytuł; tytuł i play zawsze w kaflu */
+@container (max-height: 279px){ .np .art{ width:clamp(40px, min(36cqi, 120px, 40cqh), 120px); } }
+@container (max-height: 219px){ .np .pb{ display:none; } .np .ctl{ margin-top:auto; } .np .cb.pp{ width:40px; height:40px; } }
+@container (max-height: 149px){ .np .art, .np .src{ display:none; } .np .tx span{ display:none; } ha-card.np{ justify-content:space-between; } }
 `);
   }
   render() {
