@@ -70,7 +70,8 @@ test('breakpoint switch uses the derived layout', async () => {
   const h = c._gridHtml(); assert.match(h, /--st-cols:8;/);
   const g = c._cur().find((i) => i.id === 'w_greeting');
   assert.equal(area(h, 'w_greeting'), `${g.y + 1} / ${g.x + 1} / span ${g.h} / span ${g.w}`);
-  c._width(390); assert.equal(c._bp.id, 'sm'); assert.ok(c._cur().every((i) => i.x + i.w <= 4));
+  c._width(390); assert.equal(c._bp.id, 'sm'); assert.match(c._gridHtml(), /--st-cols:1;/);
+  assert.ok(c._cur().every((i) => i.x === 0 && i.w === 1));
 });
 
 test('lg move / resize write items and set custom:1; bps untouched', async () => {
@@ -181,7 +182,7 @@ test('edit mode grid rows follow visible layout, not lg minimum', () => {
   const h2 = c._gridHtml();
   const m = /--st-rows:(\d+)/.exec(h2);
   assert.ok(m, 'rows var');
-  assert.equal(+m[1], 10, 'edit keeps the same lg floor as preview (same layout in both modes)');
+  assert.equal(+m[1], 11, 'edit grows for the add tile under a single-column stack');
 });
 
 test('row height uses design unit (_stCh), same in edit and preview', () => {

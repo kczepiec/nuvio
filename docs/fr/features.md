@@ -65,7 +65,7 @@ Une vue facultative avec une grille libre de widgets, désactivée par défaut.
 
 - **Activer** : **Réglages → Vues**, activez **Studio**. L’accueil et vos dispositions enregistrées restent inchangés. La première disposition Studio est créée une fois à partir de vos entités et jamais régénérée.
 - **Mode édition** : déplacez un widget par sa poignée, redimensionnez-le depuis le coin, ouvrez son menu pour choisir une taille, le masquer ou le supprimer, et utilisez la tuile **Ajouter un widget** pour en ajouter un ou réafficher un widget masqué. Les autres widgets s’écartent et se compactent. Les flèches déplacent le widget actif, Maj et les flèches le redimensionnent.
-- **Disposition par appareil** : la grille compte 12 colonnes sur grand écran, 8 sur tablette et 4 sur téléphone. Les changements faits à une largeur donnée sont enregistrés comme une disposition distincte pour cette largeur. **Enregistrer** les conserve, **Annuler** rétablit la disposition précédente.
+- **Disposition par appareil** : la grille compte 12 colonnes sur grand écran, 8 sur tablette et 1 sur téléphone (widgets en une colonne). Les changements faits à une largeur donnée sont enregistrés comme une disposition distincte pour cette largeur. **Enregistrer** les conserve, **Annuler** rétablit la disposition précédente.
 - La disposition fait partie de la [sauvegarde de la disposition](#sauvegarde-de-la-disposition).
 
 ## Assistant vocal

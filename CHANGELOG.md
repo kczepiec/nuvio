@@ -11,6 +11,7 @@ All notable changes to Nuvio are listed here, newest first. Versions follow [sem
 - Added: beta builds such as `2.32.0-beta.1` load their assets from the CDN. `tools/cut-release.sh --pre` and `tools/tag-release.sh --pre` publish a beta pre-release from the current branch.
 - Fixed: Studio widgets sit closer to the mockup. Cards on the photo use darker glass and white text, the climate arc stays inside the card, energy bars show from the medium size, media uses a larger cover, lights-on is indigo, and scenes sit in one row.
 - Fixed: Studio chrome. The logo shows again, the rail is a rounded bar without the back arrow, and the top-right icons have more space. Wi-Fi and Bluetooth reflect the tablet state and open the entity; the battery icon is gone.
+- Fixed: on phones, Studio widgets stack in a single full-width column.
 - Fixed: the Studio grid sits against the rail instead of leaving a gutter, and edit mode adds the same components as the other views.
 - Fixed: Studio no longer keeps an empty grid column on the left, and widgets scale with the height of their cell.
 - Fixed: Studio edit mode no longer wobbles the whole grid or squeezes widgets to fit the add tile.

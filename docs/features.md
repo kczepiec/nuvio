@@ -69,7 +69,7 @@ An optional view with a free widget grid, off by default.
 
 - **Enable**: **Settings → Views**, switch on **Studio**. Home and your saved layouts stay untouched. The first Studio layout is built once from your own entities and never regenerated.
 - **Edit mode**: drag a widget by its handle, resize it from the corner, open its menu to pick a size or hide or remove it, and use the dashed **Add widget** tile to add one or show a hidden one again. Other widgets move aside and compact. Arrow keys move a focused widget, Shift and arrows resize it.
-- **Per-device layouts**: the grid has 12 columns on wide screens, 8 on tablets and 4 on phones. Changes made at a given width are stored as a separate layout for that width. **Save** keeps them, **Cancel** restores the previous layout.
+- **Per-device layouts**: the grid has 12 columns on wide screens, 8 on tablets and 1 on phones (widgets stack in a single column). Changes made at a given width are stored as a separate layout for that width. **Save** keeps them, **Cancel** restores the previous layout.
 - The layout is part of the [layout backup](#layout-backup).
 
 ## Voice assistant

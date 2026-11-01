@@ -1,6 +1,6 @@
 /* Studio: czysty silnik siatki 2D (bez DOM, nie mutuje wejścia). Ukryte elementy zachowują pozycję, ale nie kolidują. */
 const HGGrid = (() => {
-  const BP = [{ id: 'lg', min: 1024, cols: 12 }, { id: 'md', min: 600, cols: 8 }, { id: 'sm', min: 0, cols: 4 }];
+  const BP = [{ id: 'lg', min: 1024, cols: 12 }, { id: 'md', min: 600, cols: 8 }, { id: 'sm', min: 0, cols: 1 }];
   const I = (n, d) => { n = Math.round(Number(n)); return Number.isFinite(n) ? n : d; };
   const vis = (a) => !a.hidden;
   const cmp = (a, b) => a.y - b.y || a.x - b.x;
@@ -61,9 +61,21 @@ const HGGrid = (() => {
     });
     return compact(items.map((it) => res.get(it.id)));
   };
+  /* telefon (1 kolumna): pełna szerokość, układ pionowy bez nakładania */
+  const stack = (items, cols) => {
+    if (cols !== 1) return items;
+    const out = items.map((it) => ({ ...it }));
+    let y = 0;
+    out.map((it, i) => [it, i]).sort(([a, i], [b, j]) => cmp(a, b) || i - j).forEach(([it]) => {
+      if (!vis(it)) { Object.assign(it, normOne({ ...it, x: 0, w: 1 }, cols)); return; }
+      Object.assign(it, normOne({ ...it, x: 0, w: 1, y }, cols)); y += it.h;
+    });
+    return out;
+  };
   const layoutFor = (L, bpId) => {
     const cols = (BP.find((b) => b.id === bpId) || BP[0]).cols;
-    return (L.bps && L.bps[bpId]) || derive(L.items || [], 12, cols);
+    const raw = (L.bps && L.bps[bpId]) || derive(L.items || [], 12, cols);
+    return stack(raw, cols);
   };
-  return { BP, bp, norm, collides, compact, place, move, resize, snap, derive, layoutFor };
+  return { BP, bp, norm, collides, compact, place, move, resize, snap, derive, stack, layoutFor };
 })();

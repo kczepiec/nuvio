@@ -1,5 +1,5 @@
 /* ===================== STUDIO: swobodna siatka widżetów (HGGrid + HG_STUDIO_W), układ w HGL.data.studio ===================== */
-/* Siatka: 12 / 8 / 4 kolumny wg szerokości karty (HGGrid.bp). Wiersze dzielą wysokość panelu (min. 32 px), a --hg-u na kafelku jest wysokością komórki względem projektu (64 px + odstęp). lg zapisuje items, md / sm własne nadpisanie bps[bp].
+/* Siatka: 12 / 8 / 1 kolumna wg szerokości karty (HGGrid.bp; telefon = jedna kolumna). Wiersze dzielą wysokość panelu (min. 32 px), a --hg-u na kafelku jest wysokością komórki względem projektu (64 px + odstęp). lg zapisuje items, md / sm własne nadpisanie bps[bp].
    Treść rysowana poza render() (morph do .st-root), bo w trybie edycji HG_FREEZE wstrzymuje zwykłe przerysowanie kart.
    Wiersz --st-ch: 64×u0, dopasowany do wysokości panelu; treść kafelka --hg-u (stosy bez tego skalowania). */
 const HG_ST_ROW = 64, HG_ST_GAP = 24;
@@ -117,6 +117,7 @@ class HGStudioGrid extends HGBase {
       a = a.filter((i) => ids.has(i.id));
       const miss = L.items.filter((i) => !a.some((x) => x.id === i.id));
       if (miss.length) { const d = HGGrid.derive(L.items, 12, cols); for (const m of miss) { const { x, y, ...r } = d.find((o) => o.id === m.id); a = HGGrid.place(a, r, cols); } }
+      a = HGGrid.stack(a, cols);
     }
     return a;
   }
@@ -284,10 +285,13 @@ class HGStudioGrid extends HGBase {
     this._saveLayout(Object.assign({}, L, { items: HGGrid.place(L.items, it, 12), bps, custom: 1 })); this._lh = null; this._lay(); return id;
   }
   /* rozmiary S / M / L z rejestru (min / domyślny / większy), przeliczone na kolumny progu */
-  _preset(type, k) { if (type === 'card') { const p = k === 's' ? { w: 3, h: 2 } : k === 'l' ? { w: 6, h: 4 } : { w: 4, h: 3 }, f = this._cols() / 12; return { w: Math.max(2, Math.round(p.w * f)), h: p.h }; }
-    const d = HG_STUDIO_W[type], f = this._cols() / 12; if (!d) return null;
+  _preset(type, k) {
+    const cols = this._cols(), f = cols / 12;
+    if (type === 'card') { const p = k === 's' ? { w: 3, h: 2 } : k === 'l' ? { w: 6, h: 4 } : { w: 4, h: 3 }; return { w: cols === 1 ? 1 : Math.max(2, Math.round(p.w * f)), h: p.h }; }
+    const d = HG_STUDIO_W[type]; if (!d) return null;
     const p = k === 's' ? d.min : k === 'l' ? { w: Math.min(d.max.w, Math.round(d.def.w * 1.5)), h: Math.min(d.max.h, d.def.h + 1) } : d.def;
-    return { w: Math.max(1, Math.round(p.w * f)), h: p.h }; }
+    return { w: cols === 1 ? 1 : Math.max(1, Math.round(p.w * f)), h: p.h };
+  }
   _opSize(id, k) { const t = this._byId().get(id), p = t && this._preset(t.type, k); if (p) this._opResize(id, p.w, p.h); }
   _say(id) { const it = this._cur().find((i) => i.id === id), t = this._byId().get(id), el = this.$ && this.$.querySelector && this.$.querySelector('[data-st-live]');
     if (it && t && el) el.textContent = hgT('studio.pos', { name: this._name(t.type, t), x: it.x + 1, y: it.y + 1, w: it.w, h: it.h }); }

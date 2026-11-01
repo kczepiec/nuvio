@@ -13,7 +13,7 @@ const overlaps = (arr) => arr.some((a) => arr.some((b) => G.collides(a, b)));
 test('bp: progi 1024/600', () => {
   assert.deepEqual(G.bp(1400), { id: 'lg', cols: 12 }); assert.deepEqual(G.bp(1024), { id: 'lg', cols: 12 });
   assert.deepEqual(G.bp(1023), { id: 'md', cols: 8 }); assert.deepEqual(G.bp(600), { id: 'md', cols: 8 });
-  assert.deepEqual(G.bp(599), { id: 'sm', cols: 4 }); assert.deepEqual(G.bp(0), { id: 'sm', cols: 4 });
+  assert.deepEqual(G.bp(599), { id: 'sm', cols: 1 }); assert.deepEqual(G.bp(0), { id: 'sm', cols: 1 });
 });
 
 test('collides: nakładanie, styk krawędzi, ukryte, ten sam element', () => {
@@ -95,27 +95,25 @@ test('ukryte: nie kolidują, nie ruszają się i nie pchają', () => {
   assert.deepEqual(pos(p).n, [4, 0, 4, 2]);
 });
 
-test('derive 12 -> 8 -> 4: kolejność czytania, minW, bez kolizji', () => {
+test('derive 12 -> 8 -> 1: kolejność czytania, minW, bez kolizji', () => {
   const src = fz([it('g', 0, 0, 6, 2), it('w', 6, 0, 6, 2, { minW: 4 }), it('h', 0, 2, 6, 2), it('m', 6, 2, 6, 2)]);
   const order = (arr) => arr.slice().sort((a, b) => a.y - b.y || a.x - b.x).map((i) => i.id).join('');
-  const d8 = G.derive(src, 12, 8), d4 = G.derive(src, 12, 4);
-  for (const [d, cols] of [[d8, 8], [d4, 4]]) {
-    assert.equal(order(d), 'gwhm'); assert.equal(overlaps(d), false);
-    assert.ok(d.every((i) => i.x >= 0 && i.x + i.w <= cols));
-  }
-  assert.ok(by(d8, 'w').w >= 4 && by(d4, 'w').w >= 4);
-  assert.deepEqual(G.derive(d8, 8, 4).map((i) => i.id).sort(), ['g', 'h', 'm', 'w']);
-  assert.equal(overlaps(G.derive(d8, 8, 4)), false);
+  const d8 = G.derive(src, 12, 8), d1 = G.stack(G.derive(src, 12, 1), 1);
+  assert.equal(order(d8), 'gwhm'); assert.equal(overlaps(d8), false);
+  assert.ok(d8.every((i) => i.x >= 0 && i.x + i.w <= 8));
+  assert.ok(by(d8, 'w').w >= 4);
+  assert.ok(d1.every((i) => i.x === 0 && i.w === 1)); assert.equal(overlaps(d1), false);
+  assert.equal(order(d1), 'gwhm');
   assert.deepEqual(pos(G.derive(src, 12, 12)), pos(src));
 });
 
 test('layoutFor: override bps, inaczej derive', () => {
   const items = [it('a', 0, 0, 6, 2), it('b', 6, 0, 6, 2)], ov = [it('a', 0, 0, 4, 2), it('b', 0, 2, 4, 2)];
   const L = fz({ items, bps: { sm: ov } });
-  assert.equal(G.layoutFor(L, 'sm'), ov);
+  assert.deepEqual(pos(G.layoutFor(L, 'sm')), { a: [0, 0, 1, 2], b: [0, 2, 1, 2] });
   assert.deepEqual(pos(G.layoutFor(L, 'md')), pos(G.derive(items, 12, 8)));
   assert.deepEqual(pos(G.layoutFor(L, 'lg')), pos(items));
-  assert.deepEqual(pos(G.layoutFor({ items }, 'sm')), pos(G.derive(items, 12, 4)));
+  assert.ok(G.layoutFor({ items }, 'sm').every((i) => i.x === 0 && i.w === 1));
 });
 
 test('snap: piksele na komórki, clamp do 0', () => {
