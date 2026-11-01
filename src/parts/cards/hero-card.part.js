@@ -29,8 +29,8 @@ ha-card.hero.img{ background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,
     return n;
   }
   render() { const c = this._config, h = this._hass, nm = hgFirstName(h), s = c.entity ? H.st(h, c.entity) : null, sg = !!(c.studio || c.auto_greeting || c.status);
-    const hr = this._hour();
-    const T = c.title ?? ((c.studio || c.auto_greeting) ? (hr < 5 ? hgT('cards.hero.greeting_night', { name: nm }) : hr < 12 ? hgT('cards.hero.greeting_morning', { name: nm }) : hr < 18 ? hgT('cards.hero.greeting_afternoon', { name: nm }) : hgT('cards.hero.greeting_evening', { name: nm })) : hgT('cards.hero.greeting_title', { name: nm })), Sb = c.subtitle ?? (c.studio ? '' : hgT('cards.hero.your_whole_home_in'));
+    const hr = this._hour(), ag = c.studio || c.auto_greeting;
+    const T = c.title ?? (ag ? (hr < 5 ? hgT('cards.hero.greeting_night', { name: nm }) : hr < 12 ? hgT('cards.hero.greeting_morning', { name: nm }) : hr < 18 ? hgT('cards.hero.greeting_afternoon', { name: nm }) : hgT('cards.hero.greeting_evening', { name: nm })) : hgT('cards.hero.greeting_title', { name: nm })), Sb = c.subtitle ?? (c.studio ? '' : hgT('cards.hero.your_whole_home_in'));
     /* pusty {name}: usuwa przecinek i zwykłe spacje przed «!», a spacja niełamliwa (typografia francuska) zostaje */
     const bang = (m) => (m.includes('\u00a0') ? '\u00a0!' : '!');
     const fill = (x) => String(x || '').replace(/\{name\}/g, nm).replace(/,\s*!/, bang).replace(/\s+!/, bang);

@@ -11,11 +11,11 @@ class HGKidCard extends HGBase {
 .li + .li{ border-top:1px solid color-mix(in srgb, currentColor 8%, transparent); }`; }
   render() { const h = this._hass, c = this._config, k = this._kid();
     if (!k) return `<ha-card class="glass">${hgHead('mdi:human-child', c.title || hgT('cards.kid.child'), '', false)}<div class="em">${hgT('cards.kid.no_child_data')}</div></ha-card>`;
-    const st = k.present ? hgT('common.at_facility') : hgT('cards.kid.away');
+    const st = k.present ? hgT('common.at_facility') : hgT('cards.kid.away'), inT = k.inToday || k.lastIn, outT = k.outToday || k.lastOut;
     const row = (ic, nm, vl, e, cls = '', sub = '') => `<button class="li ${cls}" data-act="more" data-e="${H.esc(e || '')}">${H.icon(ic)}<span class="nm">${H.esc(nm)}</span><span class="vl">${H.esc(vl)}${sub ? `<small>${H.esc(sub)}</small>` : ''}</span></button>`;
     const none = hgT('cards.kid.none'), rows = [
-      row('mdi:login', hgT('common.check_in'), k.inToday || k.lastIn || '--:--', k.ids.last_check_in || k.ids.present, k.inToday || k.lastIn ? '' : 'mu'),
-      row('mdi:logout', hgT('common.check_out'), k.outToday || k.lastOut || '--:--', k.ids.last_check_out || k.ids.present, k.outToday || k.lastOut ? '' : 'mu'),
+      row('mdi:login', hgT('common.check_in'), inT || '--:--', k.ids.last_check_in || k.ids.present, inT ? '' : 'mu'),
+      row('mdi:logout', hgT('common.check_out'), outT || '--:--', k.ids.last_check_out || k.ids.present, outT ? '' : 'mu'),
       k.ids.meals_today ? row('mdi:silverware-fork-knife', hgT('cards.kid.meals_today'), k.mealsOn ? k.meals : none, k.ids.meals_today, k.mealsOn ? '' : 'mu') : '',
       k.unread != null ? row('mdi:bell-badge-outline', hgT('cards.kid.unread'), String(k.unread), k.ids.unread_feed, k.unread ? 'al' : 'mu') : '',
       k.bill ? row('mdi:cash', hgT('cards.kid.bill'), k.billNum > 0 ? k.bill : hgT('cards.kid.paid'), k.ids.bill_to_pay, k.billNum > 0 ? (k.overdue ? 'od' : '') : 'mu',

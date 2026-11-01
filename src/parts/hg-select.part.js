@@ -56,7 +56,6 @@ function hgSelUp(sel) {
   sel.after(t);
   let L = null, act = -1, q = '', fl = [], shown = 0, Q = null;   /* act: pozycja w przefiltrowanej liście fl (indeksy opcji); shown: ile opcji dopisano do listy */
   const opts = () => [...sel.options];
-  const norm = hgsNorm;
   const filt = () => { fl = hgsFilter(opts().map((o) => o.text), q); return fl; };
   const paint = () => { const o = sel.options[sel.selectedIndex]; t.innerHTML = `<span class="hgs-v">${hgsEsc(o ? o.text : '')}</span>${HGS_CHEV}`; t.disabled = sel.disabled; };
   const row = (i) => { const o = sel.options[i]; return `<li class="hgs-o" role="option" id="${id}o${i}" data-i="${i}" aria-selected="${i === sel.selectedIndex}"${o.disabled ? ' aria-disabled="true"' : ''}>${HGS_TICK}<span>${hgsEsc(o.text)}</span></li>`; };

@@ -100,7 +100,7 @@ ha-card.glass{ container-type:inline-size; }
   _num(e) { const s = this._st(e); return s && H.ok(s) && isFinite(parseFloat(s.state)) ? parseFloat(s.state) : null; }
   _kv(icon, label, v, u, bar) {
     if (v == null || v === '') return '';
-    return `<div><small>${H.icon(icon)}${H.esc(label)}</small><b>${H.esc(typeof v === 'number' ? H.fmt(v, v < 10 ? 1 : 0) : v)}${u ? `<em>${H.esc(u)}</em>` : ''}</b>${bar != null ? `<div class="bar" style="--c:${bar > 90 ? '#E53935' : bar > 70 ? 'var(--hg-accent)' : 'var(--hg-accent)'}"><i style="width:${Math.min(100, Math.max(2, bar))}%"></i></div>` : ''}</div>`;
+    return `<div><small>${H.icon(icon)}${H.esc(label)}</small><b>${H.esc(typeof v === 'number' ? H.fmt(v, v < 10 ? 1 : 0) : v)}${u ? `<em>${H.esc(u)}</em>` : ''}</b>${bar != null ? `<div class="bar" style="--c:${bar > 90 ? '#E53935' : 'var(--hg-accent)'}"><i style="width:${Math.min(100, Math.max(2, bar))}%"></i></div>` : ''}</div>`;
   }
   _upd(e) {
     const s = this._st(e); if (!s || !H.ok(s)) return '';

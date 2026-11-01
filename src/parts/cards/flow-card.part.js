@@ -29,7 +29,7 @@ const hgFlowGuess = (h) => { const st = (h && h.states) || {}, R = h.entities ||
   const battery = P4.map((q) => q[0]), battery_soc = SL.filter(Boolean), socOf = Object.fromEntries(P4.map((q, i) => [q[0], SL[i]]).filter(([, x]) => x));
   return { grid: grid || null, solar: solar || null, battery, battery_soc, socOf }; };
 /* formularz (galeria i karta widoku Energia) -> konfiguracja karty: baterie jako osobne obiekty, poziom z tego samego urządzenia co moc, inaczej wg kolejności */
-const hgFlowCfg = (v, h) => { const L = (x) => hgArr(x), o = Object.fromEntries(['grid', 'solar', 'grid_export', 'home'].filter((k) => L(v[k]).length).map((k) => [k, L(v[k]).length > 1 ? L(v[k]) : L(v[k])[0]]));
+const hgFlowCfg = (v, h) => { const L = (x) => hgArr(x), o = Object.fromEntries(['grid', 'solar', 'grid_export', 'home'].filter((k) => L(v[k]).length).map((k) => { const a = L(v[k]); return [k, a.length > 1 ? a : a[0]]; }));
   const P = L(v.battery), S = L(v.battery_soc), R = (h && h.entities) || {}, used = new Set();
   const NM = v.names || {};   /* nazwy baterii z konfiguracji karty (YAML), wg czujnika mocy, inaczej poziomu */
   const SO = v.socOf || {};   /* dokładne pary moc -> poziom (panel Energia HA, zgadywanie), przed dopasowaniem wg urządzenia i kolejności */

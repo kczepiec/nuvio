@@ -287,14 +287,15 @@ const HGWall = window.__hgWall || (window.__hgWall = {
       navigator.wakeLock.request('screen').then((l) => { this._wlq = false; if (!this.active) { l.release(); return; } this._wl = l; try { l.addEventListener('release', () => { if (this._wl === l) this._wl = null; }); } catch (e) { /* bez zdarzenia: sprawdzamy released */ } }, () => { this._wlq = false; });
     } catch (e) { this._wlq = false; /* ekran może zgasnąć wg systemu */ } },
   clock() { clearTimeout(this._ck); const el = this.el; if (!el) return; if (this.ntSwitch()) return;
-    if (el.classList.contains('gl')) { this.gl(true); this._ck = setTimeout(() => this.clock(), 60000 - (Date.now() % 60000) + 50); return; }
-    if (el.classList.contains('xs')) { this.xsDraw(); this._ck = setTimeout(() => this.clock(), 60000 - (Date.now() % 60000) + 50); return; }
-    if (el.classList.contains('bd')) { this.bd(true); this._ck = setTimeout(() => this.clock(), 60000 - (Date.now() % 60000) + 50); return; }
+    const again = () => { this._ck = setTimeout(() => this.clock(), 60000 - (Date.now() % 60000) + 50); };
+    if (el.classList.contains('gl')) { this.gl(true); return again(); }
+    if (el.classList.contains('xs')) { this.xsDraw(); return again(); }
+    if (el.classList.contains('bd')) { this.bd(true); return again(); }
     const l = this.hass && this.hass.locale ? this.hass.locale.time_format : null, o = l === '12' ? { hour12: true } : l === '24' ? { hour12: false } : {}, d = new Date();
     el.querySelector('.nw-t').textContent = new Intl.DateTimeFormat(HG_LOC(), Object.assign({ hour: '2-digit', minute: '2-digit' }, o)).format(d);
     el.querySelector('.nw-d').textContent = new Intl.DateTimeFormat(HG_LOC(), { weekday: 'long', day: 'numeric', month: 'long' }).format(d);
     this.wx(); this.kid(); this.cal();
-    this._ck = setTimeout(() => this.clock(), 60000 - (Date.now() % 60000) + 50); },
+    again(); },
   /* pogoda w prawym górnym rogu (szklana karta), tylko gdy w HA jest encja weather */
   wx() { const el = this.el, h = this.hass, box = el && el.querySelector('.nw-w'); if (el && el.classList.contains('gl')) return this.gl(true); if (!box) return;
     const id = Object.keys((h && h.states) || {}).find((e) => e.startsWith('weather.') && h.states[e].state !== 'unavailable' && h.states[e].state !== 'unknown'), w = id ? h.states[id] : null;

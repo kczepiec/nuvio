@@ -72,7 +72,7 @@ ha-card.glass{ container-type:inline-size; }
       return `<button class="d ${sel === i ? 'sel' : ''} ${i === n - 1 ? 'today' : ''}" data-act="day" data-i="${i}" aria-label="${H.lv(H.esc(d.toLocaleDateString(HG_LOC())), `${ser.map((s) => `${s.label} ${s.has[i] ? H.fmt(s.vals[i], 1) + ' kWh' : hgT('common.no_data')}`).join(', ')}`)}">${tip}<span class="bs"><span class="bw">${pair}</span></span><small>${dayName(d, i)}</small></button>`;
     }).join('');
     const pv = ser.find((s) => s.k === 'production');
-    const gaps = pv ? days.filter((d, i) => !pv.has[i]).map((d, i) => d) : [];
+    const gaps = pv ? days.filter((d, i) => !pv.has[i]) : [];
     const note = gaps.length ? `<div class="note" title="${hgT('cards.week.the_inverter_sent_no')}"><i></i>${hgT('cards.week.no_inverter_data')} (${gaps.map((d) => H.DAYS[d.getDay()]).join(', ')})</div>` : '';
     return `<ha-card class="glass">${hd}<div class="sums">${sums}</div><div class="ch" style="--n:${n}">${cols}</div>${note}</ha-card>`;
   }

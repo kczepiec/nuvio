@@ -13,7 +13,7 @@ const HG_AIRQ = [
 /* poziomy 0..3: [nazwa (hgTLazy), kolor] */
 const HG_AIRQ_LV = [[hgTLazy('cards.airq.levels.good'), '#2FB36B'], [hgTLazy('cards.airq.levels.moderate'), '#F5B83D'], [hgTLazy('cards.airq.levels.poor'), '#FF8A3D'], [hgTLazy('cards.airq.levels.bad'), '#FF4D4F']];
 /* poziom 0..3; wilgotność: 40–60% dobrze, 30–70% umiarkowanie, 20–80% słabo */
-const hgAirqLv = (m, v) => { if (!m[3]) { const d = Math.max(0, Math.abs(v - 50) - 10); return d === 0 ? 0 : d <= 10 ? 1 : d <= 20 ? 2 : 3; } return m[3].findIndex((t) => v < t) === -1 ? 3 : m[3].findIndex((t) => v < t); };
+const hgAirqLv = (m, v) => { if (!m[3]) { const d = Math.max(0, Math.abs(v - 50) - 10); return d === 0 ? 0 : d <= 10 ? 1 : d <= 20 ? 2 : 3; } const i = m[3].findIndex((t) => v < t); return i === -1 ? 3 : i; };
 class HGAirqCard extends HGBase {
   static getStubConfig() { return { entities: [] }; }
   defaults() { return { title: null, entities: [] }; }

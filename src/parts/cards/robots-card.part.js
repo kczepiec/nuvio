@@ -148,16 +148,16 @@ ha-card.glass{ height:auto; display:flex; flex-direction:column; gap:var(--s2); 
     return `<ha-card class="glass">${hd}<div class="list ${d.robots.length > 1 ? 'two' : ''}">${d.robots.map((r) => this._robot(r)).join('')}</div></ha-card>`;
   }
   _robot(r) {
-    const h = this._hass, c = this._config, s = h.states[r.e], a = s.attributes, mower = r.e.startsWith('lawn_mower.');
+    const h = this._hass, c = this._config, s = h.states[r.e], a = s.attributes, mower = r.e.startsWith('lawn_mower.'), ic = mower ? 'mdi:robot-mower' : 'mdi:robot-vacuum';
     const nm = c.names[r.e] || (a.friendly_name || r.e).replace(/^(.+?)\s+\1$/, '$1').replace(/\s{2,}/g, ' ');
-    if (!H.ok(s)) return `<div class="rb idle"><div class="top"><span class="av">${H.icon(mower ? 'mdi:robot-mower' : 'mdi:robot-vacuum')}</span><span class="nm"><b>${H.esc(nm)}</b><span>${hgT('common.unavailable_masc')}</span></span></div></div>`;
+    if (!H.ok(s)) return `<div class="rb idle"><div class="top"><span class="av">${H.icon(ic)}</span><span class="nm"><b>${H.esc(nm)}</b><span>${hgT('common.unavailable_masc')}</span></span></div></div>`;
     const [lbl, cls] = hgRobotState(s), f = a.supported_features || 0, working = cls === 'work';
     const batV = a.battery ?? a.battery_level ?? H.num(h, r.bat);
     const bat = batV != null ? `<span class="bat ${batV < 20 ? 'low' : ''}">${H.icon(a.charging ? 'mdi:battery-charging' : batV > 90 ? 'mdi:battery' : `mdi:battery-${Math.max(10, Math.round(batV / 10) * 10)}`)}${H.pct(Math.round(batV))}</span>` : '';
     const err = cls === 'err' && a.error && a.error !== 'No error' ? ` · ${a.error}` : '';
     const room = r.room && H.ok(h.states[r.room]) && working ? h.states[r.room].state : '';
     const sub = room ? H.lv(hgT('common.room'), room) : (r.hist && H.ok(h.states[r.hist]) ? `${hgT('cards.robots.last')} ${hgAgo(h.states[r.hist].state)}` : (mower ? hgT('cards.robots.mower') : hgT('cards.robots.vacuum')));
-    const top = `<div class="top"><span class="av">${H.icon(mower ? 'mdi:robot-mower' : 'mdi:robot-vacuum')}</span><span class="nm"><b>${H.esc(nm)}</b><span>${H.esc(sub)}</span></span>
+    const top = `<div class="top"><span class="av">${H.icon(ic)}</span><span class="nm"><b>${H.esc(nm)}</b><span>${H.esc(sub)}</span></span>
       ${bat}<span class="pill" title="${H.esc(lbl + err)}"><i></i>${H.esc(lbl)}</span><button class="ib" data-act="more" data-e="${r.e}" aria-label="${hgT('common.more')}" title="${hgT('common.more')}">${H.icon('mdi:dots-vertical')}</button></div>`;
     // przyciski: tylko obsługiwane funkcje
     const B = (act, icon, label, on, pri) => `<button class="cb ${pri ? 'pri' : ''}" data-act="${act}" data-e="${r.e}" aria-label="${label}">${H.icon(icon)}<span>${label}</span></button>`;
@@ -211,7 +211,7 @@ ha-card.glass{ height:auto; display:flex; flex-direction:column; gap:var(--s2); 
     const last = kv.length ? `<div><div class="sec">${hgT('cards.robots.last_cleaning')}</div><div class="kv">${kv.map(([k, v, u]) => `<div title="${H.esc(H.lv(k, `${v}${u ? ' ' + u : ''}`))}"><small>${k}</small><p><b>${H.esc(v)}</b>${u ? `<em>${H.esc(u)}</em>` : ''}</p></div>`).join('')}</div></div>` : '';
     const cam = r.cam && h.states[r.cam];
     const map = cam ? `<div class="map" data-cam="${r.cam}" style="--a:${this._asp && this._asp[r.cam] || 1.25}"><div class="ph">${H.ok(cam) ? hgT('cards.robots.loading_map') : hgT('cards.robots.map_unavailable')}</div><img alt="${hgT('common.map')} ${H.esc(nm)}" ${this._src && this._src[r.cam] ? `src="${this._src[r.cam]}" class="ok"` : ''}>${room ? `<span class="rm">${H.esc(room)}</span>` : ''}</div>` : '';
-    const ill = map ? '' : `<div class="media ill" aria-hidden="true"><span class="ring" style="--p:${batV != null ? Math.round(batV) : 0}"><span class="in">${H.icon(mower ? 'mdi:robot-mower' : 'mdi:robot-vacuum')}</span></span><b>${H.esc(lbl)}</b><small>${batV != null ? `${hgT('common.battery')} ${H.pct(Math.round(batV))}` : H.esc(sub)}</small>${cls === 'chg' || cls === 'dock' ? H.icon('mdi:home-lightning-bolt-outline', 'dock') : ''}</div>`;
+    const ill = map ? '' : `<div class="media ill" aria-hidden="true"><span class="ring" style="--p:${batV != null ? Math.round(batV) : 0}"><span class="in">${H.icon(ic)}</span></span><b>${H.esc(lbl)}</b><small>${batV != null ? `${hgT('common.battery')} ${H.pct(Math.round(batV))}` : H.esc(sub)}</small>${cls === 'chg' || cls === 'dock' ? H.icon('mdi:home-lightning-bolt-outline', 'dock') : ''}</div>`;
     return `<div class="rb ${cls}">${top}<div class="g ${map ? '' : 'nomap'}" style="margin-top:10px">${map ? `<div class="media">${map}</div>` : ill}<div class="side">
       ${ctl ? `<div class="ctl">${ctl}</div>` : ''}${opts}${rooms}${cons ? `<div><div class="sec">${hgT('cards.robots.maintenance')}</div><div class="cons">${cons}</div></div>` : ''}${last}</div></div></div>`;
   }

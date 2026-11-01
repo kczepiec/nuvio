@@ -185,10 +185,10 @@ const HG_TILE_KIND = (e) => { const d = e.split('.')[0];
 /* typy wyświetlania zgodne z domeną encji */
 /* nazwy typów: gettery – język rozwiązywany przy użyciu */
 const HG_TYPES = hgTO({}, { tog: 'edit.switch', btn: 'edit.button', compact: 'edit.compact', minimal: 'edit.minimal', val: 'edit.reading', chart: 'edit.with_chart', clim: 'edit.climate', media: 'common.media', cam: 'edit.camera', cover: 'edit.cover', run: 'edit.action' });
-const hgTypesFor = (h, e) => { const d = e.split('.')[0], s = h.states[e], k = HG_TILE_KIND(e), num = s && s.state !== '' && isFinite(Number(s.state));
+const hgTypesFor = (h, e) => { const d = e.split('.')[0], k = HG_TILE_KIND(e);
   if (k === 'tog') return ['tog', 'btn', 'compact', 'minimal']; if (k === 'run') return ['run', 'btn', 'compact', 'minimal']; if (k === 'clim') return ['clim', 'val', 'chart', 'compact', 'minimal'];
   if (k === 'media') return ['media', 'compact', 'minimal']; if (k === 'cam') return ['cam', 'compact', 'minimal']; if (k === 'cover') return ['cover', 'compact', 'minimal'];
-  return num || d === 'sensor' ? ['val', 'chart', 'compact', 'minimal'] : ['val', 'compact', 'minimal']; };
+  return hgIsNum(h, e) || d === 'sensor' ? ['val', 'chart', 'compact', 'minimal'] : ['val', 'compact', 'minimal']; };
 const hgTypeOpts = (h, e) => hgTypesFor(h, e).map((t, i) => [t, i ? HG_TYPES[t] : hgT('edit.tile_type_default')]);
 /* historia (24 h) do wykresów – pamięć 5 min, odświeżenie kart po pobraniu */
 const HG_HIST = window.__hgHist || (window.__hgHist = { m: new Map(), get(h, e, cb) { const c = this.m.get(e); if (c && (c.p || Date.now() - c.t < 300000)) return c.d;

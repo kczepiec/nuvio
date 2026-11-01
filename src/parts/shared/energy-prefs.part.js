@@ -1,4 +1,3 @@
-/* shared/energy-prefs: Preferencje panelu Energia HA (energy/get_prefs). */
 /* --- wspólne: preferencje panelu Energia HA (energy/get_prefs) --- */
 const HGEnergyPrefs = {
   async get(hass) {

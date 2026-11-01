@@ -817,12 +817,13 @@ class HGPage extends HTMLElement {
   /* telefon: arkusz „Więcej” (warstwa nad stroną): zamykanie tapnięciem w tło, przesunięciem w dół, Escape */
   _openSheet(open) {
     const L = this._sheetL, c = this._config; if (!L) return;
+    const sheetMs = hgReduced() ? 0 : 220;
     clearTimeout(this._sheetT);
     if (!open) {
       if (!this._sheetOpen) return;
       this._sheetOpen = false;   // stan logiczny od razu (warstwa znika dopiero po animacji, ale pasek ma już wrócić do aktywnej pozycji)
       L.classList.remove('in', 'done'); document.removeEventListener('keydown', this._sheetKey, true);
-      this._sheetT = setTimeout(() => { L.removeAttribute('open'); L.innerHTML = ''; }, hgReduced() ? 0 : 220);
+      this._sheetT = setTimeout(() => { L.removeAttribute('open'); L.innerHTML = ''; }, sheetMs);
       this._paintRail(true); return;
     }
     const path = location.pathname, pop = open === 'rail', more = pop ? (this._railOv || []) : ((c.phone_nav && c.phone_nav.more) || []);
@@ -834,7 +835,7 @@ class HGPage extends HTMLElement {
     L.innerHTML = `<div class="scrim" data-act="sheetclose"></div><div class="sheet ${pop ? 'pop' : ''}" ${pst} role="dialog" aria-modal="true" aria-label="${hgT('common.more')}"><i class="grab" aria-hidden="true"></i>
       <div class="sg">${more.map((m, i) => `<button class="st ${m.match && hgMatch(m.match, path) ? 'act' : ''}" data-act="sheetnav" data-i="${i}">${H.icon(m.icon)}<span>${H.esc(m.label)}</span></button>`).join('')}</div></div>`;
     L.classList.remove('done');
-    requestAnimationFrame(() => requestAnimationFrame(() => { L.classList.add('in'); this._sheetT = setTimeout(() => this._sheetOpen && L.classList.add('done'), hgReduced() ? 0 : 220); }));
+    requestAnimationFrame(() => requestAnimationFrame(() => { L.classList.add('in'); this._sheetT = setTimeout(() => this._sheetOpen && L.classList.add('done'), sheetMs); }));
     this._sheetKey = this._sheetKey || ((e) => { if (e.key === 'Escape' && !hgsOpen.size) { e.preventDefault(); this._openSheet(false); } });
     document.addEventListener('keydown', this._sheetKey, true);
     const sh = L.querySelector('.sheet'); let y0 = null;

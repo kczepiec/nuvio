@@ -164,8 +164,9 @@ ha-card.sw{ justify-content:flex-start; gap:var(--s2); }
 </svg>`;
     const arw = `<span class="arw">${svg}<i class="sd" style="left:${x.toFixed(1)}%;top:${((y + 2) / 40 * 100).toFixed(1)}%;background:${night ? '#9AA6C8' : 'var(--hg-accent)'}"></i></span>`;
     const c = this._config, ri = `${c.icon_base}static-sunrise.svg?v=${c.icon_v}`, si = `${c.icon_base}static-sunset.svg?v=${c.icon_v}`;
-    const lab = (t) => { const d = new Date(t), today = new Date().toDateString() === d.toDateString(); return HGWx.hm(d) + (today ? '' : ' ' + hgT('cards.weather.tomorrow')); };
-    return `<div class="sun" aria-label="${H.esc(hgT('cards.weather.sun_aria', { sunrise: lab(r), sunset: lab(st) }))}"><span><img src="${ri}" alt=""><span class="st"><b>${HGWx.hm(new Date(r))}</b><small>${hgT('cards.weather.sunrise')}${new Date().toDateString() === new Date(r).toDateString() ? '' : ' ' + hgT('cards.weather.tomorrow')}</small></span></span>${arw}<span><span class="st"><b>${HGWx.hm(new Date(st))}</b><small>${hgT('cards.weather.sunset')}${new Date().toDateString() === new Date(st).toDateString() ? '' : ' ' + hgT('cards.weather.tomorrow')}</small></span><img src="${si}" alt=""></span></div>`;
+    const td = new Date().toDateString(), tom = (t) => (new Date(t).toDateString() === td ? '' : ' ' + hgT('cards.weather.tomorrow'));
+    const lab = (t) => HGWx.hm(new Date(t)) + tom(t);
+    return `<div class="sun" aria-label="${H.esc(hgT('cards.weather.sun_aria', { sunrise: lab(r), sunset: lab(st) }))}"><span><img src="${ri}" alt=""><span class="st"><b>${HGWx.hm(new Date(r))}</b><small>${hgT('cards.weather.sunrise')}${tom(r)}</small></span></span>${arw}<span><span class="st"><b>${HGWx.hm(new Date(st))}</b><small>${hgT('cards.weather.sunset')}${tom(st)}</small></span><img src="${si}" alt=""></span></div>`;
   }
   _minmax() {
     const d0 = (this._daily || [])[0];

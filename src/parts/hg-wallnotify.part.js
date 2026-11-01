@@ -76,7 +76,7 @@ const HG_NT_SS = `
       box.addEventListener('click', (e) => { e.stopPropagation(); const b = e.target.closest('[data-nt]'), c = e.target.closest('.nt-c');
         if (b && b.dataset.nt === 'clr') { wr(LL, []); return this.ntRender(); }
         if (b && b.dataset.nt === 'less') { box.classList.remove('open'); this._ntFull = null; return this.ntRender(); }
-        if (!box.classList.contains('open')) { if (this.ntList().length > 1) { box.classList.add('open'); return this.ntRender(); } }
+        if (!box.classList.contains('open') && this.ntList().length > 1) { box.classList.add('open'); return this.ntRender(); }
         if (c) { this._ntFull = this._ntFull === c.dataset.id ? null : c.dataset.id; c.classList.toggle('full', this._ntFull === c.dataset.id); } }); },
     ntHtml(h) { const sv = Object.keys((h.services && h.services.notify) || {}).filter((s) => !['send_message', 'persistent_notification', 'notify'].includes(s)).map((s) => 'notify.' + s);
       const en = Object.keys(h.states).filter((e) => e.startsWith('notify.')), S = this.ntSel(), all = [...new Set([...sv, ...en])];

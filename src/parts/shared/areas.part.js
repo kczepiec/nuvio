@@ -172,11 +172,12 @@ const HGAreas = {
     const dn = d && (d.name_by_user || d.name);
     if (dn && n.toLowerCase().startsWith(dn.toLowerCase() + ' ')) { const rest = n.slice(dn.length).replace(/^[\s\-–·:*]+/, ''); if (rest) n = rest; }
     n = n.replace(/^\*\s*/, '').replace(/\s\*\s/g, ' ');
-    for (const p of (a && a.strip) || []) {
-      const re = new RegExp('^\\s*' + p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[\\s\\-–·:_]*', 'i');
+    const strips = (a && a.strip) || [], esc = (p) => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    for (const p of strips) {
+      const re = new RegExp('^\\s*' + esc(p) + '[\\s\\-–·:_]*', 'i');
       n = n.replace(re, '');
     }
-    for (const p of (a && a.strip) || []) n = n.replace(new RegExp('\\s+[-–·:]?\\s*' + p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?=\\s|$)', 'ig'), ' ');
+    for (const p of strips) n = n.replace(new RegExp('\\s+[-–·:]?\\s*' + esc(p) + '(?=\\s|$)', 'ig'), ' ');
     n = n.replace(/\s+(zajętość|occupancy|contact|kontakt)$/i, '').replace(/\b(\p{L}+)\s+\1$/iu, '$1').replace(/^[\s\-–·:]+|[\s\-–·:]+$/g, '');
     n = n.replace(/\s{2,}/g, ' ').trim();
     if (!n) n = fb || n0;

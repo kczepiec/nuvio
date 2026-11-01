@@ -80,7 +80,7 @@ ha-card.glass::before{ content:''; position:absolute; z-index:-1; left:-20%; top
     const un = !H.ok(s), feat = s ? Number(s.attributes.supported_features) || 0 : 0;
     const anim = ['arming', 'pending', 'disarming', 'triggered'].includes(stt);
     const by = s && s.attributes.changed_by ? ` · ${H.esc(s.attributes.changed_by)}` : '';
-    const acts = un ? '' : HG_ALARM_ACT.filter((a) => feat & a[0]).map((a) => `<button class="ab ${stt === a[4] ? 'sel' : ''}" data-act="arm" data-m="${a[1]}" aria-pressed="${stt === a[4]}" aria-label="${H.lv(hgT('cards.alarm.arm'), hgAlarmLbl(a))}" title="${H.lv(hgT('cards.alarm.arm'), hgAlarmLbl(a))}">${H.icon(a[3])}<span>${hgAlarmLbl(a)}</span></button>`).join('')
+    const acts = un ? '' : HG_ALARM_ACT.filter((a) => feat & a[0]).map((a) => { const tl = H.lv(hgT('cards.alarm.arm'), hgAlarmLbl(a)); return `<button class="ab ${stt === a[4] ? 'sel' : ''}" data-act="arm" data-m="${a[1]}" aria-pressed="${stt === a[4]}" aria-label="${tl}" title="${tl}">${H.icon(a[3])}<span>${hgAlarmLbl(a)}</span></button>`; }).join('')
       + (stt !== 'disarmed' ? `<button class="ab dis" data-act="arm" data-m="disarm" aria-label="${hgT('cards.alarm.disarm')}">${H.icon('mdi:shield-off-outline')}<span>${hgT('cards.alarm.disarm')}</span></button>` : '');
     const txt = s && s.attributes.code_format === 'text', n = (this._code || '').length;
     const pwIn = `<input class="pw" type="password" autocomplete="off" aria-label="${hgT('cards.alarm.alarm_code')}" placeholder="${hgT('common.code')}">`;

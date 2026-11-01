@@ -53,7 +53,6 @@ const hgStudioSettingsFromEdit = (type, card, v) => {
     if (card.sun) s.sun = card.sun;
     if (card.scripts) s.entities = card.scripts.map((x) => (typeof x === 'string' ? x : x.entity)).filter(Boolean);
     if (card.nv_v) s.nv_v = JSON.parse(JSON.stringify(card.nv_v));
-    if (card.nv_comp) { /* zostaje w card */ }
   }
   return s;
 };

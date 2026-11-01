@@ -12,7 +12,7 @@ class HGPvCard extends HGBase {
     try { const pr = await HGEnergyPrefs.get(h); if (pr.production.length) { const v = await HGStats.daily(h, pr.production, 30);
       const days = [...v.days].reverse(), sum = (d) => pr.production.reduce((a, id) => a + Math.max(0, (v.byId[id] || {})[d.__k] || 0), 0);
       this._today = days.length && days[0].toDateString() === new Date().toDateString() ? sum(days[0]) : null;   // dziś wg liczników całkowitych (dzienny czujnik falownika zeruje się po rozłączeniu)
-      for (const d of days) { const s = pr.production.reduce((a, id) => a + Math.max(0, (v.byId[id] || {})[d.__k] || 0), 0); if (s > 0.05) { this._last = { t: Date.now(), d, s }; break; } }
+      for (const d of days) { const s = sum(d); if (s > 0.05) { this._last = { t: Date.now(), d, s }; break; } }
       if (!this._last) this._last = { t: Date.now(), d: null, s: 0 }; else this._last.t = Date.now(); } } catch (e) { this._last = { t: Date.now(), d: null, s: 0 }; }
     // dziś wg historii czujnika dziennego: suma odcinków między zerowaniami (falownik zeruje licznik po każdym ponownym uruchomieniu;
     // licznik całkowity po powrocie skacze o produkcję z okresów, których HA nie widział -> zawyża)
@@ -61,7 +61,7 @@ ha-card.glass{ display:flex; flex-direction:column; gap:var(--s2); padding:var(-
     return `<ha-card class="glass warm ${on ? 'on' : 'off'}" style="--c:${col}"><div class="hd">${H.icon(c.icon, 'ic')}<span class="tt">${H.esc(c.title)}</span><span class="sp"></span>
         <button class="ib kebab" data-act="more" aria-label="${hgT('cards.pv.inverter_details')}" title="${hgT('cards.pv.details_and_history')}">${H.icon('mdi:dots-vertical')}</button></div>
       <div class="st"><span class="bd">${H.icon(on ? 'mdi:white-balance-sunny' : 'mdi:solar-panel')}</span><div><b>${lbl}</b><span>${on ? hgT('cards.pv.updated_ago', { time: H.esc(since) }) : since ? hgT('cards.pv.last_data_since', { time: H.esc(since) }) : hgT('cards.pv.no_entity')}</span></div></div>
-      ${on ? '' : ''}<div class="kv" ${on ? '' : 'hidden'}>${kv.map(([k, [v, u]]) => `<div><small>${H.esc(k)}</small><b>${v}<em>${u}</em></b></div>`).join('')}</div>${note}</ha-card>`;
+      <div class="kv" ${on ? '' : 'hidden'}>${kv.map(([k, [v, u]]) => `<div><small>${H.esc(k)}</small><b>${v}<em>${u}</em></b></div>`).join('')}</div>${note}</ha-card>`;
   }
   onAct(a) { if (a === 'more') H.fire(this, 'hass-more-info', { entityId: this._config.power }); }
   getCardSize() { return 4; }

@@ -1,5 +1,5 @@
 /* --- hg-phases-card: moc teraz na fazach (zużycie), napięcia, prądy; kolor wg obciążenia --- */
-const hgLoadCol = (p) => (p < 30 ? 'var(--hg-accent)' : p < 70 ? 'var(--hg-accent)' : '#E5484D');
+const hgLoadCol = (p) => (p < 70 ? 'var(--hg-accent)' : '#E5484D');
 class HGPhasesCard extends HGBase {
   defaults() { return { title: hgT('common.power_now'), icon: 'mdi:flash-outline', phases: [], max_power: 17250, phase_max: 5750 }; }
   ents() { return this._config.phases.flatMap((p) => [p.power, p.voltage, p.current]).filter(Boolean); }
