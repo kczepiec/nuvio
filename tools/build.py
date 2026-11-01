@@ -29,7 +29,7 @@ SHARED = [
     'shared/nv-card.part.js',
     'shared/livekid.part.js',
     'shared/grid-engine.part.js',
-    'shared/studio-widgets.part.js',
+    'studio/registry.part.js',
 ]
 CARDS = [
     'cards/energy-card.part.js',

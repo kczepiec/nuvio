@@ -13,7 +13,7 @@ function mk() {
     sessionStorage: { getItem: () => null, setItem() {}, removeItem() {} },
     HTMLElement: El, customElements: { get() {}, define() {} }, matchMedia: stub(), requestAnimationFrame: () => 0, setInterval: () => 0, MutationObserver: class { observe() {} },
     CustomEvent, Event, fetch: () => Promise.reject(new Error('offline')), getComputedStyle: stub(), hgFlowDef: () => ({}), hgFlowCfg: () => ({}) };
-  return loadParts(['hg-i18n.part.js', 'hg-select.part.js', 'hg-oss.part.js', 'hg-core.part.js', 'shared/studio-widgets.part.js', 'shared/grid-engine.part.js'], g, ['hgGenerate', 'hgViewHas', 'hgCdn', 'HG_STUDIO_W', 'hgStudioSeed', 'hgStudioEnsure', 'hgStudioGet'],
+  return loadParts(['hg-i18n.part.js', 'hg-select.part.js', 'hg-oss.part.js', 'hg-core.part.js', 'studio/registry.part.js', 'shared/grid-engine.part.js'], g, ['hgGenerate', 'hgViewHas', 'hgCdn', 'HG_STUDIO_W', 'hgStudioSeed', 'hgStudioEnsure', 'hgStudioGet'],
     { EN, MANIFEST: [{ code: 'en', name: 'English', locale: 'en-GB', file: null }], text: [['import.meta.url', 'undefined']] });
 }
 const st = (state = 'on', attributes = {}) => ({ state, attributes });
