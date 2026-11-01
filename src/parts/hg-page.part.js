@@ -173,20 +173,16 @@ class HGPage extends HTMLElement {
     this._config = Object.assign({
       view: 'dashboard',   /* brand / title / subtitle: domyślne zależne od języka w miejscu użycia (_paintTop, _paintHead) */
       user: {}, tabs: [], rail: [], hub: null, toolbar: true, back: { back: true, fallback: '/' },
-      panel: { columns: '1fr 1fr', rows: '150fr 92fr 48fr 152fr', areas: null, width: 438, wide: true }, cards: [], persons: [],
+      panel: { columns: '1fr 1fr', rows: '150fr 92fr 48fr 152fr', areas: null }, cards: [], persons: [],
       notifications_action: { notifications: true }, mail_action: { notifications: true },
       menu: [], storage_key: 'home-glass', zoom: { min: 0.8, max: 1.3, step: 0.1 },
     }, c);
     if (this._config._hgLang) { window.__hgLang = this._config._hgLang; window.__hgLangOpt = this._config._hgLangOpt || ''; }   /* język wybrany w strategii; opcja language ma pierwszeństwo przed kreatorem */
     if (this._config.phone_nav) this._config.phone_nav = Object.assign({ main: [], more: [] }, this._config.phone_nav);
     this._built = false; this._w = null;
-    this._pbgSync();
     if (this._hass) this._build();
   }
-  /* tło panelu (#15): Wygląd > Tło panelu (app.pbg: false = bez tła wszędzie), wyjątek dla widoku (app.pbgv[widok] = 'on' | 'off'), panel_backdrop: false w YAML */
-  _pbgSync() { const c = this._config; if (!c) return; const A = (window.__hgL && window.__hgL.data && window.__hgL.data.app) || {}, v = c.view && A.pbgv && A.pbgv[c.view];
-    this.toggleAttribute('no-pbg', v === 'off' ? true : v === 'on' ? false : c.panel_backdrop === false || A.pbg === false); }
-  /* tokeny Studio (jasny/ciemny) są na :host([studio][data-hg-scheme=…]); html[data-hg-scheme] nie wchodzi do shadow DOM */
+  /* tokeny szkła (jasny/ciemny) na :host([data-hg-scheme=…]); html[data-hg-scheme] nie wchodzi do shadow DOM */
   _syncScheme() { const v = document.documentElement.getAttribute('data-hg-scheme') === 'dark' ? 'dark' : 'light'; if (this.getAttribute('data-hg-scheme') !== v) this.setAttribute('data-hg-scheme', v); }
   set hass(h) {
     window.__hgHass = h; window.__hgPage = this;   /* język kart (hgCurLang) znany zanim karty dostaną hass; bieżąca strona dla poleceń z HA (#47) */
@@ -203,7 +199,6 @@ class HGPage extends HTMLElement {
     if (!this._config) return;
     if (this._config.redirect) { this._redirect(); return; }
     if (!this._built) this._build();
-    if (this._built) this._pbgSync();   /* zmiana w Wyglądzie na innym widoku */
     for (const el of this._cards) hgPass(el, h);
     if (this._wxEl) hgPass(this._wxEl, h);
     if (first) { this._subscribe(); HGVer.check(h, true); HGLang.sync(h, this); }
@@ -418,8 +413,6 @@ class HGPage extends HTMLElement {
       else if (mode !== 'phone' && span && !cc.area) w.style.gridColumn = `span ${span}`;
       else if (!cc.area || mode === 'phone') w.style.removeProperty('grid-column');
     });
-    /* desktop: zawsze pełna szerokość (układ jak Studio); zapis pw w starych układach ignorowany */
-    const wd = mode === 'wide';
     { const cs = el.style.gridTemplateColumns || '', m = /^repeat\((\d+), minmax\(0(px)?, 1fr\)\)$/.exec(cs); if (m && mode !== 'phone' && !p.areas) el.style.setProperty('--hg-vcols-tpl', 'repeat(' + m[1] + ', minmax(0, 1fr))'); else el.style.removeProperty('--hg-vcols-tpl'); } /* „dense” dosuwa wąskie karty w dziury, ale tylko w układzie domyślnym: po zmianie kolejności karty stoją dokładnie w kolejności użytkownika (inaczej przeniesiona karta wracała na stare miejsce) */
     /* dodane komponenty (stos, siatka, karta YAML, #17): bez „dense”, bo szerokie kontenery przeskakiwały przed wcześniejsze karty; stoją w kolejności dodania i przeciągania */
     const ord = (() => { try { const sc = this._pageScope(); return !!sc && (HGL.get(sc).order.length > 0 || HGL.get(sc + ':tiles').added.length > 0); } catch (e) { return false; } })();
@@ -430,7 +423,6 @@ class HGPage extends HTMLElement {
     const mm = p.masonry ? 'masonry' : p.flow === 'cols' ? 'cols' : '';
     if (mm && mode !== 'phone') { el.style.gridAutoRows = '4px'; this._masMode = mm; this._masOn = true; this._mas(); } else if (this._masOn) { this._masOn = false; this._masMode = ''; for (const w of this._cardWraps) { w.style.gridRowEnd = ''; w.style.gridRow = ''; if (w.dataset.masGc != null) { w.style.gridColumn = w.dataset.masGc; delete w.dataset.masGc; } } }
     this.toggleAttribute('scroll', !!(p.scroll || this._hasTiles2()));
-    this.toggleAttribute('wide-panel', wd);
     this.toggleAttribute('fit-panel', !!p.fit);
     if (this._pro) { this._pro.disconnect(); this._pro.observe(el); for (const k of el.children) this._pro.observe(k); }
     this._moreUpd();
@@ -483,7 +475,6 @@ class HGPage extends HTMLElement {
     this._cards = []; this._cardWraps = [];
     if (!HGL.loaded && this._hass) await Promise.race([HGL.load(this._hass), new Promise((r) => setTimeout(r, 900))]);
     if (this._config._hgAuto && HGL.loaded && !HGL.failed && !HGL.data.wiz && this._hass && this._hass.user && this._hass.user.is_admin && typeof HGWizard !== 'undefined') setTimeout(() => HGWizard.open(this), 400);
-    this._pbgSync();   /* układ z HA mógł dojść dopiero teraz (Wygląd: tło panelu) */
     const LC = this._lc = this._applyLayout(c.cards); this._hasTiles = LC.some((x) => x._tiles); this._autoScroll = false;
     if (this._pageScope()) this._panelEl.dataset.hgl = this._pageScope();
     for (const cc of LC) {
@@ -987,7 +978,7 @@ class HGPage extends HTMLElement {
     let hb = this._config.hub; const WH = typeof HGL !== 'undefined' && HGL.data && HGL.data.wiz && HGL.data.wiz.hub;
     /* tytuł i podtytuł paska z bieżącego układu (jedno źródło: wiz.hub), więc zmiana w Ustawieniach działa bez przebudowy pulpitu */
     if (hb && WH && typeof WH === 'object') hb = Object.assign({}, hb, { title: WH.title || hgT('common.household'), subtitle: WH.subtitle || hgT('page.who_is_home_right') });
-    this.toggleAttribute('hub-right', !!(hb && hb.pos === 'right')); if (!hb) { this._hubEl.style.display = 'none'; return; }
+    if (!hb) { this._hubEl.style.display = 'none'; return; }
     const sig = hb.title + '|' + hb.subtitle + JSON.stringify((hb.persons || []).map((p) => { const s = H.st(this._hass, p); return s ? [s.state, s.attributes.entity_picture, s.attributes.friendly_name] : null; }));
     if (!force && sig === this._sigHub) return; this._sigHub = sig;
     this._setHTML(this._hubEl, `<div class="ht"><b>${H.esc(hb.title)}</b><span>${H.esc(hb.subtitle)}</span></div>
@@ -1046,16 +1037,28 @@ class HGPage extends HTMLElement {
   getCardSize() { return 12; }
   _css() {
     return U(`
-:host{ display:block; color:#fff; position:relative; --hg-card-bf: none; --hg-card-under: none; --k: var(--hg-u0, 1.3px); --r-lg:24u; --r-md:16u; --r-sm:12u; --s1:8u; --s2:12u; --s3:16u; --s4:24u; --fs-xs:var(--hg-fs-xs, 8.5u); --fs-sm:var(--hg-fs-sm, 10u); --fs-md:var(--hg-fs-md, 12u); }
+:host{ display:block; color:#fff; position:relative; --hg-card-under: none; --k: var(--hg-u0, 1.3px); --r-lg:24u; --r-md:16u; --r-sm:12u; --s1:8u; --s2:12u; --s3:16u; --s4:24u; --fs-xs:var(--hg-fs-xs, 8.5u); --fs-sm:var(--hg-fs-sm, 10u); --fs-md:var(--hg-fs-md, 12u);
+  --hg-glass-blur: 38px; --hg-glass-sat: 185%; --hg-glass-bri: 1;
+  --hg-card-bf: blur(calc(var(--hg-glass-blur) * var(--hg-bf, 1))) saturate(var(--hg-glass-sat)) brightness(var(--hg-glass-bri)); }
 .bg{ position:fixed; inset:0; pointer-events:none; z-index:0; background:var(--hg-accent-tx) var(--hg-bg-wide) var(--hg-bg-pos, 50% 50%) / cover no-repeat;  }
 @media (max-aspect-ratio: 1/1){ .bg{ background-image: var(--hg-bg-portrait, var(--hg-bg-wide)); background-position:50% 40%; } }
 @media (pointer:coarse){ :host{ --hg-bf:.6; } }
 /* tryb lekki (dotyk / słabe urządzenie, nadpisanie: localStorage home-glass:lite = 1/0): słabsze rozmycie, bez ciężkich cieni */
-/* ===== JEDNO SZKŁO dla wszystkich pływających powierzchni = dokładnie przepis kart (ha-card.glass przy panel_backdrop:false):
-   wypełnienie, backdrop-filter, ramka, cień. Tokeny liczone na :host, więc lite/dotyk (--hg-bf, --hg-glass-lite, --hg-card-sh) działają tak samo jak w kartach. */
+/* ===== JEDNO SZKŁO dla chromu (tabs, rail, menu): ten sam przepis co karty. Tokeny na :host (--hg-bf, lite, --hg-card-sh). */
 :host{ --primary-color: var(--hg-accent); --accent-color: var(--hg-accent); --state-icon-active-color: var(--hg-accent); --state-active-color: var(--hg-accent); --state-light-active-color: var(--hg-accent); --state-switch-active-color: var(--hg-accent); --switch-checked-color: var(--hg-accent); --switch-checked-button-color: var(--hg-accent); --switch-checked-track-color: var(--hg-accent); --rgb-primary-color: 99,215,30; --rgb-state-light-color: 99,215,30; --rgb-state-switch-color: 99,215,30; --mush-rgb-amber: 99,215,30; --mush-rgb-orange: 99,215,30; --mush-rgb-blue: 99,215,30; --mush-rgb-green: 99,215,30; --mush-rgb-yellow: 99,215,30; --ha-card-background: var(--hg-glass-bg); --ha-card-border-width: 0; --ha-card-box-shadow: none; --ha-card-border-radius: 18px; --mdc-theme-primary: var(--hg-accent); --label-badge-blue: var(--hg-accent); --label-badge-yellow: var(--hg-accent);
-  --glass-bg: var(--hg-glass-sheen, none), var(--hg-glass-lite, var(--hg-glass-bg)); --glass-bf: blur(calc(var(--hg-glass-blur, 14px) * var(--hg-bf, 1))) saturate(var(--hg-glass-sat, 180%)) brightness(var(--hg-glass-bri, 1));
+  --glass-bg: var(--hg-glass-sheen, none), var(--hg-glass-lite, var(--hg-glass-bg)); --glass-bf: blur(calc(var(--hg-glass-blur) * var(--hg-bf, 1))) saturate(var(--hg-glass-sat)) brightness(var(--hg-glass-bri));
   --glass-border: 0 solid transparent; --glass-shadow: var(--hg-edge, 0 0 0 transparent), var(--hg-card-sh, var(--hg-shadow-float, var(--hg-sh))); }
+:host([data-hg-scheme=light]){ --hg-glass-bg: rgba(255,255,255,.22); --hg-glass-lite: rgba(255,255,255,.22);
+  --hg-glass-sheen: linear-gradient(155deg, rgba(255,255,255,.38) 0%, rgba(255,255,255,.10) 44%, rgba(255,255,255,0) 72%);
+  --hg-edge: 0 0 0 transparent; --hg-inner-hi: none; --hg-shadow-lg: 0 22px 54px rgba(16,24,40,.11);
+  --hg-card-fg: #12151a; --hg-t2: rgba(18,21,26,.62); --hg-inner-bg: rgba(255,255,255,.34); --hg-inner-bg-h: rgba(255,255,255,.50);
+  --hg-chrome-bg: rgba(255,255,255,.34); --hg-chrome-fg: #12151a; --hg-chrome-lite: rgba(255,255,255,.58); --hg-tile-bg: rgba(255,255,255,.26); }
+:host([data-hg-scheme=dark]){ --hg-glass-bg: rgba(6,8,12,.26); --hg-glass-lite: rgba(6,8,12,.26);
+  --hg-glass-sheen: linear-gradient(155deg, rgba(255,255,255,.14) 0%, rgba(255,255,255,.04) 42%, rgba(255,255,255,0) 72%);
+  --hg-edge: 0 0 0 transparent; --hg-inner-hi: none; --hg-shadow-lg: 0 26px 60px rgba(0,0,0,.26);
+  --hg-card-fg: #fff; --hg-t2: rgba(255,255,255,.72); --hg-inner-bg: rgba(255,255,255,.08); --hg-inner-bg-h: rgba(255,255,255,.14);
+  --hg-chrome-bg: rgba(10,14,20,.36); --hg-chrome-fg: #fff; --hg-chrome-lite: rgba(255,255,255,.12); --hg-tile-bg: rgba(255,255,255,.08); }
+:host([data-hg-scheme=light]) .shade{ background: rgba(255,255,255,.18); }
 /* rozmycie na izolowanej warstwie ::after (inset:0, radius:inherit, z-index:-1) – element sam nie ma backdrop-filter
    (unika dwutonowego pasa Chrome na małych elementach; ta sama technika wszędzie = identyczny wygląd) */
 .tabs, .rail, .tools, .hub, .back, .cir, .user, .fc, .rback, .more, .menu, .sheet-l .sheet{ background: transparent !important; border: var(--glass-border) !important; box-shadow: var(--glass-shadow) !important;
@@ -1068,7 +1071,7 @@ class HGPage extends HTMLElement {
 /* rail + pigułka narzędzi (zoom): dokładnie przepis szkła kart (--glass-bf), bez osobnego nasycenia */
 /* lite (dotyk): rozmycie tylko na zewnętrznym panelu (≤12px); chrom, menu, arkusz i karty bez backdrop-filter, bez dużych cieni */
 :host([lite]){ --hg-lens: saturate(100%); --hg-glass-rim: var(--hg-glass-rim-lite); --hg-glass-bri: 1; --hg-glow: none; --hg-glow-l: none; --hg-bf:.35; --hg-card-sh: 0 0 0 transparent; --hg-inner-bf: none; --hg-glass-lite: var(--hg-glass-lite-c); --hg-warm-lite: var(--hg-warm-lite-c); --hg-wm-tumble: none; --hg-wm-slosh: none; --hg-wm-bub: none; --hg-sc-anim: none; }
-:host([lite]) .panel{ -webkit-backdrop-filter: var(--hg-bfo, blur(12px)) !important; backdrop-filter: var(--hg-bfo, blur(12px)) !important; box-shadow: none !important; }
+:host([lite]) .panel{ box-shadow: none !important; }
 :host([lite]) .ind{ box-shadow:none !important; }
 :host([lite]) .ri, :host([lite]) .tab{ transition:none; }
 /* niewidoczny widok / ukryta karta przeglądarki: animacje ciągłe wstrzymane (zmienna dziedziczy się do kart) */
@@ -1081,14 +1084,6 @@ class HGPage extends HTMLElement {
 .page{ position:relative; z-index:1; }
 .logo{ width:22u; height:22u; border-radius:50%; background:var(--hg-accent); color:var(--hg-on-accent); display:inline-flex; align-items:center; justify-content:center; flex:none; box-shadow:var(--hg-sh-sm); }
 .logo ha-icon{ width:15u; height:15u; --mdc-icon-size:100%; }
-/* desktop: jedna kolumna, wcięcie pod szynę (56u + odstęp siatki widżetów); nagłówek i panel w siatce strony */
-:host([mode=wide][wide-panel]) .page{ display:grid; grid-template-columns:minmax(0,1fr); grid-template-rows:auto minmax(0,1fr);
-  padding:73u 18u 19u calc(56u + 24px); box-sizing:border-box; }
-:host([mode=wide][wide-panel]) .head{ position:relative; left:auto; top:auto; grid-row:1; grid-column:1; margin:0; max-width:none;
-  justify-self:start; width:max-content; max-width:calc(100% - 26u - 56px); }
-:host([mode=wide][wide-panel]) .panel{ position:relative; left:auto; right:auto; top:auto; bottom:auto; width:auto; max-width:100%;
-  grid-row:2; grid-column:1; margin-top:max(24px, calc(var(--hg-u0) * 14)); min-height:0; align-self:stretch; }
-:host([wide-panel]) .tools, :host([wide-panel]) .hub{ display:none; }
 :host([mode=wide][fit-panel]) .panel{ align-self:start; max-height:100%; overflow:auto; align-content:start; }
 :host([fit-panel]) .panel{ align-self:start; }
 button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
@@ -1242,10 +1237,8 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 .vempty button{ all:unset; cursor:pointer; margin-top:8px; display:inline-flex; align-items:center; gap:6px; height:40px; padding:0 18px; border-radius:999px; background:var(--hg-accent); color:var(--hg-on-accent, #0B0F0A); font-weight:600; font-size:14px; transition:transform .15s; }
 .vempty button:active{ transform:scale(.96); } .vempty button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:3px; } .vempty button ha-icon, .vempty button svg{ --mdc-icon-size:18px; width:18px; height:18px; }
 @keyframes hgVeIn{ from{ transform:translateY(8px); } } @media (prefers-reduced-motion:reduce){ .vempty{ animation:none; } }
-.panel{ display:grid; gap:var(--s2); padding:var(--s3); border-radius:var(--r-lg); --hg-u: calc(var(--hg-u0, 1.3px) * var(--hg-zoom, 1)); --k: var(--hg-u); --r-lg:24u; --r-md:16u; --r-sm:12u; --s1:8u; --s2:12u; --s3:16u; --s4:24u; --fs-xs:var(--hg-fs-xs, 8.5u); --fs-sm:var(--hg-fs-sm, 10u); --fs-md:var(--hg-fs-md, 12u); 
-  background: var(--hg-panel-bg);
-  border:0; -webkit-backdrop-filter: var(--hg-bfo, blur(calc(16px * var(--hg-bf, 1))) saturate(120%)); backdrop-filter: var(--hg-bfo, blur(calc(16px * var(--hg-bf, 1))) saturate(120%));
-  box-shadow: 0 20u 50u rgba(10,20,30,.18); }
+.panel{ display:grid; gap:24px; padding:0; border-radius:0; --hg-u: calc(var(--hg-u0, 1.3px) * var(--hg-zoom, 1)); --k: var(--hg-u); --r-lg:24u; --r-md:16u; --r-sm:12u; --s1:8u; --s2:12u; --s3:16u; --s4:24u; --fs-xs:var(--hg-fs-xs, 8.5u); --fs-sm:var(--hg-fs-sm, 10u); --fs-md:var(--hg-fs-md, 12u);
+  background:none; border:0; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; }
 .cw{ min-width:0; min-height:0; contain: layout style; container-type:inline-size; animation: hgCwIn .6s cubic-bezier(.2,0,0,1) both; }
 .cw:nth-child(2){ animation-delay:.06s } .cw:nth-child(3){ animation-delay:.12s } .cw:nth-child(4){ animation-delay:.18s } .cw:nth-child(5){ animation-delay:.24s } .cw:nth-child(n+6){ animation-delay:.3s }
 /* tylko transform: opacity w animacji (a przy fill both także po jej końcu) robi z .cw backdrop root i blur kart w środku nie działa */
@@ -1257,16 +1250,11 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 :host([vlocked]) .panel, :host([vlocked]) .hub{ visibility:hidden !important; }   /* widok zablokowany PIN-em: treść ukryta pod pinpadem */
 :host([panel-hidden]) .panel{ visibility:hidden; opacity:0 !important; pointer-events:none; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
 /* w trakcie animacji: jedno rozmycie (sam panel), potomkowie bez backdrop-filter / animacji / przejść -> panel znika jako jedna warstwa */
-:host([panel-anim]) .panel{ transform-origin: 100% 50%; pointer-events:none; --hg-inner-bf: none; }
-/* panel bez tła (panel_backdrop: false albo Wygląd > Tło panelu): panel bez tła/ramki/cienia/rozmycia (ten sam padding i ramka przezroczysta = karty się nie przesuwają); karty mają własne szkło z rozmyciem */
-:host([no-pbg]) .panel{ background:none !important; border-color:transparent !important; box-shadow:none !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
-  --hg-card-bf: blur(calc(var(--hg-glass-blur, 14px) * var(--hg-bf, 1))) saturate(var(--hg-glass-sat, 180%)) brightness(var(--hg-glass-bri, 1)); }
-:host([no-pbg]) .panel{ padding:0 !important; border-width:0 !important; }
-/* przewijane panele: mały wewnętrzny margines na cień/uniesienie kart, kompensowany ujemnym marginesem (te same zewnętrzne krawędzie) */
-:host([no-pbg][mode=wide][scroll]) .panel, :host([no-pbg][mode=wide][fit-panel]) .panel{ padding:8px !important; margin:-8px; scroll-padding-bottom:8px; }
-:host([no-pbg][mode=wide][wide-panel][scroll]) .panel, :host([no-pbg][mode=wide][wide-panel][fit-panel]) .panel{ margin:calc(max(24px, calc(var(--hg-u0) * 14)) - 8px) -8px -8px; }
-:host([no-pbg][panel-anim]) .panel{ --hg-card-bf: none; --hg-glass-lite: var(--hg-glass-lite-c); --hg-warm-lite: var(--hg-warm-lite-c); }
+:host([panel-anim]) .panel{ transform-origin: 100% 50%; pointer-events:none; --hg-inner-bf: none; --hg-card-bf: none; --hg-glass-lite: var(--hg-glass-lite-c); --hg-warm-lite: var(--hg-warm-lite-c); }
 :host([panel-anim]) .panel *, :host([panel-anim]) .panel *::before, :host([panel-anim]) .panel *::after{ animation:none !important; transition:none !important; }
+/* przewijane panele (desktop): wewnętrzny margines na cień kart */
+:host([mode=wide][scroll]) .panel, :host([mode=wide][fit-panel]) .panel{ padding:8px !important; margin:-8px; scroll-padding-bottom:8px; }
+:host([mode=wide][scroll]) .panel, :host([mode=wide][fit-panel]) .panel{ margin:calc(max(24px, calc(var(--hg-u0) * 14)) - 8px) -8px -8px; }
 /* ----- toolbar ----- */
 .tools{ display:flex; align-items:center; justify-content:space-between; gap:var(--s1); padding:5u var(--s1); border-radius:var(--r-lg); height:39u; width:171u;
   background: rgba(30,32,36,.30); border:1px solid rgba(255,255,255,.55); -webkit-backdrop-filter: var(--hg-bfo, blur(calc(12px * var(--hg-bf, 1)))); backdrop-filter: var(--hg-bfo, blur(calc(12px * var(--hg-bf, 1)))); }
@@ -1296,15 +1284,19 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 .ind, .rind, :host([lite]) .ind, :host([lite]) .rind{ box-shadow: var(--hg-chrome-pill-sh) !important; }
 @media (pointer:coarse){ .tab::before, .cir::before, .ri::before, .tb::before, .plus::before, .pa::before, .chev::before{ content:''; position:absolute; inset:-6px; } .ri, .tb, .chev{ position:relative; } }
 
-/* ================= WIDE (desktop/landscape) – geometria referencji 912x597 ================= */
-:host([mode=wide]) .page{ height:100vh; height:100dvh; overflow:hidden; }
+/* ================= WIDE (desktop/landscape) – jedna kolumna, szyna + pełna szerokość panelu ================= */
+:host([mode=wide]) .page{ display:grid; grid-template-columns:minmax(0,1fr); grid-template-rows:auto minmax(0,1fr);
+  height:100vh; height:100dvh; overflow:hidden; padding:73u 18u 19u calc(56u + 24px); box-sizing:border-box; }
 :host([mode=wide]) .top{ position:absolute; left:20u; right:20u; top:20u; height:39u; }
 :host([mode=wide]) .tabs{ position:absolute; left:56u; top:0; }
-:host([mode=wide]) .head{ position:absolute; left:26u; top:78u; max-width:400u; }
+:host([mode=wide]) .head{ position:relative; left:auto; top:auto; grid-row:1; grid-column:1; margin:0; max-width:none;
+  justify-self:start; width:max-content; max-width:calc(100% - 26u - 56px); }
 :host([mode=wide]) .rail{ position:absolute; left:16u; top:73u; bottom:19u; z-index:4; border-radius:18px; }
 :host([mode=wide]) .ri{ border-radius:10u; }
 :host([mode=wide]) .rind{ border-radius:10u; }
-:host([mode=wide]) .panel{ position:absolute; right:18u; top:73u; bottom:19u; width:calc(var(--k) * 438); }
+:host([mode=wide]) .panel{ position:relative; left:auto; right:auto; top:auto; bottom:auto; width:auto; max-width:100%;
+  grid-row:2; grid-column:1; margin-top:max(24px, calc(var(--hg-u0) * 14)); min-height:0; align-self:stretch; overflow-y:auto; overscroll-behavior:contain; }
+:host([mode=wide]) .tools, :host([mode=wide]) .hub{ display:none; }
 :host([mode=wide][scroll]) .panel{ overflow:auto; align-content:start; overscroll-behavior:contain; scrollbar-width:thin; scrollbar-color: rgba(0,0,0,.28) transparent; scroll-padding-bottom:var(--s3); }
 :host([mode=wide][scroll]) .panel::-webkit-scrollbar{ width:6px; } :host([mode=wide][scroll]) .panel::-webkit-scrollbar-track{ background:transparent; margin:var(--s3) 0; }
 :host([mode=wide][scroll]) .panel::-webkit-scrollbar-thumb{ background:rgba(0,0,0,.28); border-radius:3px; }
@@ -1317,30 +1309,13 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 :host([studio]) .back{ display:none; }
 :host([studio]) .right{ gap:12px; }
 :host([studio]) .right .cir{ display:none; }
-:host([studio]) .panel{ background:none; border:0; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; padding:0; }
-/* Studio: frosted glass jak mockup — mocny blur, mała krycie, bez obramowań; jasny/ciemny osobno */
-:host([studio]){ --hg-glass-blur: 38px; --hg-glass-sat: 185%; --hg-glass-bri: 1;
-  --hg-card-bf: blur(calc(var(--hg-glass-blur) * var(--hg-bf, 1))) saturate(var(--hg-glass-sat)) brightness(var(--hg-glass-bri));
-  --glass-bf: blur(calc(var(--hg-glass-blur) * var(--hg-bf, 1))) saturate(var(--hg-glass-sat)) brightness(var(--hg-glass-bri)); }
-:host([studio]) .tabs::after, :host([studio]) .rail::after, :host([studio]) .user::after{ -webkit-backdrop-filter: var(--hg-bfo, var(--glass-bf)); backdrop-filter: var(--hg-bfo, var(--glass-bf)); }
-:host([studio][data-hg-scheme=light]){ --hg-glass-bg: rgba(255,255,255,.22); --hg-glass-lite: rgba(255,255,255,.22);
-  --hg-glass-sheen: linear-gradient(155deg, rgba(255,255,255,.38) 0%, rgba(255,255,255,.10) 44%, rgba(255,255,255,0) 72%);
-  --hg-edge: 0 0 0 transparent; --hg-inner-hi: none; --hg-shadow-lg: 0 22px 54px rgba(16,24,40,.11);
-  --hg-card-fg: #12151a; --hg-t2: rgba(18,21,26,.62); --hg-inner-bg: rgba(255,255,255,.34); --hg-inner-bg-h: rgba(255,255,255,.50);
-  --hg-chrome-bg: rgba(255,255,255,.34); --hg-chrome-fg: #12151a; --hg-chrome-lite: rgba(255,255,255,.58); --hg-tile-bg: rgba(255,255,255,.26); }
-:host([studio][data-hg-scheme=dark]){ --hg-glass-bg: rgba(6,8,12,.26); --hg-glass-lite: rgba(6,8,12,.26);
-  --hg-glass-sheen: linear-gradient(155deg, rgba(255,255,255,.14) 0%, rgba(255,255,255,.04) 42%, rgba(255,255,255,0) 72%);
-  --hg-edge: 0 0 0 transparent; --hg-inner-hi: none; --hg-shadow-lg: 0 26px 60px rgba(0,0,0,.26);
-  --hg-card-fg: #fff; --hg-t2: rgba(255,255,255,.72); --hg-inner-bg: rgba(255,255,255,.08); --hg-inner-bg-h: rgba(255,255,255,.14);
-  --hg-chrome-bg: rgba(10,14,20,.36); --hg-chrome-fg: #fff; --hg-chrome-lite: rgba(255,255,255,.12); --hg-tile-bg: rgba(255,255,255,.08); }
-:host([studio][data-hg-scheme=light]) .shade{ background: rgba(255,255,255,.18); }
 :host([studio]) .un{ display:none; }
-/* Studio: panel bez tła (szkło na widżetach); siatka strony jak reszta desktopu ([mode=wide][wide-panel]) */
-:host([studio][mode=wide][wide-panel]) .panel{ margin:0 !important; padding:0 !important; grid-template-rows:minmax(0,1fr) !important; grid-auto-rows:minmax(0,1fr) !important; }
+:host([studio][mode=wide]) .panel{ margin:0 !important; padding:0 !important; align-self:stretch !important; height:100%; min-height:0;
+  grid-template-rows:minmax(0,1fr) !important; grid-auto-rows:minmax(0,1fr) !important; }
 :host([studio]) .cw{ height:100%; min-height:0 !important; }
 /* edycja strony nie kiwa całej siatki i nie ściska jej do połowy wysokości: karta rośnie w dół, panel się przewija */
 :host([studio][editing]) .panel > .cw{ display:block; width:auto; animation:none; outline:none; }
-:host([studio][editing][mode=wide][wide-panel]) .panel{ grid-template-rows:auto !important; overflow:auto; }
+:host([studio][editing][mode=wide]) .panel{ grid-template-rows:auto !important; overflow:auto; }
 :host([studio][editing]) .cw{ height:auto; min-height:100% !important; align-self:start; }
 :host([studio][editing]) .cw > *{ height:auto; min-height:100%; }
 :host([studio][mode=phone]) .sst, :host([studio][mode=phone]) .rth{ display:none; }
@@ -1349,12 +1324,9 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 /* podskakuje tylko ikona i tylko 3 razy: ruch szklanego przycisku przeliczał jego rozmycie w każdej klatce (połowa klatek na słabszym tablecie) */
 :host([mode=wide][scroll]) .more ha-icon{ width:20px; height:20px; animation: hgmore 2.4s ease-in-out 3; }
 @media (prefers-reduced-motion: reduce){ :host([mode=wide][scroll]) .more ha-icon{ animation:none; } }
-:host([mode=wide][scroll][wide-panel]) .more{ left:calc(56u + 24px + (100% - 56u - 24px - 18u) / 2 - 18px); bottom:calc(var(--s3) + 10px); }
+:host([mode=wide][scroll]) .more{ left:calc(56u + 24px + (100% - 56u - 24px - 18u) / 2 - 18px); bottom:calc(var(--s3) + 10px); }
 
 @keyframes hgmore{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(3px); } }
-:host([mode=wide]) .tools{ position:absolute; left:151u; bottom:80u; }
-:host([mode=wide]) .hub{ position:absolute; left:96u; bottom:20u; }
-:host([mode=wide][hub-right]) .hub{ left:auto; right:476u; }
 :host([mode=wide]) .back{ position:absolute; left:16u; bottom:22u; }
 
 /* ================= TABLET (portret / wąskie okna) ================= */
@@ -1417,7 +1389,7 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 :host([mode=phone]) .menu button{ font-size:15px; } :host([mode=phone]) .st{ font-size:14px; }
 :host([mode=phone]){ --hg-fs-xs:13px; --hg-fs-sm:15px; --hg-fs-md:17px; --hg-fsv:1.12; --hg-fs-min:12px; }
 :host([mode=phone]) .head .renv{ font-size:16px; } :host([mode=phone]) .head .renv .rt{ font-size:28px; }
-:host([mode=phone]) .panel{ grid-area:panel; padding:12px; gap:12px; border-radius:24px; }
+:host([mode=phone]) .panel{ grid-area:panel; }
 /* ===== tryb edycji układu ===== */
 .cir.ed.on{ background:var(--hg-accent) !important; color:var(--hg-on-accent) !important; }
 :host([editing]) .tools, :host([editing]) .hub{ visibility:hidden; }
@@ -1547,8 +1519,8 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 .hs-pv{ display:flex; flex-direction:column; gap:6px; flex:none; } .hs-pv:empty{ display:none; } .hs-pv > small{ font-size:12px; opacity:.72; padding-left:4px; } .hs-pv .tg2{ grid-template-columns:1fr; pointer-events:none; } .hs-pvb.tg2 > *, .hs-pvb > .hgg{ width:100%; max-width:440px; justify-self:center; margin-inline:auto; box-sizing:border-box; }   /* kafel i grupa w podglądzie: szerokość jak w panelu, nie cały arkusz */
 .hs-more{ display:block; height:1px; flex:none; } .hs-cnt{ padding:0 6px; opacity:.6; font-size:12px; }
 .hs-e{ margin:12px 4px; opacity:.72; font-size:14px; }
-/* tło panelu obejmuje treść (bez rozciągania do dołu ekranu) */
-:host([mode=wide][wide-panel]:not([scroll])) .panel, :host([mode=tablet]) .panel, :host([mode=phone]) .panel{ align-self:start; height:auto; align-content:start; }
+/* tablet/telefon: panel rośnie z treścią; desktop ma stałą wysokość siatki strony i przewija panel (edycja: „Dodaj”, uchwyty) */
+:host([mode=tablet]) .panel, :host([mode=phone]) .panel{ align-self:start; height:auto; align-content:start; }
 :host([mode=phone]) .rail{ position:fixed; z-index:10; left:12px; right:12px; bottom:calc(10px + env(safe-area-inset-bottom)); width:auto; height:64px;
   flex-direction:row; justify-content:space-around; border-radius:32px; padding:6px 8px; background: rgba(24,30,40,.74); }
 :host([mode=phone]) .ri{ width:48px; height:48px; } :host([mode=phone]) .ri ha-icon, :host([mode=phone]) .ri svg{ width:22px; height:22px; }

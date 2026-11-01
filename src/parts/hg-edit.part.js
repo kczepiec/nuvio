@@ -1274,12 +1274,19 @@ const HG_EDIT = {
     this.setAttribute('editing', '');
     for (const sc of Object.keys(HGL.data.s || {})) { const L = HGL.get(sc); if (hgCleanL(L)) HGL.set(sc, L); }
     this._eWire(); this._eDecorate(); this._eGhostSweep(); this._eHeadBtn(); this._eBar();
+    this._eStudioEditSync(true);
     clearInterval(this._eGh); this._eGh = setInterval(() => { if (!this._editing) return clearInterval(this._eGh); if (this._drag && this._drag.on) return; this._eGhostSweep(); this._eDecorate(); }, 700);
+  },
+  _eStudioEditSync(on) {
+    if (!this._config || !this._config.studio) return;
+    for (const c of this._cards || []) { try { if (c._lay) c._lay(); else if (c.rerender) c.rerender(); } catch (e) { /* */ } }
+    if (on) requestAnimationFrame(() => { for (const c of this._cards || []) { try { if (c._scaleSoon) c._scaleSoon(); } catch (e) { /* */ } } });
   },
   _eDirty() { return this._editing && (this._eSnap !== JSON.stringify(HGL.data) || HGDraft.pending(this)); },
   _editExit(save) {
     if (!this._editing) return;
-    this._editing = false; HGL.editing = false; this.removeAttribute('editing'); clearInterval(this._eGh); for (const ct of this._eConts()) for (const g of ct.el.querySelectorAll(':scope > .hge-ghost')) g.classList.remove('hge-ghost');
+    this._editing = false; HGL.editing = false; this.removeAttribute('editing'); clearInterval(this._eGh); this._eStudioEditSync(false);
+    for (const ct of this._eConts()) for (const g of ct.el.querySelectorAll(':scope > .hge-ghost')) g.classList.remove('hge-ghost');
     if (!save) { HGL.data = JSON.parse(this._eSnap); HGL._ls(); HGDraft.discard(this); }
     if (this._eUnload) { window.removeEventListener('beforeunload', this._eUnload); this._eUnload = null; }
     const fin = () => { HG_FREEZE.on = false; HG_FREEZE.release(); this._eUnwire(); if (this._eBarEl) { this._eBarEl.remove(); this._eBarEl = null; } this._eSheet(false);
@@ -1338,9 +1345,10 @@ const HG_EDIT = {
   _eBar() {
     if (!this._editing) return;
     let b = this._eBarEl; if (b && !b.isConnected) this.shadowRoot.appendChild(b); if (!b) { b = this._eBarEl = document.createElement('div'); b.className = 'hge-bar'; b.setAttribute('role', 'toolbar'); b.setAttribute('aria-label', hgT('edit.edit_layout')); this.shadowRoot.appendChild(b); }
-    const nh = this._eHidden().length;
-    b.innerHTML = `<span class="hgt">${H.icon('mdi:pencil')}<b>${hgT('edit.edit_layout')}</b></span>
-      <button data-hge="hidden" ${nh ? '' : 'disabled'}>${H.icon('mdi:eye-outline')}<span>${hgT('edit.restore_hidden')}${nh ? ` · ${nh}` : ''}</span></button>
+    const nh = this._eHidden().length, st = !!(this._config && this._config.studio);
+    b.innerHTML = `<span class="hgt">${H.icon('mdi:pencil')}<b>${hgT('edit.edit_layout')}</b></span>`
+      + (st ? `<button data-hge="stadd">${H.icon('mdi:plus')}<span>${hgT('edit.add_component')}</span></button>` : '')
+      + `<button data-hge="hidden" ${nh ? '' : 'disabled'}>${H.icon('mdi:eye-outline')}<span>${hgT('edit.restore_hidden')}${nh ? ` · ${nh}` : ''}</span></button>
       <button data-hge="look">${H.icon('mdi:palette-outline')}<span>${hgT('edit.appearance')}</span></button>
       <button data-hge="reset">${H.icon('mdi:restore')}<span>${hgT('edit.reset_to_default_layout')}</span></button>
       <button data-hge="cancel">${hgT('common.cancel')}</button><button class="ok" data-hge="done">${H.icon('mdi:check')}<span>${hgT('common.done')}</span></button>`;
@@ -1407,10 +1415,6 @@ const HG_EDIT = {
     if (a.startsWith('us-') && window.HGUsers) return HGUsers.act(this, b, a);
     if (a.startsWith('tv-') && window.HGTv) return HGTv.act(this, b, a);
     if (a.startsWith('as-') && window.HGAssistUI) return HGAssistUI.act(this, b, a);
-    if (a === 'pbg' || a === 'pbgv') { const vw = this._config && this._config.view, v = b.dataset.v || '';
-      this._eApp((A) => { if (a === 'pbg') { if (v === 'off') A.pbg = false; else delete A.pbg; return; }
-        const M = Object.assign({}, A.pbgv || {}); if (v && vw) M[vw] = v; else delete M[vw]; if (Object.keys(M).length) A.pbgv = M; else delete A.pbgv; });
-      this._pbgSync(); return this._eLook(); }
     if (a === 'perfblur' || a === 'perfeco') { HGPerf.set(a === 'perfblur' ? 'blur' : 'eco', b.dataset.v || ''); return this._eLook(); }
     if (a === 'acc') { this._eApp((A) => { A.accent = b.dataset.c; }); return this._eLook(); }
     if (a === 'bgp') { this._eApp((A) => { A.bg = b.dataset.v ? { kind: 'image', v: b.dataset.v, v2p: b.dataset.p || '' } : null; }); return this._eLook(); }
@@ -1420,6 +1424,7 @@ const HG_EDIT = {
     if (a === 'lktab') return this._eSetGo(b.dataset.k);
     if (a === 'lkback') { this._lkDD = 'nav'; const sh = this._eSheetEl && this._eSheetEl.querySelector('.hge-sheet.lk'); if (sh) { sh.dataset.dd = 'nav'; const t = sh.querySelector(`#lkt-${this._lkTab}`); if (t) t.focus(); } return; }
     if (a === 'lookreset') { HGL.data.app = {}; HGApp.apply(); this._eToast(hgT('edit.appearance_reset_to_default')); return this._eLook(); }
+    if (a === 'stadd') { const card = (this._cards || []).find((c) => c._addMenu); if (card && card._addMenu) return card._addMenu(); return this._eGallery(null, this._pageScope() + ':tiles'); }
     if (a === 'stwig' && this._stAdd) { const fn = this._stAdd, t = b.dataset.t; fn({ studio: t }); return this._eSheet(false); }
     if (a === 'stshow' && this._stAdd) { const fn = this._stAdd, id = b.dataset.id; fn({ show: id }); return this._eSheet(false); }
     if (a === 'add') { this._stAdd = null; this._stHid = null; const ct0 = b._ct || (b.closest('.hge-addw') && b.closest('.hge-addw').firstChild._ct); return ct0 && ct0.scope === 'rooms' ? this._eSheet('add', ct0) : this._eGallery(ct0); }
@@ -1748,12 +1753,6 @@ const HG_EDIT = {
       <div class="lk-seg lk-lng" role="group" aria-label="${hgT('edit.language')}">${[['', hgT('common.automatic')], ...[...HGLang.LIST].sort((a, b) => (a[0] === 'en') - (b[0] === 'en'))].map(([v, n]) => `<button data-hge="lang" data-l="${v}" aria-pressed="${sel === v}"${v ? ` lang="${v}"` : ''}>${H.esc(n)}</button>`).join('')}</div></section>`;
   },
   /* Wydajność (osobno na tym urządzeniu, HGPerf): rozmycie szkła i oszczędzanie baterii; „Automatycznie” pokazuje, co wybrano */
-  /* tło panelu (#15): wspólne dla dashboardu + wyjątek dla bieżącego widoku */
-  _ePbgHtml() { const A = HGApp.get(), g = A.pbg === false ? 'off' : 'on', vw = this._config && this._config.view, pv = (vw && A.pbgv && A.pbgv[vw]) || '';
-    const seg = (act, sel, opts, lbl) => `<div class="lk-seg lk-lng lk-pf" style="--n:${opts.length}" role="group" aria-label="${H.esc(lbl)}">${opts.map(([v, n]) => `<button data-hge="${act}" data-v="${v}" aria-pressed="${sel === v}">${H.esc(n)}</button>`).join('')}</div>`;
-    return `<section class="lk-g" data-tab="look" data-pg="theme"><h4>${H.icon('mdi:card-outline')}${hgT('edit.panel_backdrop')}</h4><small class="lk-hn">${hgT('edit.panel_backdrop_hint')}</small>
-      ${seg('pbg', g, [['on', hgT('common.on_neut')], ['off', hgT('common.off_neut')]], hgT('edit.panel_backdrop'))}
-      ${vw ? `<small class="lk-hn">${hgT('edit.panel_backdrop_view')}</small>${seg('pbgv', pv, [['', hgT('edit.panel_backdrop_as_all')], ['on', hgT('common.on_neut')], ['off', hgT('common.off_neut')]], hgT('edit.panel_backdrop_view'))}` : ''}</section>`; },
   _ePerfHtml() {
     const bs = HGPerf.blurSel(), es = HGPerf.ecoSel(), b = HGPerf.blur(), e = HGPerf.eco();
     const BN = { full: hgT('edit.full'), light: hgT('edit.blur_light'), off: hgT('common.off_neut') };
@@ -1821,7 +1820,6 @@ const HG_EDIT = {
           <div class="lk-seg"><button data-hge="bgcol" data-k="color" aria-pressed="${!!bg && bg.kind === 'color'}">${hgT('edit.solid')}</button><button data-hge="bgcol" data-k="gradient" aria-pressed="${!!bg && bg.kind === 'gradient'}">${hgT('edit.gradient')}</button></div></div></section>
       <section class="lk-g" data-tab="look" data-pg="bg"><h4>${H.icon('mdi:brightness-6')}${hgT('edit.dimming')}<em class="dv">${H.pct(dv)}</em></h4><small class="lk-hn">${hgT('edit.applies_to_the_background')}</small>
         <input class="lk-rg" type="range" min="0" max="100" step="1" name="dim" value="${dv}" style="--v:${dv}%" aria-label="${hgT('edit.background_dimming')}"></section>
-      ${this._ePbgHtml()}
       ${this._eLangHtml()}
       ${this._ePerfHtml()}
       ${window.HGLookX ? HGLookX.html(this) : ''}

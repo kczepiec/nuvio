@@ -17,6 +17,8 @@ Alle belangrijke wijzigingen in Nuvio staan hier, de nieuwste eerst. Versies vol
 - Opgelost: Studio-bewerken mat de groeiende kaart, waardoor elke rij tot duizenden pixels opzwol. De rijhoogte komt nu van het paneel.
 - Opgelost: Studio-glas heeft sterkerere blur en aparte tokens voor licht en donker (widgets en chrome), lichte modus houdt geen donkere kaarten meer vast.
 - Opgelost: Studio verplaatst bewerken, Assist, berichten en meldingen naar het gebruikersmenu; de actieve rail-indicator heeft een zachtere hoekradius.
+- Gewijzigd: één layout overal — smal paneel, `wide-panel`, gedeeld paneelglas en **Paneelachtergrond** in Uiterlijk verwijderd; kaarten hebben altijd eigen glas met 24px tussenruimte.
+- Opgelost: layoutbewerking op desktop toont weer handgrepen, **Component toevoegen** en het Studio-raster (paneel scrollt in het paginaraster i.p.v. afgesneden te worden).
 
 ### 2.31.0
 - Toegevoegd: de titel en ondertitel van de kop kunnen de actuele status van een entiteit tonen met `{state:sensor.jouw_entiteit}`, bijvoorbeeld de status van een wasmachine. De regel verdwijnt als de status leeg is, `off`, `unavailable` of `unknown`, en de kop werkt bij wanneer de entiteit verandert.

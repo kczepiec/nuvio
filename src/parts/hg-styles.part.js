@@ -63,9 +63,7 @@ ha-icon{ display:inline-flex; --mdc-icon-size: 100%; }
 ha-card.glass{ position:relative; height:100%; min-height:var(--hg-min-h, 0px); overflow:hidden; border-radius:var(--hg-card-r, var(--hg-radius, 18u));
   /* szkło: przezroczyste wypełnienie + delikatny refleks (135°, biel -> przezroczystość 40%), bez kolorowych gradientów */
   background: var(--hg-glass-sheen, none), var(--hg-card-under, linear-gradient(transparent, transparent)), var(--hg-glass-lite, var(--hg-glass-bg));
-  /* bez własnego backdrop-filter: karta leży na szklanym panelu, który już rozmywa tło (jedno rozmycie zamiast zagnieżdżonych) */
   border:0;
-  /* własne rozmycie tylko gdy panel nie ma tła (panel_backdrop: false) */
   -webkit-backdrop-filter: var(--hg-bfo, var(--hg-card-bf, none)); backdrop-filter: var(--hg-bfo, var(--hg-card-bf, none));
   /* cienka jasna krawędź (mocniejsza u góry) + miękki cień, jak w projekcie */
   box-shadow: var(--hg-edge, 0 0 0 transparent), var(--hg-card-sh, var(--hg-shadow-lg, 0 6px 20px var(--hg-glass-sh)));

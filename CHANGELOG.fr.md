@@ -17,6 +17,8 @@ Toutes les modifications notables de Nuvio sont listées ici, des plus récentes
 - Corrigé : l'édition Studio mesurait la carte qui grandit, donc chaque rangée gonflait à des milliers de pixels. La hauteur de rangée vient maintenant du panneau.
 - Corrigé : le verre Studio a un flou plus marqué et des jetons distincts en clair et en sombre (widgets et chrome), le mode clair ne garde plus des cartes sombres.
 - Corrigé : Studio déplace édition, Assist, messages et notifications dans le menu utilisateur ; l’indicateur actif du rail a un rayon plus doux.
+- Modifié : une seule disposition partout — panneau étroit, `wide-panel`, verre commun du panneau et **Fond du panneau** dans Apparence supprimés ; les cartes portent toujours leur propre verre avec des espacements de 24px.
+- Corrigé : le mode édition sur bureau affiche à nouveau les poignées, **Ajouter un composant** et la grille Studio (le panneau défile dans la grille de page au lieu d’être rogné).
 
 ### 2.31.0
 - Ajouté : le titre et le sous-titre de l’en-tête peuvent afficher l’état d’une entité en direct avec `{state:sensor.votre_entite}`, par exemple l’état d’un lave-linge. La ligne disparaît quand l’état est vide, `off`, `unavailable` ou `unknown`, et l’en-tête se met à jour quand l’entité change.

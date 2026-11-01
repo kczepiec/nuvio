@@ -20,6 +20,9 @@ All notable changes to Nuvio are listed here, newest first. Versions follow [sem
 - Changed: on desktop every view uses the Studio-style layout (full-width panel, rail and tabs aligned with the rail, rounded rail). The narrow/wide panel picker is removed from edit mode and custom views; older `pw` preferences are ignored.
 - Changed: Studio widget glass is more transparent with a stronger blur and no inset borders, closer to the mockup weather card.
 - Changed: Studio widget grid uses 24px gutters so cards breathe like the mockup.
+- Changed: on desktop all views use the same frosted-glass tokens and transparent panel as Studio, not only the Studio view.
+- Changed: one layout everywhere (phone, tablet, desktop): legacy narrow panel, `wide-panel`, shared panel glass and **Panel background** in Appearance are removed; cards always carry their own glass with 24px gaps.
+- Fixed: layout edit mode on desktop again shows drag handles, **Add component** and the Studio widget grid (panel scrolls inside the page grid instead of being clipped).
 
 ### 2.31.0
 - Added: the header title and subtitle can show a live entity state with `{state:sensor.your_entity}`, for example a washer's status. The line disappears when the state is empty, `off`, `unavailable` or `unknown`, and the header updates when the entity changes.

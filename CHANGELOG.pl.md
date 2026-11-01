@@ -20,6 +20,9 @@ Tutaj zapisane są wszystkie istotne zmiany w Nuvio, od najnowszych. Wersje zgod
 - Zmieniono: na desktopie każdy widok ma układ jak Studio (panel na całą szerokość, szyna i zakładki wyrównane do szyny, zaokrąglona szyna). Wybór wąski/szeroki panel znika z edycji i widoków własnych; stare preferencje `pw` są ignorowane.
 - Zmieniono: szkło widżetów Studio jest bardziej przezroczyste, z mocniejszym rozmyciem i bez wewnętrznych obrysów — bliżej karty pogody z makiety.
 - Zmieniono: siatka widżetów Studio ma odstępy 24px między kartami, jak na mockupie.
+- Zmieniono: na desktopie wszystkie widoki mają to samo szkło i przezroczysty panel co Studio, nie tylko widok Studio.
+- Zmieniono: jeden układ na wszystkich urządzeniach — usunięty wąski panel, `wide-panel`, wspólne szkło panelu i **Tło panelu** w Wyglądzie; karty zawsze mają własne szkło i odstępy 24px.
+- Naprawiono: edycja układu na desktopie znów pokazuje uchwyty, **Dodaj komponent** i siatkę Studio (panel przewija się w siatce strony zamiast być ucięty).
 
 ### 2.31.0
 - Dodano: tytuł i podtytuł nagłówka mogą pokazywać stan encji na żywo wpisem `{state:sensor.twoja_encja}`, np. status pralki. Linia znika, gdy stan jest pusty, `off`, `unavailable` lub `unknown`, a nagłówek odświeża się przy zmianie encji.
