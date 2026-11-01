@@ -22,23 +22,25 @@ class HGAreasCard extends HGBase {
   css() {
     return U(`
 :host{ height:auto; container-type:inline-size; }
-.grid{ display:grid; grid-template-columns:minmax(0, 1fr); gap:26px; }
+.grid{ display:grid; grid-template-columns:minmax(0, 1fr); gap:26px; padding:2px 2px 6px; }
 /* kolumny po szerokosci karty obszarow: >=1100 px 3, 700-1100 px 2, ponizej 1; config columns ogranicza maksimum (1-3) */
 @container (min-width: 700px){ .grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); } }
 @container (min-width: 1100px){ .grid{ grid-template-columns:repeat(3, minmax(0, 1fr)); } .grid.cols2{ grid-template-columns:repeat(2, minmax(0, 1fr)); } }
 .grid.cols1{ grid-template-columns:minmax(0, 1fr) !important; }
-.tile{ position:relative; display:flex; flex-direction:column; justify-content:space-between; min-width:0; box-sizing:border-box; aspect-ratio:465 / 285; min-height:230px; container-type:size; padding:5cqh 4.5cqi; border-radius:var(--r-md); overflow:hidden; cursor:pointer;
-  background:var(--hg-glass-lite, var(--hg-glass-bg)); border:0; box-shadow: var(--hg-edge, 0 0 0 transparent), var(--hg-card-sh, var(--hg-shadow-lg, 0 6px 20px var(--hg-glass-sh)));
+.tile{ position:relative; display:flex; flex-direction:column; justify-content:space-between; min-width:0; box-sizing:border-box; aspect-ratio:465 / 285; min-height:230px; container-type:size; padding:5cqh 4.5cqi; border-radius:var(--r-lg, var(--r-md)); overflow:hidden; cursor:pointer;
+  background:var(--hg-glass-lite, var(--hg-glass-bg)); border:0; background-clip:padding-box; box-shadow: var(--hg-edge, 0 0 0 transparent), var(--hg-card-sh, var(--hg-shadow-lg, 0 6px 20px var(--hg-glass-sh)));
   color:#fff; text-align:left; transition: transform .25s cubic-bezier(.2,0,0,1), box-shadow .25s; -webkit-tap-highlight-color:transparent; touch-action:manipulation; outline:none; }
-.tile .ph{ position:absolute; inset:0; background-size:cover; background-position:center; }
-.tile .sh{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.18) 0%, rgba(0,0,0,.08) 40%, rgba(0,0,0,.62) 100%); }
-.tile.nop .ph{ background:linear-gradient(160deg, #3a4048, #1c1f24); }
+.tile .ph{ position:absolute; inset:0; width:auto; height:auto; border-radius:inherit; background-size:cover; background-position:center; }
+.tile .sh{ position:absolute; inset:0; border-radius:inherit; background:linear-gradient(180deg, rgba(0,0,0,.18) 0%, rgba(0,0,0,.08) 40%, rgba(0,0,0,.62) 100%); }
+.tile.nop .ph{ background:linear-gradient(160deg, rgba(40,46,56,.34), rgba(8,10,14,.46)); }
+.tile.nop .sh{ background:linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,.28) 100%); }
 .tile:active{ transform: scale(.98); }
 .tile:focus-visible{ box-shadow: 0 0 0 2px var(--hg-accent), 0 0 24px var(--hg-accent-soft, var(--hg-accent)); }
+.tile::after{ border-radius:inherit; }
 @media (hover:hover) and (pointer:fine){ .tile:hover{ box-shadow: 0 0 0 2px var(--hg-accent), 0 0 24px var(--hg-accent-soft, var(--hg-accent)); } }
 .tile *{ pointer-events:none; } .tile button, .tile button *{ pointer-events:auto; } .tile button ha-icon{ pointer-events:none; }
-.hd{ position:relative; display:flex; align-items:center; gap:3cqi; min-width:0; }
-.ic{ flex:none; display:flex; color:#fff; } .ic ha-icon{ --mdc-icon-size:clamp(20px, 10cqh, 32px); width:clamp(20px, 10cqh, 32px); height:clamp(20px, 10cqh, 32px); }
+.hd{ position:relative; display:flex; align-items:center; gap:12px; min-width:0; }
+.hd .ic{ flex:none; display:flex; align-items:center; justify-content:center; width:28px; height:28px; min-width:28px; color:#fff; } .hd .ic ha-icon{ --mdc-icon-size:28px; width:28px; height:28px; }
 .tx{ flex:1; min-width:0; }
 .nm{ display:block; font-size:clamp(14px, 7cqh, 22px); font-weight:600; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .stt{ display:flex; align-items:center; gap:6px; font-size:clamp(12px, 4.4cqh, 14px); color:rgba(255,255,255,.85); line-height:1.3; }
@@ -55,7 +57,8 @@ class HGAreasCard extends HGBase {
 .grid.list{ grid-template-columns:minmax(0, 1fr) !important; gap:var(--s1); }
 .grid.list .tile{ aspect-ratio:auto; min-height:0; height:72px; container-type:normal; flex-direction:row; align-items:center; gap:14px; padding:0 14px 0 0; }
 .grid.list .tile .ph{ position:relative; inset:auto; flex:none; width:72px; height:72px; align-self:stretch; }
-.grid.list .tile .sh{ display:none; } .grid.list .tile.nop .ph{ background:linear-gradient(160deg, #3a4048, #1c1f24); }
+.grid.list .tile .sh{ display:none; } .grid.list .tile.nop .ph{ background:linear-gradient(160deg, rgba(40,46,56,.34), rgba(8,10,14,.46)); }
+.tile.nop .sh{ background:linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,.28) 100%); }
 .grid.list .tile{ color:#1E2023; } .grid.list .stt, .grid.list .mk, .grid.list .cv{ color:#4A4E54; } .grid.list .mc{ color:#1E2023; }
 .grid.list .hd{ display:contents; } .grid.list .tx{ flex:1; } .grid.list .ic{ display:none; } .grid.list .nm{ font-size:16px; }
 .grid.list .mx{ display:flex; gap:18px; flex:none; } .grid.list .mk{ display:none; } .grid.list .mv{ font-size:16px; } .grid.list .mv ha-icon{ width:18px; height:18px; --mdc-icon-size:18px; }
