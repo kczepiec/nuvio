@@ -1,4 +1,4 @@
-/* --- zegar --- */
+/* ===================== ZEGAR ===================== */
 class HGClockCard extends HGBase {
   defaults() { return { title: null, seconds: false, date: true, hour12: false }; }
   ents() { return []; }

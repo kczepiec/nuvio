@@ -1,4 +1,4 @@
-/* ===================== ROBOTY: hg-robots-card (vacuum.* + lawn_mower.*, wykrywane automatycznie) =====================
+/* --- roboty: hg-robots-card (vacuum.* + lawn_mower.*, wykrywane automatycznie) ---
    Encje powiązane (bateria, mapa camera.*, select ssania/trybu, czujniki eksploatacji) z tego samego urządzenia (hass.entities.device_id).
    Mapa: camera_proxy z wstępnym wczytaniem, odświeżana tylko gdy kafel jest widoczny i karta przeglądarki aktywna (5 s przy pracy, 30 s w spoczynku). */
 const HG_VF = { PAUSE: 4, STOP: 8, HOME: 16, FAN: 32, LOCATE: 512, START: 8192 };

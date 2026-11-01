@@ -1,4 +1,4 @@
-/* ===================== DZIENNIK: ostatnie zmiany wybranych encji (logbook HA) z czasem względnym ===================== */
+/* --- DZIENNIK: ostatnie zmiany wybranych encji (logbook HA) z czasem względnym --- */
 const hgAgoRel = (ms) => { const s = Math.round((ms - Date.now()) / 1000), f = new Intl.RelativeTimeFormat(HG_LOC(), { numeric: 'auto' });
   const a = Math.abs(s); return a < 60 ? f.format(0, 'second').replace(/^./, (x) => x.toUpperCase()) : a < 3600 ? f.format(Math.round(s / 60), 'minute') : a < 86400 ? f.format(Math.round(s / 3600), 'hour') : f.format(Math.round(s / 86400), 'day'); };
 class HGLogbookCard extends HGBase {

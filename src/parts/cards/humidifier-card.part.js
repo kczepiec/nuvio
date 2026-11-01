@@ -1,4 +1,4 @@
-/* ===================== NAWILŻACZ: docelowa wilgotność na łuku, bieżąca wilgotność i tryby jako pigułki ===================== */
+/* --- NAWILŻACZ: docelowa wilgotność na łuku, bieżąca wilgotność i tryby jako pigułki --- */
 class HGHumidifierCard extends HGArcCard {
   static getStubConfig(h) { return { entity: hgStub(h, ['humidifier']) || null }; }
   defaults() { return { entity: null, name: null, icon: 'mdi:air-humidifier' }; }

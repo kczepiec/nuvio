@@ -1,4 +1,4 @@
-/* ===================== POWITANIE (hero): „Hej, Krzysztof!” + hasło, opcjonalnie zdjęcie i stan encji ===================== */
+/* --- POWITANIE (hero): „Hej, Krzysztof!” + hasło, opcjonalnie zdjęcie i stan encji --- */
 class HGHeroCard extends HGBase {
   static getStubConfig() { return {}; }
   defaults() { return { title: null, subtitle: null, image: null, entity: null, glass: false, studio: false, auto_greeting: false, status: false, status_entities: null }; }

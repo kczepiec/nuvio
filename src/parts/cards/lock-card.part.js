@@ -1,4 +1,4 @@
-/* ===================== ZAMEK: stan i odblokowanie z potwierdzeniem (alert dialog), kod gdy zamek go wymaga ===================== */
+/* --- ZAMEK: stan i odblokowanie z potwierdzeniem (alert dialog), kod gdy zamek go wymaga --- */
 class HGLockCard extends HGBase {
   static getStubConfig(h) { return { entity: hgStub(h, ['lock']) || null }; }
   defaults() { return { entity: null, name: null, confirm: true }; }

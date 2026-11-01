@@ -1,4 +1,4 @@
-/* ===================== PASEK POSTĘPU: dowolna wartość 0–100 albo min–max, z progami ostrzeżenia ===================== */
+/* --- pasek postępu: dowolna wartość 0–100 albo min–max, z progami ostrzeżenia --- */
 class HGProgressCard extends HGBase {
   static getStubConfig(h) { return { entity: hgStub(h, ['sensor'], (s) => s.attributes.unit_of_measurement === '%') || hgStub(h, ['sensor'], hgNum) || null }; }
   defaults() { return { entity: null, name: null, icon: null, min: 0, max: null, warn: null, bad: null, unit: null, decimals: 0 }; }

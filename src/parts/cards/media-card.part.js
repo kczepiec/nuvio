@@ -1,4 +1,4 @@
-/* ===================== MEDIA ===================== */
+/* --- MEDIA --- */
 class HGMediaCard extends HGBase {
   defaults() { return { name: null, icon: 'mdi:speaker', studio: false, now_playing: false }; }
   css() {

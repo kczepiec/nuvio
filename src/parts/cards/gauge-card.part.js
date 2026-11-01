@@ -1,4 +1,4 @@
-/* --- wskaźnik: łuk 240° dla czujnika liczbowego --- */
+/* ===================== WSKAŹNIK: łuk 240° dla czujnika liczbowego ===================== */
 class HGGaugeCard extends HGBase {
   defaults() { return { entity: null, name: null, icon: null, min: null, max: null }; }
   ents() { return [this._config.entity]; }

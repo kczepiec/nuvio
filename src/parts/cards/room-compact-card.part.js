@@ -1,4 +1,4 @@
-/* ===================== POKÓJ KOMPAKT: temperatura, przełącznik i suwak-linijka jasności ===================== */
+/* --- pokój kompakt: temperatura, przełącznik i suwak-linijka jasności --- */
 class HGRoomCompactCard extends HGBase {
   static getStubConfig(h) { return { name: hgT('cards.room_compact.living_room'), temperature: hgStub(h, ['sensor'], (s) => s.attributes.device_class === 'temperature'), entity: hgStub(h, ['light']) }; }
   defaults() { return { name: null, icon: 'mdi:sofa-outline', temperature: null, humidity: null, entity: null }; }

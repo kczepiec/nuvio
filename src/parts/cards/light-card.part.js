@@ -1,4 +1,4 @@
-/* ===================== OŚWIETLENIE ===================== */
+/* --- OŚWIETLENIE --- */
 class HGLightCard extends HGBase {
   defaults() { return { title: hgT('cards.light.lighting'), icon: 'mdi:lightbulb-outline', name: null }; }
   css() {

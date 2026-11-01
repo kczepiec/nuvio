@@ -1,4 +1,4 @@
-/* --- lista encji: wiersze z przełącznikiem, przyciskiem lub wartością --- */
+/* ===================== LISTA ENCJI: wiersze z przełącznikiem, przyciskiem lub wartością ===================== */
 class HGEntitiesCard extends HGBase {
   defaults() { return { title: hgT('cards.entities.entities'), icon: 'mdi:format-list-bulleted', entities: [] }; }
   ents() { return this._config.entities.map((x) => (typeof x === 'string' ? x : x.entity)); }

@@ -1,4 +1,4 @@
-/* --- ceny paliw jako widżet (to samo źródło co pasek w nagłówku: wiz.fuel albo własna lista) --- */
+/* ===================== CENY PALIW: widżet, to samo źródło co pasek w nagłówku (wiz.fuel albo własna lista) ===================== */
 class HGFuelCard extends HGBase {
   defaults() { return { title: '', fuel: null }; }
   _list() { const c = this._config; return (Array.isArray(c.fuel) && c.fuel.length ? c.fuel : ((HGL.data.wiz || {}).fuel || [])).filter((f) => f && f.entity); }

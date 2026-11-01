@@ -1,4 +1,4 @@
-/* ===================== LINK ===================== */
+/* --- LINK --- */
 class HGLinkCard extends HGBase {
   defaults() { return { title: hgT('common.open'), subtitle: '', icon: 'mdi:open-in-new', action: null, entity: null }; }
   css() {

@@ -1,4 +1,4 @@
-/* ===================== MULTIMEDIA + ENERGIA ===================== */
+/* --- multimedia + energia --- */
 /* --- hg-players-card: odtwarzacze (konfigurowane + wykryte), aktywne duże z okładką, bezczynne kompaktowe, niedostępne jako chipy --- */
 const HG_MP = { PAUSE: 1, SEEK: 2, VOL_SET: 4, MUTE: 8, PREV: 16, NEXT: 32, ON: 128, OFF: 256, VOL_STEP: 1024, SOURCE: 2048, STOP: 4096, PLAY: 16384 };
 /* etykieta stanu odtwarzacza w bieżącym języku: hgTD('cards.players.states.' + stan); undefined dla stanu spoza listy */

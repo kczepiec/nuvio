@@ -1,4 +1,4 @@
-/* ===================== OCZYSZCZACZ POWIETRZA: duży odczyt PM2.5 z odliczaniem, fale powietrza wokół liczby (tempo zależne od trybu), włącznik i tryby z przesuwanym podświetleniem ===================== */
+/* --- oczyszczacz powietrza: duży odczyt PM2.5 z odliczaniem, fale wokół liczby (tempo zależne od trybu), włącznik i tryby z przesuwanym podświetleniem --- */
 /* PM2.5 (µg/m³): progi jak w US EPA AQI; kolor fal i etykiety z jakości powietrza */
 /* [próg, etykieta (hgTLazy), kolor] */
 const HG_AQ_LV = [[12, hgTLazy('cards.purifier.aq_levels.clean'), '#0A84FF'], [35, hgTLazy('cards.purifier.aq_levels.good'), '#2FB36B'], [55, hgTLazy('cards.purifier.aq_levels.moderate'), '#F5A524'], [150, hgTLazy('cards.purifier.aq_levels.poor'), '#FF7A3D'], [Infinity, hgTLazy('cards.purifier.aq_levels.very_poor'), '#FF4D4F']];

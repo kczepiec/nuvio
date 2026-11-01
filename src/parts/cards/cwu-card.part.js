@@ -1,3 +1,4 @@
+/* ===================== CWU: ciepła woda użytkowa ===================== */
 class HGCwuCard extends HGRoomCard {
   defaults() { return { cwu: null, areas: {} }; }
   ents() { const C = this._config.cwu; if (!C) return []; return [C.heater, C.heating, C.keep, C.power, C.remaining, C.consumption, ...(C.switches || []).map((x) => x[0]), ...(C.up ? [C.up.tank, C.up.switch, C.up.power, ...((C.up.co || []).map((x) => x[0]))] : [])].filter(Boolean); }
