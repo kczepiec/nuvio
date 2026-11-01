@@ -12,6 +12,7 @@ Toutes les modifications notables de Nuvio sont listées ici, des plus récentes
 - Corrigé : les widgets Studio se rapprochent de la maquette. Les cartes sur la photo ont un verre plus sombre et un texte blanc, l’arc climat reste dans la carte, les barres d’énergie apparaissent dès la taille moyenne, le média a une pochette plus grande, les lumières allumées sont indigo et les scènes tiennent sur une rangée.
 - Corrigé : cadre Studio. Le logo réapparaît, le rail est une barre arrondie sans flèche retour, et les icônes en haut à droite ont plus d’espace. Le Wi-Fi et le Bluetooth reflètent l’état de la tablette et ouvrent l’entité ; l’icône de batterie disparaît.
 - Corrigé : sur téléphone, les widgets Studio s’empilent en une seule colonne pleine largeur.
+- Corrigé : le calendrier mensuel et l’agenda ont une typographie plus grande et lisible (y compris dans Studio, sans réduction par l’échelle du tuileau).
 - Corrigé : la grille Studio se cale contre le rail, sans bande vide, et le mode édition ajoute les mêmes composants que les autres vues.
 - Corrigé : Studio n'a plus de colonne de grille vide à gauche, et les widgets suivent la hauteur de leur cellule.
 - Corrigé : l'édition Studio ne fait plus osciller toute la grille et ne compresse plus les widgets pour caser la tuile d'ajout.

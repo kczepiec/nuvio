@@ -5,15 +5,16 @@ class HGAgendaCard extends HGBase {
   _extraSig() { return [this._n || 0, hgDayKey(new Date())]; }
   css() {
     return U(`
-ha-card.glass{ display:flex; flex-direction:column; gap:var(--s1); overflow:auto; }
-.day{ margin-top:8u; } .day h4{ margin:0 0 5u; font-size:10px; font-size:var(--fs-sm); font-weight:400; color:#4D5157; text-transform:none; }
-.day h4 em{ font-style:normal; color:#1E2023; margin-right:4u; }
-.ev{ gap:var(--s2); }
-.ev i{ width:4u; align-self:stretch; border-radius:2u; flex:none; }
-.ev .tm{ font-size:var(--fs-sm); color:#5A5E64; min-width:58u; }
-.ev .tx{ min-width:0; flex:1; } .ev b{ display:block; font-size:var(--fs-sm); font-weight:400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.ev small{ display:block; font-size:var(--fs-xs); color:#8A8E94; margin-top:1u; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.none{ margin-top:10u; font-size:var(--fs-sm); color:#6A6E74; }
+ha-card.glass{ display:flex; flex-direction:column; gap:var(--s1); overflow:auto; container-type:inline-size; }
+.day{ margin-top:10u; } .day h4{ margin:0 0 6u; font-size:var(--fs-md); font-weight:500; color:#4D5157; text-transform:none; line-height:1.35; }
+.day h4 em{ font-style:normal; color:#1E2023; margin-right:5u; font-weight:600; }
+.ev{ gap:var(--s2); align-items:flex-start; }
+.ev i{ width:4u; align-self:stretch; border-radius:2u; flex:none; min-height:1.2em; }
+.ev .tm{ font-size:var(--fs-md); color:#5A5E64; min-width:64u; flex:none; line-height:1.35; }
+.ev .tx{ min-width:0; flex:1; } .ev b{ display:block; font-size:var(--fs-md); font-weight:500; line-height:1.35; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ev small{ display:block; font-size:var(--fs-sm); color:#8A8E94; margin-top:2u; line-height:1.35; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.none{ margin-top:10u; font-size:var(--fs-md); color:#6A6E74; }
+@container (min-width: 420px){ .ev .tm, .ev b{ font-size:calc(var(--fs-md) * 1.05); } .ev small{ font-size:var(--fs-md); } }
 `);
   }
   async _load() {

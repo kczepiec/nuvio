@@ -248,7 +248,7 @@ test('tile --hg-u is not set on stack/grid containers, for both hg-* and branded
     { id: 'w_card_3', type: 'card', x: 0, y: 0, w: 4, h: 3, settings: { card: 'hg-stack-card', name: '' } },
   ], bps: {}, custom: 1 } } });
   const P = mk(HGL, { M }), c = new P.HGStudioGrid();
-  for (const tag of ['hg-stack-card', 'nuvio-stack-card', 'hg-grid-card', 'nuvio-grid-card']) {
+  for (const tag of ['hg-stack-card', 'nuvio-stack-card', 'hg-grid-card', 'nuvio-grid-card', 'hg-month-card', 'nuvio-month-card', 'hg-agenda-card', 'nuvio-agenda-card']) {
     const cleared = [];
     const el = { clientHeight: 300, querySelector: () => ({ localName: tag }), style: { removeProperty: (k) => cleared.push(k), setProperty: () => {} } };
     c._tileU(el, { h: 3 });

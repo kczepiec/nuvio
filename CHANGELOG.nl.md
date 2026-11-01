@@ -12,6 +12,7 @@ Alle belangrijke wijzigingen in Nuvio staan hier, de nieuwste eerst. Versies vol
 - Opgelost: Studio-widgets liggen dichter bij het ontwerp. Kaarten op de foto hebben donkerder glas en witte tekst, de klimaatboog blijft in de kaart, energiebalken verschijnen al op middelgroot formaat, media heeft een grotere hoes, ingeschakelde lampen zijn indigo en scènes staan op één rij.
 - Opgelost: Studio-kader. Het logo is weer zichtbaar, de rail is een afgeronde balk zonder terugpijl, en de pictogrammen rechtsboven hebben meer ruimte. Wifi en Bluetooth tonen de tabletstatus en openen de entiteit; het batterijpictogram is weg.
 - Opgelost: op telefoons stapelen Studio-widgets in één kolom over de volle breedte.
+- Opgelost: maandkalender en agenda gebruiken grotere, leesbare typografie (ook in Studio, zonder te klein schalen via de tegel).
 - Opgelost: het Studio-raster sluit aan op de rail, zonder lege strook, en in bewerkmodus kun je dezelfde componenten toevoegen als op de andere weergaven.
 - Opgelost: Studio heeft geen lege rasterkolom meer links, en widgets schalen mee met de hoogte van hun cel.
 - Opgelost: Studio-bewerken laat het raster niet meer wiebelen en knijpt widgets niet samen om de toevoegtegel te passen.

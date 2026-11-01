@@ -12,6 +12,7 @@ Tutaj zapisane są wszystkie istotne zmiany w Nuvio, od najnowszych. Wersje zgod
 - Naprawiono: widżety Studio są bliżej makiety. Karty na zdjęciu mają ciemniejszą taflę i biały tekst, łuk klimatyzacji mieści się w karcie, słupki energii widać już w średnim rozmiarze, multimedia mają większą okładkę, włączone światła są indygo, a sceny leżą w jednym rzędzie.
 - Naprawiono: ramka Studio. Logo znów widać, szyna jest zaokrąglonym paskiem bez strzałki wstecz, a ikony w prawym górnym rogu mają odstęp. Wi-Fi i Bluetooth pokazują stan tabletu i otwierają encję; ikony baterii nie ma.
 - Naprawiono: na telefonie widżety Studio układają się w jednej kolumnie na pełną szerokość.
+- Naprawiono: kalendarz miesiąca i agenda mają większą, czytelną typografię (także w widoku Studio, bez ściskania skali kafelka).
 - Naprawiono: siatka Studio dosuwa się do szyny, bez pustego pasa, a w edycji da się dodać te same komponenty co na innych widokach.
 - Naprawiono: Studio nie zostawia pustej kolumny siatki po lewej, a widżety skalują się do wysokości swojego pola.
 - Naprawiono: edycja Studio nie kiwa całej siatki i nie ściska widżetów, żeby zmieścić kafelek dodawania.
