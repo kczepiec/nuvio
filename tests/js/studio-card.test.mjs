@@ -254,3 +254,10 @@ test('tile --hg-u is not set on stack/grid containers, for both hg-* and branded
     assert.deepEqual(cleared, ['--hg-u'], tag + ' must not get a scaled --hg-u');
   }
 });
+
+test('stack in a Studio tile fills tile height and shares it between children (stt)', async () => {
+  const fs = await import('node:fs'); const s = fs.readFileSync(new URL('../../src/parts/cards/stack-card.part.js', import.meta.url), 'utf8');
+  assert.match(s, /\.stt:not\(\.h\) \.bd\{[^}]*overflow:auto/);
+  assert.match(s, /ha-card\.stt:not\(\.h\) \.sl\{ flex:1 0 auto/);
+  assert.match(s, /this\.style\.height = '100%'/);
+});

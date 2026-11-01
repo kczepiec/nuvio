@@ -33,6 +33,9 @@ ha-card{ container-type:inline-size; }   /* siatka i zawijanie liczą się od sz
 .sl{ min-width:0; flex:var(--nv-fl, 1) 1 0; position:relative; container-type:inline-size; }   /* dziecko dopasowuje S/M/L do własnego gniazda */
 ha-card:not(.h) .sl, ha-card.nw .sl{ flex:0 0 auto; container-type:normal; }   /* pion: wysokość gniazda z treści dziecka; bez zawierania rozmiaru, bo Safari liczył wtedy wysokość treści jako 0 */
 ha-card:not(.h) .bd, ha-card.nw .bd{ flex:1 0 auto; }   /* Safari: podstawa 0% przy min-height:0 zwijała cały stos do samych odstępów */
+.stt:not(.h) .bd{ flex:1 1 auto; min-height:0; overflow:auto; }   /* kafel Studio: pion dzieli wysokość kafla, przewija się tylko gdy dzieci się nie mieszczą */
+ha-card.stt:not(.h) .sl{ flex:1 0 auto; }   /* dziecko rośnie ponad treść (bez zwężania poniżej treści) */
+ha-card.stt{ height:100%; box-sizing:border-box; }
 .glass:not(.flat) .sl{ --hg-glass-sheen:none; --hg-glass-lite:transparent; --hg-glass-bg:transparent; --hg-edge:0 0 0 transparent; --hg-card-sh:none; --hg-card-bf:none; --hg-card-under:none;
   --ha-card-background:transparent; --ha-card-box-shadow:none; --ha-card-border-width:0; }
 .glass.dv:not(.flat) .sl + .sl::before{ content:''; position:absolute; left:var(--s3); right:var(--s3); top:0; height:1px; background:currentColor; opacity:.08; }
@@ -51,15 +54,16 @@ ha-card:not(.h) .bd, ha-card.nw .bd{ flex:1 0 auto; }   /* Safari: podstawa 0% p
   /* w kaflu Studio stos poziomy zostaje poziomy (dzieci dzielą szerokość), bez zamiany na pion i przewijania */
   _inStudioTile() { const p = this.parentElement; return !!(p && p.classList && p.classList.contains('st-k')); }
   _narrowSet(w) { const c = this._config; if (!c) return; const nw = c.direction === 'horizontal' && w > 0 && w < (+c.wrap_below || 0) && !this._inStudioTile(); if (nw !== !!this._nw) { this._nw = nw; this._animNext = true; this.rerender(); } }
-  connectedCallback() { super.connectedCallback(); if (!this._ro && typeof ResizeObserver !== 'undefined') this._ro = new ResizeObserver((es) => this._narrowSet(es[0].contentRect.width)); if (this._ro) this._ro.observe(this); }
+  connectedCallback() { super.connectedCallback(); if (!this._ro && typeof ResizeObserver !== 'undefined') this._ro = new ResizeObserver((es) => this._narrowSet(es[0].contentRect.width)); if (this._ro) this._ro.observe(this);
+    if (this._inStudioTile()) { this.style.height = '100%'; this.style.overflow = 'hidden'; this.rerender(); } }   /* inline bije regułę kafla (height:auto; overflow:auto) */
   disconnectedCallback() { if (this._ro) this._ro.disconnect(); }
-  _extraSig() { return [this._nw]; }
+  _extraSig() { return [this._nw, this._inStudioTile()]; }
   styleVars() { const c = this._config, V = []; if (c.gap != null && c.gap !== '' && isFinite(+c.gap)) V.push(`--nv-gap:${+c.gap}px`);
     if (c.align && c.align !== 'stretch') V.push(`--nv-al:${{ start: 'flex-start', end: 'flex-end', center: 'center' }[c.align] || 'stretch'}`); return V.join(';'); }
   slot(x, i) { const r = Array.isArray(this._config.ratio) ? +this._config.ratio[i] : 0; return `<div class="sl" data-own data-key="${this.key()}-${i}" style="--i:${i}${r > 0 ? `;--nv-fl:${r}` : ''}"></div>`; }
   bodyCls() { return ''; }
   render() { const c = this._config, L = this.cards(), anim = this._anim || this._animNext; this._animNext = false;
-    const cls = [c.glass === false ? 'flat' : '', c.direction === 'horizontal' ? 'h' : '', this._nw ? 'nw' : '', c.divider !== false ? 'dv' : ''].filter(Boolean).join(' ');
+    const cls = [c.glass === false ? 'flat' : '', c.direction === 'horizontal' ? 'h' : '', this._nw ? 'nw' : '', this._inStudioTile() ? 'stt' : '', c.divider !== false ? 'dv' : ''].filter(Boolean).join(' ');
     return `<ha-card class="glass ${cls}">${this.head()}<div class="bd ${this.bodyCls()} ${anim ? 'nv-in' : ''}" data-key="bd-${this.key()}" style="${this.styleVars()}">${L.map((x, i) => this.slot(x, i)).join('')}${L.length ? '' : `<span class="nv-empty" style="padding:var(--s3)">${hgT('cards.stack.add_cards_to_the')}</span>`}</div></ha-card>`; }
   /* karty potomne żyją między aktualizacjami (morph zostawia gniazda data-own), tworzone raz na konfigurację */
   afterRender() { this._kids = this._kids || new Map(); const L = this.cards(), h = this._hass, deep = this.depth() >= HG_CONT_MAX;
