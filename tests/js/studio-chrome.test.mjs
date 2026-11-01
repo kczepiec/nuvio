@@ -1,6 +1,6 @@
 /* studio-chrome.test.mjs
    Default page chrome (_studioUI): status icons + date/time in the top bar, theme toggle on the rail.
-   Runs the real _stDev/_stChrome cut from hg-page.part.js against a fake hass; room_head stays without chrome. */
+   Runs the real _stDev/_stChrome cut from studio/chrome.part.js against a fake hass; room_head stays without chrome. */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -8,7 +8,10 @@ import vm from 'node:vm';
 
 const src = readFileSync(new URL('../../src/parts/hg-page.part.js', import.meta.url), 'utf8');
 
+const chrome = readFileSync(new URL('../../src/parts/studio/chrome.part.js', import.meta.url), 'utf8');
+
 function method(name) {
+  const src = chrome;
   const m = new RegExp('\\n  ' + name + '\\([^)]*\\) \\{').exec(src);
   assert.ok(m, name + ' must exist');
   let i = m.index + m[0].length - 1, d = 0;
@@ -46,7 +49,7 @@ test('studio chrome is gated on _studioUI; room_head and studio:false opt out', 
   assert.match(src, /\$\{this\._studioUI\(c\) \? this\._stChrome\(\) : ''\}/, 'status block when studio UI on');
   assert.match(src, /toggleAttribute\('studio', this\._studioUI\(c\)\)/, 'host attribute follows _studioUI');
   assert.match(src, /const st = this\._studioUI\(c\) && this\.getAttribute\('mode'\) !== 'phone' \? 1 : 0/, 'theme toggle when studio UI, not phone');
-  assert.match(src, /room_head \|\| c\.studio === false/, 'room view and explicit opt-out disable chrome');
+  assert.match(chrome, /room_head \|\| c\.studio === false/, 'room view and explicit opt-out disable chrome');
   const css = src.split('\n').filter((l) => /^:host\(\[studio\]/.test(l));
   assert.ok(css.length >= 5 && css.every((l) => l.startsWith(':host([studio]')), 'studio CSS is scoped to [studio]');
   assert.ok(/:host\(\[studio\]\[mode=phone\]\) \.sst/.test(src), 'rail theme/status hidden on phone');
