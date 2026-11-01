@@ -30,6 +30,7 @@ SHARED = [
     'shared/livekid.part.js',
     'shared/grid-engine.part.js',
     'studio/registry.part.js',
+    'studio/seed.part.js',
 ]
 CARDS = [
     'cards/energy-card.part.js',

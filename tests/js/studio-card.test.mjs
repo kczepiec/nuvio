@@ -16,7 +16,7 @@ function mk(HGL, opt = {}) {
     hgStudioSettingsFromEdit: () => ({}),
     HGModel: { load: async () => opt.M || {} }, customElements: { get: () => null }, ResizeObserver: undefined, MutationObserver: undefined,
   };
-  const r = loadParts(['shared/grid-engine.part.js', 'studio/registry.part.js', 'cards/studio-card.part.js'], g, ['HGStudioGrid', 'HGGrid', 'HG_STUDIO_W', 'hgStudioGet', 'hgStudioSet']);
+  const r = loadParts(['shared/grid-engine.part.js', 'studio/registry.part.js', 'studio/seed.part.js', 'cards/studio-card.part.js'], g, ['HGStudioGrid', 'HGGrid', 'HG_STUDIO_W', 'hgStudioGet', 'hgStudioSet']);
   return { ...r, made };
 }
 const lay = (HGL, P) => (P && P.hgStudioGet ? P.hgStudioGet(HGL.data, 'dashboard') : HGL.data.studios?.dashboard || HGL.data.studio);
