@@ -1188,7 +1188,7 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 .fc .tr{ display:inline-flex; width:auto; height:auto; background:none !important; align-items:center; justify-content:center; margin-left:-1u; }
 .fc .tr ha-icon{ width:14px; height:14px; display:flex; --mdc-icon-size:14px; }
 .fc .tr.up{ color:inherit; opacity:.8; background:var(--hg-tile-bg, rgba(255,255,255,.12)) !important; } .fc .tr.dn{ color:var(--hg-accent-tx); background:var(--hg-accent-faint) !important; } .fc .tr.eq{ color:inherit; opacity:.68; }
-.head p{ margin:0; font-size:23u; font-weight:400; letter-spacing:-.01em; line-height:1.2; text-shadow: 0 1px 12px rgba(0,0,0,.18); }
+.head p{ margin:0; font-size:16u; font-weight:400; letter-spacing:-.01em; line-height:1.35; opacity:.82; text-shadow: 0 1px 12px rgba(0,0,0,.18); }
 /* ----- szyna ----- */
 .rail{ display:flex; flex-direction:column; align-items:center; gap:var(--s1); padding:5u; border-radius:999px; width:40u;
   background: rgba(30,36,44,.22); border:1px solid rgba(255,255,255,.42); -webkit-backdrop-filter: var(--hg-bfo, blur(calc(14px * var(--hg-bf, 1)))); backdrop-filter: var(--hg-bfo, blur(calc(14px * var(--hg-bf, 1))));

@@ -6,8 +6,11 @@ class HGMapCard extends HTMLElement {
     this._config = Object.assign({ title: null, icon: 'mdi:map-outline', entities: [], theme_mode: 'dark', hours_to_show: 0 }, c);
     const sr = this.shadowRoot;
     sr.innerHTML = `<style>${HG_BASE}${U(`
-ha-card.glass{ display:flex; flex-direction:column; padding:var(--s2) var(--s2) var(--s2); gap:var(--s2); }
-.hd{ padding:0 2u; }
+ha-card.glass{ display:flex; flex-direction:column; padding:var(--s2) var(--s2) var(--s2); gap:var(--s2); container-type:inline-size; }
+.hd{ padding:0 2u; min-height:max(20u, 28px); }
+.hd .tt{ font-size:max(16px, calc(var(--fs-md) * 1.05)); font-weight:600; }
+.hd .note{ font-size:max(13px, var(--fs-sm)); opacity:.78; color:inherit; }
+@container (min-width: 420px){ .hd .tt{ font-size:max(17px, calc(var(--fs-md) * 1.12)); } .hd .note{ font-size:max(14px, var(--fs-sm)); } }
 .mw{ position:relative; flex:1; min-height:220u; border-radius:var(--r-sm); overflow:hidden; background:#e9e5df;
   --ha-card-border-radius: 0; --ha-card-box-shadow: none; --ha-card-border-width: 0; }
 .mw > *{ position:absolute; inset:0; display:block; height:100%; }
@@ -37,7 +40,7 @@ ha-card.glass{ display:flex; flex-direction:column; padding:var(--s2) var(--s2) 
     const fix = () => {
       const r = el.shadowRoot; if (!r) return false;
       if (!r.getElementById('hg-fill')) { const s = document.createElement('style'); s.id = 'hg-fill';
-        s.textContent = 'ha-card{height:100%!important;border-radius:0!important;border:0!important;box-shadow:none!important} #root{height:100%!important;padding-bottom:0!important} ha-map{position:absolute;inset:0;height:100%!important}';
+        s.textContent = 'ha-card{height:100%!important;border-radius:0!important;border:0!important;box-shadow:none!important} #root{height:100%!important;padding-bottom:0!important} ha-map{position:absolute;inset:0;height:100%!important} .leaflet-tooltip,.leaflet-tooltip-pane,.marker-text,button.name{font-size:13px!important;font-weight:600;line-height:1.25}';
         r.appendChild(s); }
       return true;
     };

@@ -6,7 +6,12 @@ class HGFamilyCard extends HGBase {
   ents() { return this.list(); }
   _changed() { this._entsC = null; return super._changed(); }
   css() { return HG_NV_CSS + U(`
-.ls{ display:flex; flex-direction:column; gap:var(--s1); } .ls .nv-row{ font-size:var(--fs-sm); } .ls .nv-row small{ opacity:.6; margin-left:auto; }
+.ls{ display:flex; flex-direction:column; gap:var(--s1); }
+.ls .nv-row{ font-size:max(14px, var(--fs-md)); align-items:baseline; }
+.ls .nv-row > span:not(.dot){ font-weight:500; }
+.ls .nv-row small{ font-size:max(12px, var(--fs-sm)); opacity:.72; margin-left:auto; }
+.nv-hd .nv-tt{ font-size:max(15px, var(--fs-md)); font-weight:600; }
+.hr0 .nv-name small{ font-size:max(13px, var(--fs-sm)); opacity:.75; }
 ha-card.glass{ container-type:inline-size; } .hr0{ flex-wrap:wrap; row-gap:6u; } .hr0 .nv-avs{ min-width:0; }
 .ls .nv-row > span:not(.dot){ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .ls .nv-row small{ min-width:0; max-width:55%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:right; }
 /* wąska karta (S): licznik nad awatarami, awatary ciaśniej, strefa pod imieniem */
