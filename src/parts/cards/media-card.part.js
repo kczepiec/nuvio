@@ -23,14 +23,27 @@ ha-card.np{ container-type:inline-size; height:100%; justify-content:flex-start;
 .np .src{ flex:none; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--hg-inner-bg); color:var(--hg-accent-tx); box-shadow:var(--hg-inner-hi); } .np .src ha-icon{ width:18px; height:18px; }
 .np .src.sp{ color:#1DB954; }
 .np .pb{ height:4px; border-radius:2px; background:color-mix(in srgb, currentColor 18%, transparent); overflow:hidden; margin-top:auto; } .np .pb i{ display:block; height:100%; border-radius:2px; background:currentColor; opacity:.75; }
-.np .ctl{ margin-top:var(--s1); gap:var(--s4); } .np .cb{ background:transparent; } .np .cb.pp{ background:transparent; color:inherit; } .np .cb.pp ha-icon{ width:32px; height:32px; }
-@container (max-width: 219px){ .np .pb, .np .src, .np .ctl .cb:not(.pp), .np .kebab{ display:none; } .np .tx span{ display:none; } }
+.np .ctl{ margin-top:var(--s1); gap:var(--s4); flex-wrap:nowrap; flex:none; } .np .cb{ background:color-mix(in srgb, currentColor 8%, transparent); } .np .cb.pp{ background:var(--hg-accent); color:var(--hg-on-accent, #fff); } .np .cb.pp ha-icon{ width:22px; height:22px; } .np .cb.pw{ background:transparent; } .np .cb.pw.on{ color:var(--hg-accent-tx, var(--hg-accent)); }
+.np .art{ background-color:color-mix(in srgb, currentColor 12%, transparent); color:inherit; box-shadow:none; }
+.np.playing .art, .np.on .art{ background:color-mix(in srgb, var(--hg-accent) 24%, transparent); color:var(--hg-accent-tx, var(--hg-accent)); box-shadow:0 0 0 1px color-mix(in srgb, var(--hg-accent) 40%, transparent); }
+@container (max-width: 219px){ .np .pb, .np .src, .np .ctl .cb:not(.pp):not(.pw), .np .kebab{ display:none; } .np .tx span{ display:none; } }
 @container (min-width: 220px) and (max-width: 299px){ .np .src{ display:none; } }
 @container (min-width: 420px){ .np .tx b{ font-size:20px; } }
-/* kafel Studio ma stałą wysokość (container-type:size na .st-k): okładka maleje z cqh, potem znika pasek, okładka i podtytuł; tytuł i play zawsze w kaflu */
-@container (max-height: 279px){ .np .art{ width:clamp(40px, min(36cqi, 120px, 40cqh), 120px); } }
-@container (max-height: 219px){ .np .pb{ display:none; } .np .ctl{ margin-top:auto; } .np .cb.pp{ width:40px; height:40px; } }
-@container (max-height: 149px){ .np .art, .np .src{ display:none; } .np .tx span{ display:none; } ha-card.np{ justify-content:space-between; } }
+/* kafel Studio: niski pas — jeden wiersz (ikona · tytuł · play · zasilanie), jak lista odtwarzaczy */
+@container (max-height: 279px){ .np .art{ width:clamp(44px, min(36cqi, 96px, 36cqh), 96px); border-radius:50%; } }
+@container (max-height: 219px){
+  ha-card.np{ flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:12px; padding:10px 14px; }
+  .np .npr{ flex:1; min-width:0; align-items:center; }
+  .np .art{ width:48px; height:48px; min-height:48px; border-radius:50%; flex:none; display:flex !important; }
+  .np .tx b{ font-size:15px; font-weight:600; line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .np .tx span{ font-size:13px; line-height:1.25; opacity:.72; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .np .src, .np .pb{ display:none; }
+  .np .ctl{ margin:0; margin-left:auto; gap:8px; }
+  .np .ctl .cb{ width:40px; height:40px; flex:none; }
+  .np .ctl .cb.pp{ width:44px; height:44px; }
+  .np .ctl .cb:not(.pp):not(.pw){ display:none; }
+}
+@container (max-height: 149px){ .np .tx span{ display:block; } .np .ctl .cb.pw{ display:flex; } }
 `);
   }
   render() {
@@ -58,11 +71,12 @@ ha-card.np{ container-type:inline-size; height:100%; justify-content:flex-start;
     const pc = dur > 0 && isFinite(pos) ? Math.max(0, Math.min(100, pos / dur * 100)) : 0;
     const app = String(a.app_name || a.source || ''), K = [[/spotify/i, 'mdi:spotify', 'sp'], [/youtube/i, 'mdi:youtube', ''], [/plex/i, 'mdi:plex', ''], [/apple|itunes/i, 'mdi:apple', ''], [/netflix/i, 'mdi:netflix', ''], [/cast|chromecast/i, 'mdi:cast', '']].find((k) => k[0].test(app));
     const badge = app ? `<span class="src ${K ? K[2] : ''}" title="${H.esc(app)}">${H.icon(K ? K[1] : 'mdi:music-note')}</span>` : '';
-    const top = a.media_artist || a.media_title ? [a.media_artist || nm, a.media_title || ''] : [nm, H.stateLabel(st)];
-    return `<ha-card class="glass np ${st === 'playing' ? 'playing' : ''}"><div class="npr"><div class="art" ${pic}>${pic ? '' : H.icon(c.icon)}</div>
-      <div class="tx" data-act="more"><b>${H.esc(top[0])}</b><span>${H.esc(top[1])}</span></div>${badge}</div>
+    const on = !['off', 'standby', 'unavailable'].includes(st);
+    const top = a.media_title || a.media_artist ? [a.media_title || nm, a.media_artist || ''] : [nm, H.stateLabel(st)];
+    return `<ha-card class="glass np ${st === 'playing' ? 'playing' : ''} ${on ? 'on' : ''}"><div class="npr"><div class="art" ${pic}>${pic ? '' : H.icon(c.icon)}</div>
+      <div class="tx" data-act="more"><b>${H.esc(top[0])}</b>${top[1] ? `<span>${H.esc(top[1])}</span>` : ''}</div>${badge}</div>
       ${unav ? '' : `<div class="pb" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(pc)}"><i style="width:${pc.toFixed(1)}%"></i></div>
-      <div class="ctl">${b(16, 'prev', 'mdi:skip-previous')}${(sf & 1) || (sf & 16384) ? `<button class="cb pp" data-act="pp" aria-label="${hgT('cards.media.play_pause')}">${H.icon(st === 'playing' ? 'mdi:pause' : 'mdi:play')}</button>` : ''}${b(32, 'next', 'mdi:skip-next')}</div>`}</ha-card>`;
+      <div class="ctl">${b(16, 'prev', 'mdi:skip-previous')}${(sf & 1) || (sf & 16384) ? `<button class="cb pp" data-act="pp" aria-label="${hgT('cards.media.play_pause')}">${H.icon(st === 'playing' ? 'mdi:pause' : 'mdi:play')}</button>` : ''}${b(32, 'next', 'mdi:skip-next')}${st === 'off' ? b(128, 'on', 'mdi:power', 'pw') : b(256, 'off', 'mdi:power', 'pw')}</div>`}</ha-card>`;
   }
   getGridOptions() { return { columns: 6, rows: 3 }; }
   onAct(a) {

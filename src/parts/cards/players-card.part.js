@@ -89,9 +89,18 @@ input[type=range]::-moz-range-thumb{ width:14u; height:14u; border:0; border-rad
 select{ font:inherit; font-size:var(--fs-sm); color:#2A2D31; height:max(calc(var(--k) * 26), var(--hg-tgt, 0px)); max-width:100%; min-width:0; flex:0 1 calc(var(--k) * 150); padding:0 var(--s4) 0 var(--s1); border-radius:var(--r-sm); border:1px solid rgba(0,0,0,.08);
   background:rgba(255,255,255,.75) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%235A5E64' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") no-repeat right 5px center/16px; -webkit-appearance:none; appearance:none; }
 .sm{ display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%, calc(var(--k) * 190)), 1fr)); gap:var(--s1); }
-.ci{ display:flex; align-items:center; gap:var(--s1); padding:var(--s1) var(--s1) var(--s1) var(--s1); border-radius:var(--r-md); background:var(--hg-inner-bg); border:0; box-shadow:var(--hg-inner-hi); min-width:0; }
-.ci .cov{ width:34u; height:34u; border-radius:var(--r-sm); box-shadow:none; } .ci .cov ha-icon{ width:17u; height:17u; }
-.ci .meta .ttl{ font-size:var(--fs-sm); -webkit-line-clamp:1; } .ci .meta .sub{ font-size:var(--fs-xs); }
+.ci{ display:flex; align-items:center; gap:12px; padding:10px 12px 10px 10px; border-radius:var(--r-md); background:color-mix(in srgb, currentColor 6%, transparent); border:0; box-shadow:none; min-width:0; min-height:60px; }
+.ci .cov{ width:48px; height:48px; border-radius:50%; box-shadow:none; background:color-mix(in srgb, currentColor 10%, transparent); color:inherit; flex:none; }
+.ci .cov ha-icon{ width:22px; height:22px; opacity:.85; }
+.ci.playing .cov, .ci.on .cov{ background:color-mix(in srgb, var(--hg-accent) 22%, transparent); color:var(--hg-accent-tx, var(--hg-accent)); box-shadow:0 0 0 1px color-mix(in srgb, var(--hg-accent) 35%, transparent); }
+.ci .meta{ flex:1; min-width:0; gap:3px; }
+.ci .meta .ttl{ font-size:15px; font-weight:600; line-height:1.25; -webkit-line-clamp:1; color:inherit; }
+.ci .meta .sub{ font-size:13px; line-height:1.25; opacity:.72; -webkit-line-clamp:1; }
+.ci .ctl{ display:flex; align-items:center; gap:8px; flex:none; margin-left:auto; }
+.ci .cb.soft{ width:40px; height:40px; background:color-mix(in srgb, currentColor 8%, transparent); }
+.ci .cb.soft.main, .ci.playing .cb.soft{ background:var(--hg-accent); color:var(--hg-on-accent, #fff); }
+.ci .cb.pw{ width:40px; height:40px; background:transparent; }
+.ci .cb.pw.on{ color:var(--hg-accent-tx, var(--hg-accent)); }
 .un{ display:flex; flex-wrap:wrap; gap:5u; align-items:center; font-size:var(--fs-xs); color:#5A5E64; }
 .un span{ padding:3u var(--s1); border-radius:var(--r-sm); background:rgba(255,255,255,.45); }
 .empty{ font-size:var(--fs-sm); color:#5A5E64; padding:var(--s2) 2u; }
@@ -124,8 +133,12 @@ select{ font:inherit; font-size:var(--fs-sm); color:#2A2D31; height:max(calc(var
     for (const e of list) { const s = h.states[e]; if (!H.ok(s)) un.push(e); else if (hgMpActive(s)) act.push(e); else idle.push(e); }
     const big = act.map((e) => hgNP.html(h, e, { name: nm(e) })).join('');   /* wspólny wygląd „Teraz gra” (shared/media) */
     const sm = idle.map((e) => { const s = h.states[e], a = s.attributes;
-      return `<div class="ci ${s.state}">${this._cov(e, s)}<div class="meta"><span class="ttl">${H.esc(nm(e))}</span><span class="sub">${H.esc(hgMpSt(s.state) || s.state)}${a.app_name ? ' · ' + H.esc(a.app_name) : ''}</span></div>
-        ${this._ctl(e, s, false)}${this._pw(e, s)}</div>`; }).join('');
+      const st = hgMpSt(s.state) || s.state;
+      const ttl = a.media_title || nm(e);
+      const sub = a.media_title ? (a.media_artist || st) : (st + (a.app_name ? ' · ' + a.app_name : ''));
+      const on = !['off', 'standby'].includes(s.state);
+      return `<div class="ci ${s.state}${on ? ' on' : ''}">${this._cov(e, s)}<div class="meta"><span class="ttl">${H.esc(ttl)}</span><span class="sub">${H.esc(sub)}</span></div>
+        <span class="ctl">${this._ctl(e, s, false)}${this._pw(e, s)}</span></div>`; }).join('');
     const unN = [...new Set(un.map(nm))];
     const unH = unN.length ? `<div class="un">${hgT('cards.players.unavailable')}${unN.map((x) => `<span>${H.esc(x)}</span>`).join('')}</div>` : '';
     return `<ha-card class="glass"><div class="hd">${H.icon(c.icon, 'ic')}<span class="tt">${H.esc(c.title)}</span><span class="sp"></span><span class="cnt">${act.length ? hgT('cards.players.active_count', { count: act.length }) : hgT('cards.players.nothing_playing')}</span></div>
