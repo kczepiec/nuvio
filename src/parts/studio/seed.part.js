@@ -21,6 +21,24 @@ const hgStudioDedupeItems = (items) => {
   for (const it of items) { if (!it || seen.has(it.id)) continue; seen.add(it.id); out.push(it); }
   return out;
 };
+const hgStudioBpOk = (arr, ids) => {
+  if (!Array.isArray(arr) || arr.length !== ids.size) return false;
+  if (!arr.every((i) => i && ids.has(i.id))) return false;
+  const vis = arr.filter((i) => !i.hidden);
+  if (typeof HGGrid === 'undefined' || !HGGrid.collides) return true;
+  for (let i = 0; i < vis.length; i++) for (let j = i + 1; j < vis.length; j++) if (HGGrid.collides(vis[i], vis[j])) return false;
+  return true;
+};
+const hgStudioSanitizeLayout = (L) => {
+  if (!L || !Array.isArray(L.items)) return L;
+  const items = hgStudioDedupeItems(L.items);
+  const ids = new Set(items.map((i) => i.id));
+  const bps = L.bps && typeof L.bps === 'object' ? L.bps : {};
+  const nbps = {};
+  for (const [k, arr] of Object.entries(bps)) if (hgStudioBpOk(arr, ids)) nbps[k] = arr;
+  if (items.length === L.items.length && JSON.stringify(nbps) === JSON.stringify(bps)) return L;
+  return Object.assign({}, L, { items, bps: nbps });
+};
 const hgStudioFinish = (layout) => Object.assign(layout, { seedV: HG_STUDIO_SEED_V, custom: 0, items: hgStudioDedupeItems(layout.items) });
 const hgStudioFromRecipe = (recipe, M, hass) => {
   const items = recipe.map((row) => {
@@ -102,23 +120,31 @@ const hgStudioGet = (data, view) => {
   if (!data) return null;
   hgStudioMigrate(data);
   const v = hgStudioViewKey(view || 'dashboard');
-  const L = (data.studios && data.studios[v]) || null;
-  if (!L || !Array.isArray(L.items)) return L;
-  const items = hgStudioDedupeItems(L.items);
-  return items.length === L.items.length ? L : Object.assign({}, L, { items });
+  if (!data.studios || !data.studios[v]) return null;
+  const clean = hgStudioSanitizeLayout(data.studios[v]);
+  if (clean !== data.studios[v]) data.studios[v] = clean;
+  return clean;
 };
 /* widok Pokoje: siatka (3 kolumny wysokich kart) albo lista (1 kolumna niskich wierszy); wybór per urządzenie w localStorage */
 const hgRoomsLayout = (v) => { try { if (v === undefined) return localStorage.getItem('home-glass:rooms-layout') === 'list' ? 'list' : 'grid'; if (v === 'list') localStorage.setItem('home-glass:rooms-layout', 'list'); else localStorage.removeItem('home-glass:rooms-layout'); } catch (e) { /* tryb prywatny */ } return v === 'list' ? 'list' : 'grid'; };
 const hgStudioSet = (data, view, layout) => {
   if (!data.studios) data.studios = {};
-  const L = layout && Array.isArray(layout.items) ? Object.assign({}, layout, { items: hgStudioDedupeItems(layout.items) }) : layout;
-  data.studios[hgStudioViewKey(view || 'dashboard')] = L;
+  data.studios[hgStudioViewKey(view || 'dashboard')] = layout ? hgStudioSanitizeLayout(layout) : layout;
 };
-/* seed raz na widok; seedV < HG_STUDIO_SEED_V podmienia zapisany układ startowy (nowe makiety widoków) */
+/* brak układu -> seed; seedV < bieżącego + custom:0 -> przepis; custom:1 -> tylko seedV (układ zostaje); Przywróć domyślny w edycji nadal może nadpisać */
 const hgStudioEnsure = (L, M, hass, view = 'dashboard') => {
   if (!L || !L.loaded || L.failed || !L.data) return false;
+  const key = hgStudioViewKey(view || 'dashboard');
+  if (!L.data.studios || !L.data.studios[key]) {
+    hgStudioSet(L.data, view, hgStudioSeed(M, hass, view));
+    return true;
+  }
   const cur = hgStudioGet(L.data, view);
-  if (cur && (cur.seedV || 1) >= HG_STUDIO_SEED_V) return false;
+  if (!cur || (cur.seedV || 1) >= HG_STUDIO_SEED_V) return false;
+  if (cur.custom === 1) {
+    hgStudioSet(L.data, view, Object.assign({}, cur, { seedV: HG_STUDIO_SEED_V }));
+    return true;
+  }
   hgStudioSet(L.data, view, hgStudioSeed(M, hass, view));
   return true;
 };

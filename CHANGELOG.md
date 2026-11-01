@@ -16,6 +16,7 @@ All notable changes to Nuvio are listed here, newest first. Versions follow [sem
 - Changed: fresh Studio layouts for Map, Cameras, Family, Energy and the Robots, Security and Network views (Nuvio widgets and cards only). Updating to seedV 2 replaces each view’s saved layout once.
 - Fixed: the seedV Studio migration also runs when a view layout was already saved (previously seed never replaced an existing `studios.*` entry).
 - Fixed: Studio hides the top tab row on wide and tablet (rail-only navigation); duplicate grid tiles with the same id are merged on read/save.
+- Fixed: seedV migration no longer replaces `custom:1` layouts or auto-saves to the server on every view visit; stale colliding `bps` overrides are dropped so tiles stop stacking.
 - Fixed: the Studio grid sits against the rail instead of leaving a gutter, and edit mode adds the same components as the other views.
 - Fixed: Studio no longer keeps an empty grid column on the left, and widgets scale with the height of their cell.
 - Fixed: Studio edit mode no longer wobbles the whole grid or squeezes widgets to fit the add tile.

@@ -95,7 +95,7 @@ class HGStudioGrid extends HGBase {
       const v = this._viewId();
       if (!hgStudioEnsure(HGL, M, this._hass, v)) return;
       this._lay();
-      if (typeof HGL.save === 'function') Promise.resolve(HGL.save(this._hass)).catch(() => {});
+      if (typeof HGL._ls === 'function') HGL._ls();
     }, () => { this._seeding = 0; });
   }
   /* tryb edycji strony: HGL.editing; zmianę zgłasza atrybut editing na stronie (wejście) i HGL.notify (wyjście, Anuluj przywraca dane) */
@@ -119,8 +119,10 @@ class HGStudioGrid extends HGBase {
   _cur() {
     const L = this._layoutRoot(); if (!L || !Array.isArray(L.items)) return [];
     const id = this._bpNow().id, cols = this._cols(), ids = new Set(L.items.map((i) => i.id));
-    let a = HGGrid.layoutFor(L, id);
-    if (L.bps && L.bps[id]) {
+    const bp = L.bps && L.bps[id];
+    const bpOk = bp && typeof hgStudioBpOk === 'function' && hgStudioBpOk(bp, ids);
+    let a = bpOk ? bp.filter((i) => ids.has(i.id)).map((i) => ({ ...i })) : HGGrid.derive(L.items, 12, cols);
+    if (id !== 'lg') {
       a = a.filter((i) => ids.has(i.id));
       const miss = L.items.filter((i) => !a.some((x) => x.id === i.id));
       if (miss.length) { const d = HGGrid.derive(L.items, 12, cols); for (const m of miss) { const { x, y, ...r } = d.find((o) => o.id === m.id); a = HGGrid.place(a, r, cols); } }

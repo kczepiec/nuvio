@@ -55,12 +55,22 @@ test('studio layout at current seedV is kept', async () => {
   assert.equal(area(c._gridHtml(), 'w_media'), '2 / 3 / span 3 / span 3');
 });
 
-test('stale seedV layout is migrated on hass', async () => {
+test('stale seedV custom layout is kept; only seedV bumps', async () => {
   const own = { v: 1, items: [{ id: 'w_media', type: 'media', x: 2, y: 1, w: 3, h: 3, settings: {} }], bps: {}, custom: 1 };
   const HGL = hgl({ studios: { dashboard: own } }), P = mk(HGL, { M }), c = new P.HGStudioGrid();
   c._width(1440); c.hass = hass; await tick(); await tick();
   const L = lay(HGL, P);
-  assert.notEqual(L, own);
+  assert.equal(L.custom, 1);
+  assert.equal(L.seedV, 2);
+  assert.equal(L.items.length, 1);
+  assert.equal(L.items[0].id, 'w_media');
+});
+
+test('stale seedV default layout is replaced by seed recipe', async () => {
+  const own = { v: 1, items: [{ id: 'w_media', type: 'media', x: 2, y: 1, w: 3, h: 3, settings: {} }], bps: {}, custom: 0 };
+  const HGL = hgl({ studios: { dashboard: own } }), P = mk(HGL, { M }), c = new P.HGStudioGrid();
+  c._width(1440); c.hass = hass; await tick(); await tick();
+  const L = lay(HGL, P);
   assert.equal(L.seedV, 2);
   assert.equal(L.custom, 0);
   assert.equal(L.items.length, 8);
@@ -273,7 +283,8 @@ test('_seed runs hgStudioEnsure even when the view already has a saved layout', 
   const body = s.match(/_seed\(h\) \{[\s\S]*?\n  \}/)[0];
   assert.doesNotMatch(body, /this\._layoutRoot\(\)/);
   assert.match(body, /hgStudioEnsure\(HGL/);
-  assert.match(body, /HGL\.save/);
+  assert.match(body, /HGL\._ls/);
+  assert.doesNotMatch(body, /HGL\.save/);
 });
 
 test('stack in a Studio tile fills tile height and shares it between children (stt)', async () => {

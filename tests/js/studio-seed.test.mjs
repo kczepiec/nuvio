@@ -104,13 +104,14 @@ test('hgStudioEnsure seeds per view; seedV bump replaces stale layout, skips whe
   root.custom = 1;
   assert.equal(hgStudioEnsure(L, M, h, 'dashboard'), true);
   assert.equal(hgStudioGet(L.data, 'dashboard').seedV, 2);
-  assert.equal(hgStudioGet(L.data, 'dashboard').custom, 0);
+  assert.equal(hgStudioGet(L.data, 'dashboard').custom, 1);
+  assert.equal(hgStudioGet(L.data, 'dashboard').items.length, 8);
   const nl = { loaded: false, failed: false, data: { s: {} } }, fl = { loaded: true, failed: true, data: { s: {} } };
   assert.equal(hgStudioEnsure(nl, M, h, 'dashboard'), false); assert.equal(hgStudioGet(nl.data, 'dashboard'), null);
   assert.equal(hgStudioEnsure(fl, M, h, 'dashboard'), false); assert.equal(hgStudioGet(fl.data, 'dashboard'), null);
 });
 
-test('hgStudioGet dedupes duplicate item ids; legacy studio migrates to dashboard only', () => {
+test('hgStudioGet dedupes duplicate item ids and drops stale bps; legacy studio migrates to dashboard only', () => {
   const { hgStudioGet, hgStudioSet } = mk();
   const data = { studios: { bezpieczenstwo: { v: 1, items: [{ id: 'w_alarm', type: 'card', x: 0, y: 0, w: 12, h: 5 }, { id: 'w_alarm', type: 'card', x: 0, y: 5, w: 12, h: 5 }], bps: {} } } };
   assert.equal(hgStudioGet(data, 'bezpieczenstwo').items.length, 1);
@@ -120,6 +121,21 @@ test('hgStudioGet dedupes duplicate item ids; legacy studio migrates to dashboar
   assert.equal(leg.studios.studio, undefined);
   hgStudioSet(leg, 'dashboard', { v: 1, items: [{ id: 'a', x: 0, y: 0, w: 1, h: 1 }, { id: 'a', x: 1, y: 0, w: 1, h: 1 }], bps: {} });
   assert.equal(leg.studios.dashboard.items.length, 1);
+  const clash = { v: 1, items: [{ id: 'a', x: 0, y: 0, w: 6, h: 4 }, { id: 'b', x: 0, y: 0, w: 6, h: 4 }], bps: { lg: [{ id: 'a', x: 0, y: 0, w: 6, h: 4 }, { id: 'b', x: 0, y: 0, w: 6, h: 4 }] } };
+  const data2 = { studios: {} };
+  hgStudioSet(data2, 'dashboard', clash);
+  assert.deepEqual(hgStudioGet(data2, 'dashboard').bps, {});
+});
+
+test('hgStudioEnsure keeps custom layouts when seedV is stale', () => {
+  const { hgStudioEnsure, hgStudioGet } = mk(), h = hass(), M = model(h);
+  const L = { loaded: true, failed: false, data: { s: {}, studios: { dashboard: { v: 1, custom: 1, items: [{ id: 'w_media', type: 'media', x: 1, y: 1, w: 3, h: 3, settings: {} }], bps: {} } } } };
+  assert.equal(hgStudioEnsure(L, M, h, 'dashboard'), true);
+  const root = hgStudioGet(L.data, 'dashboard');
+  assert.equal(root.custom, 1);
+  assert.equal(root.seedV, 2);
+  assert.equal(root.items.length, 1);
+  assert.equal(hgStudioEnsure(L, M, h, 'dashboard'), false);
 });
 
 test('hgCdn version regex accepts X.Y.Z and X.Y.Z-beta.N only', async () => {
