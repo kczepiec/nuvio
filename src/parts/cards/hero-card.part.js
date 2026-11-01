@@ -6,6 +6,8 @@ class HGHeroCard extends HGBase {
 ha-card.hero{ background:none; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; justify-content:flex-end; gap:4u; padding:var(--s3) var(--s2); color:white; text-shadow:0 1px 10px color-mix(in srgb, black 35%, transparent); }
 /* napis leży na zdjęciu tła, więc zawsze biały z cieniem (jak powitanie na stronie Nuvio), także w schemacie jasnym */
 ha-card.hero.img{ background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,.55)) , var(--img) center / cover no-repeat; color:#fff; text-shadow:0 1px 8px rgba(0,0,0,.35); box-shadow:var(--hg-edge), var(--hg-shadow-lg); }
+/* min-height z ha-card.glass (--hg-min-h ≈ 400u) rozpychało powitanie ponad kafel studia (659 px w kaflu 166 px), a flex-end spychał napis poza widok */
+ha-card.glass.hero{ min-height:0; max-height:100%; overflow:hidden; justify-content:center; }
 .t{ font-size:var(--hg-fs-6, 40px); font-weight:600; letter-spacing:-.03em; line-height:1.05; margin:0; }
 .s{ font-size:var(--hg-fs-5, 24px); font-weight:var(--hg-fw-num, 300); letter-spacing:-.02em; line-height:1.15; margin:0; opacity:.92; }
 .st{ margin-top:6u; } .st .nv-pill{ background:color-mix(in srgb, black 28%, transparent); color:white; box-shadow:none; -webkit-backdrop-filter:var(--hg-bfo, blur(12px)); backdrop-filter:var(--hg-bfo, blur(12px)); }
