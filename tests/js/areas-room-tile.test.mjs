@@ -41,6 +41,6 @@ test('room tile: Offline when every entity is unavailable, no picture falls back
   assert.match(syp, /—/);
 });
 test('layout list adds the list class', () => {
-  assert.match(card({ layout: 'list' }).render(), /class="grid list"/);
-  assert.doesNotMatch(card().render(), /class="grid list"/);
+  assert.match(card({ layout: 'list' }).render(), /class="grid list cols/);
+  assert.doesNotMatch(card().render(), /class="grid list cols/);
 });
