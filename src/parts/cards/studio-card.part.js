@@ -11,8 +11,8 @@ class HGStudioGrid extends HGBase {
   ents() { return []; }
   css() { return `
 .st-root{ position:relative; height:100%; min-height:0; }
-.st-g{ position:relative; display:grid; height:100%; min-height:0; grid-template-columns:repeat(var(--st-cols, 12), minmax(0, 1fr)); grid-template-rows:repeat(var(--st-rows, 1), minmax(32px, 1fr));
-  grid-auto-rows:minmax(32px, 1fr); gap:${HG_ST_GAP}px; }
+.st-g{ position:relative; display:grid; height:100%; min-height:0; align-content:start; grid-template-columns:repeat(var(--st-cols, 12), minmax(0, 1fr)); grid-template-rows:repeat(var(--st-rows, 1), var(--st-ch, 64px));
+  grid-auto-rows:var(--st-ch, 64px); gap:${HG_ST_GAP}px; }
 /* edycja: wiersz zostaje taki jak w podglądzie. Kafelek „Dodaj” dokładany jest niżej i panel się przewija, zamiast ściskać resztę. */
 .st-root:has(.ed){ height:100%; min-height:0; }
 .st-g.ed{ height:100%; min-height:0; align-content:start; padding-bottom:76px; box-sizing:border-box; grid-template-rows:repeat(var(--st-rows, 1), var(--st-ch, 64px)); grid-auto-rows:var(--st-ch, 64px); }
@@ -20,7 +20,7 @@ class HGStudioGrid extends HGBase {
 .st-w{ position:relative; min-width:0; min-height:0; z-index:1; border-radius:var(--r-lg); outline:none; }
 .st-k{ position:absolute; inset:0; container-type:size; }
 .st-k > *{ display:block; height:100%; min-height:0; }
-.st-bg{ display:grid; height:100%; grid-template-columns:repeat(var(--st-cols, 12), minmax(0, 1fr)); grid-template-rows:repeat(var(--st-rows, 1), minmax(32px, 1fr)); gap:${HG_ST_GAP}px; z-index:0; pointer-events:none; opacity:.18; }
+.st-bg{ display:grid; height:100%; grid-template-columns:repeat(var(--st-cols, 12), minmax(0, 1fr)); grid-template-rows:repeat(var(--st-rows, 1), var(--st-ch, 64px)); grid-auto-rows:var(--st-ch, 64px); gap:${HG_ST_GAP}px; z-index:0; pointer-events:none; opacity:.18; }
 .st-bg i{ border:1.5px dashed currentColor; border-radius:var(--r-md); }
 .ed .st-k{ pointer-events:none; }
 .ed .st-w::after{ content:''; position:absolute; inset:0; border-radius:inherit; box-shadow:0 0 0 1.5px var(--hg-accent-soft); pointer-events:none; transition:box-shadow var(--hg-t-fast) var(--hg-ease-out); }
@@ -115,14 +115,24 @@ class HGStudioGrid extends HGBase {
     const p = this._panelEl(); if (!p) return 0;
     let h = p.clientHeight;
     if (!(h > 40 && h < 8000)) return 0;
-    if (this._edNow()) {
-      try {
-        const top = p.getBoundingClientRect().top, vh = (typeof window !== 'undefined' && window.innerHeight) || 0;
-        if (vh > 0) { const fill = Math.floor(vh - top - 12); if (fill > h) h = fill; }
-      } catch (e) { /* brak DOM */ }
-    }
+    try {
+      const top = p.getBoundingClientRect().top, vh = (typeof window !== 'undefined' && window.innerHeight) || 0;
+      if (vh > 0) { const fill = Math.floor(vh - top - 12); if (fill > h) h = fill; }
+    } catch (e) { /* brak DOM */ }
     const rowsH = rows * HG_ST_ROW + Math.max(0, rows - 1) * HG_ST_GAP;
     return Math.max(h, rowsH);
+  }
+  _syncAreas(root) {
+    const cur = this._cur();
+    for (const el of root.querySelectorAll('.st-w')) {
+      const it = cur.find((i) => i.id === el.dataset.id); if (!it) continue;
+      const ga = `${it.y + 1} / ${it.x + 1} / span ${it.h} / span ${it.w}`;
+      if (el.style.gridArea !== ga) el.style.gridArea = ga;
+      el.style.removeProperty('transform');
+    }
+    const g = root.querySelector('.st-g'); if (!g) return;
+    const rows = this._gridRows(cur, null);
+    g.style.setProperty('--st-rows', String(rows));
   }
   _name(t, it) { if (it && it.type === 'card') return (it.settings && it.settings.name) || t; const d = HG_STUDIO_W[t]; return d ? String(d.n) : t; }
   _gridHtml() {
@@ -151,19 +161,18 @@ class HGStudioGrid extends HGBase {
     const root = this.$ && this.$.querySelector && this.$.querySelector('.st-root'), html = this._gridHtml();
     if (!root) return;
     if (html !== this._lh) { this._lh = html; hgMorph(root, html); }
-    this._mount(root); this._scaleSoon();
+    this._syncAreas(root); this._mount(root); this._scaleSoon();
   }
   /* wiersze już dzielą wysokość panelu; --hg-u kafelka = jego wysokość / wysokość z projektu, żeby treść (jednostka u) mieściła się w komórce */
   _scaleSoon() { if (this._scF) return; const run = () => { this._scF = 0; this._scale(); }; if (typeof requestAnimationFrame === 'function') this._scF = requestAnimationFrame(run); else run(); }
   _scale() {
     const g = this.$ && this.$.querySelector && this.$.querySelector('.st-g'); if (!g || !g.querySelectorAll) return;
     const cur = this._cur(), ed = g.classList.contains('ed');
-    this._panelRoSync(ed);
-    if (ed) {
-      const rows = parseInt(g.style.getPropertyValue('--st-rows'), 10) || this._gridRows(cur, null);
-      const box = this._panelBoxH(rows);
-      if (box && rows > 0) g.style.setProperty('--st-ch', Math.max(32, (box - HG_ST_GAP * (rows - 1)) / rows).toFixed(2) + 'px');
-    } else g.style.removeProperty('--st-ch');
+    this._panelRoSync(!!ed);
+    const rows = parseInt(g.style.getPropertyValue('--st-rows'), 10) || this._gridRows(cur, null);
+    const box = this._panelBoxH(rows);
+    if (box && rows > 0) g.style.setProperty('--st-ch', Math.max(32, (box - HG_ST_GAP * (rows - 1)) / rows).toFixed(2) + 'px');
+    else g.style.removeProperty('--st-ch');
     for (const el of g.querySelectorAll('.st-w')) {
       const it = cur.find((i) => i.id === el.dataset.id); if (!it || !el.clientHeight || el.clientHeight > 8000) continue;
       const dh = it.h * HG_ST_ROW + Math.max(0, it.h - 1) * HG_ST_GAP, u = Math.min(2, Math.max(0.65, el.clientHeight / dh)), v = u.toFixed(4) + 'px';
@@ -259,7 +268,7 @@ class HGStudioGrid extends HGBase {
       if (c === D.cell && D.mode === 'drag') { c.style.transform = `translate(${dx}px, ${dy}px)`; continue; } c.style.gridArea = hgStArea(p).slice(10); }
     const me = nx.find((i) => i.id === D.id), gh = D.g.querySelector('.st-gh'); if (gh && me) { gh.hidden = false; gh.style.gridArea = hgStArea(me).slice(10); }
     const add = D.g.querySelector('.st-add'); if (add) add.style.visibility = 'hidden';
-    D.g.style.setProperty('--st-rows', Math.max(1, ...nx.filter((i) => !i.hidden).map((i) => i.y + i.h)));
+    D.g.style.setProperty('--st-rows', String(this._gridRows(nx.filter((i) => !i.hidden), null)));
   }
   _dragEnd(ok) {
     const D = this._drag; this._drag = null; if (!D) return;

@@ -1290,7 +1290,7 @@ const HG_EDIT = {
     if (!save) { HGL.data = JSON.parse(this._eSnap); HGL._ls(); HGDraft.discard(this); }
     if (this._eUnload) { window.removeEventListener('beforeunload', this._eUnload); this._eUnload = null; }
     const fin = () => { HG_FREEZE.on = false; HG_FREEZE.release(); this._eUnwire(); if (this._eBarEl) { this._eBarEl.remove(); this._eBarEl = null; } this._eSheet(false);
-      HGL.notify(); if (this.isConnected) this._build(); if (HGLang._pend) { HGLang._pend = 0; HGLang.refresh(this); } };
+      HGL.notify(); if (this.isConnected) this._build().then(() => { if (this._studioGrid && this._studioGrid()) this._eStudioEditSync(false); }); if (HGLang._pend) { HGLang._pend = 0; HGLang.refresh(this); } };
     if (save) HGL.save(this._hass).then(async (w) => { try { this._eToast(w === 'ha' ? hgT('edit.layout_saved_synced_via') : hgT('edit.layout_saved_on_this')); } catch (e) { /* */ }
       let how = 'build'; try { how = await HGDraft.commit(this, this._hass); } catch (e) { this._eToast(hgT('oss.toast.save_failed', { error: String((e && e.message) || e) })); }
       if (how === 'reload' && !window.__hgDryRun) { setTimeout(() => location.reload(), 400); return; } fin(); }, fin); else fin();

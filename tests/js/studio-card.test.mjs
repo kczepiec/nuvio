@@ -187,7 +187,7 @@ test('edit row height comes from the panel, not the card that grows with the gri
   set['--st-ch'] = undefined;
   g.classList.contains = () => false;
   c._scale();
-  assert.equal(set['--st-ch'], undefined);
+  assert.equal(set['--st-ch'], '65.60px', 'preview uses the same fixed row height as edit');
 });
 
 test('widgets mount through hgMakeCard with the registry config', async () => {
