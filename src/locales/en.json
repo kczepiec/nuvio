@@ -3545,10 +3545,12 @@
   "studio": {
     "add_hint": "Drag and drop",
     "add_widget": "Add widget",
+    "configure": "Configure {name}",
+    "edit_unavailable": "This widget cannot be configured here.",
     "empty_text": "Turn on edit mode and add a widget.",
     "empty_title": "Nothing here yet",
     "hide": "Hide",
-    "kb_hint": "Arrow keys move the widget, Shift and arrow keys resize it, Enter opens its menu.",
+    "kb_hint": "Arrow keys move the widget, Shift and arrow keys resize it, E opens configuration, Enter opens its menu.",
     "menu": "Options for {name}",
     "move": "Move {name}",
     "picker_description": "Free grid of widgets you can move and resize in edit mode.",

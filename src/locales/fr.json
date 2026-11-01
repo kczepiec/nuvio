@@ -3603,10 +3603,12 @@
   "studio": {
     "add_hint": "Glisser-déposer",
     "add_widget": "Ajouter un widget",
+    "configure": "Configurer {name}",
+    "edit_unavailable": "Ce widget ne peut pas être configuré ici.",
     "empty_text": "Activez le mode édition et ajoutez un widget.",
     "empty_title": "Rien pour l’instant",
     "hide": "Masquer",
-    "kb_hint": "Les flèches déplacent le widget, Maj et les flèches le redimensionnent, Entrée ouvre son menu.",
+    "kb_hint": "Les flèches déplacent le widget, Maj et les flèches le redimensionnent, E ouvre la configuration, Entrée ouvre son menu.",
     "menu": "Options de {name}",
     "move": "Déplacer {name}",
     "picker_description": "Grille libre de widgets à déplacer et redimensionner en mode édition.",

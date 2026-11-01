@@ -13,6 +13,7 @@ function mk(HGL, opt = {}) {
     window: {}, HGBase, HGL, hgReg: () => {}, hgT: (k, p) => k + (p ? JSON.stringify(p) : ''), hgTLazy: (k) => ({ toString: () => k }),
     H: { esc: (s) => String(s ?? '').replace(/[&<>"']/g, (c) => '&#' + c.charCodeAt(0) + ';'), icon: (i) => `<ha-icon icon="${i}"></ha-icon>` },
     hgMakeCard: (cfg, done) => { made.push(cfg); done({ cfg }); }, hgPass: () => {}, hgMorph: () => {}, hgOverlay: { menu: async () => opt.menu },
+    hgStudioSettingsFromEdit: () => ({}),
     HGModel: { load: async () => opt.M || {} }, customElements: { get: () => null }, ResizeObserver: undefined, MutationObserver: undefined,
   };
   const r = loadParts(['shared/grid-engine.part.js', 'shared/studio-widgets.part.js', 'cards/studio-card.part.js'], g, ['HGStudioGrid', 'HGGrid', 'HG_STUDIO_W', 'hgStudioGet', 'hgStudioSet']);
@@ -161,15 +162,31 @@ test('edit chrome only in edit mode; unknown widget types are skipped', async ()
   for (const k of ['data-st="drag"', 'data-st="size"', 'data-st="menu"', 'st-add', 'st-bg', 'tabindex']) assert.ok(!h.includes(k), k);
   assert.ok(!h.includes('w_x'));
   HGL.editing = true; h = c._gridHtml();
-  for (const k of ['data-st="drag"', 'data-st="size"', 'data-st="menu"', 'st-add', 'st-bg', 'tabindex="0"', 'data-no-swipe', 'studio.add_widget', 'studio.add_hint']) assert.ok(h.includes(k), k);
+  for (const k of ['data-st="drag"', 'data-st="edit"', 'data-st="size"', 'data-st="menu"', 'st-add', 'st-bg', 'tabindex="0"', 'data-no-swipe', 'studio.add_widget', 'studio.add_hint']) assert.ok(h.includes(k), k);
   assert.ok(!h.includes('w_x'));
   assert.match(h, /data-st="add" data-no-swipe aria-haspopup="menu" style="grid-area:8 \/ 10 \/ span 3 \/ span 3"/, 'add tile in the first free slot, as in the mockup');
 });
 
-test('edit row height comes from the panel, not the card that grows with the grid', () => {
+test('edit mode grid rows follow visible layout, not lg minimum', () => {
+  const HGL = hgl({ studios: { dashboard: { v: 1, items: [
+    { id: 'w_greeting', type: 'greeting', x: 0, y: 0, w: 5, h: 4, settings: {} },
+    { id: 'w_weather', type: 'weather', x: 5, y: 0, w: 3, h: 4, settings: { entity: 'weather.home' } },
+  ], bps: {}, custom: 1 } } });
+  const P = mk(HGL, { M }), c = new P.HGStudioGrid();
+  c._width(390);
+  HGL.editing = false;
+  const h = c._gridHtml();
+  assert.match(h, /--st-rows:10/, 'preview keeps lg floor');
+  HGL.editing = true;
+  const h2 = c._gridHtml();
+  const m = /--st-rows:(\d+)/.exec(h2);
+  assert.ok(m, 'rows var');
+  assert.ok(+m[1] < 10, 'edit drops empty lg tail rows');
+});
+
+test('row height uses design unit (_stCh), same in edit and preview', () => {
   const HGL = hgl({ studios: { dashboard: { v: 1, items: [
     { id: 'w_media', type: 'media', x: 0, y: 0, w: 4, h: 4, settings: {} },
-    { id: 'w_weather', type: 'weather', x: 4, y: 0, w: 4, h: 4, settings: {} },
   ], bps: {}, custom: 1 } } });
   const P = mk(HGL, { M }), c = new P.HGStudioGrid();
   c._width(1440);
@@ -177,17 +194,18 @@ test('edit row height comes from the panel, not the card that grows with the gri
   const g = {
     classList: { contains: (x) => x === 'ed' },
     style: { setProperty: (k, v) => { set[k] = v; }, removeProperty: (k) => { delete set[k]; }, getPropertyValue: () => '' },
-    querySelectorAll: () => [],
+    querySelectorAll: (sel) => (sel === '.st-w' ? [{ dataset: { id: 'w_media' }, setAttribute: () => {}, style: { removeProperty: () => {} } }] : []),
   };
-  c.$ = { querySelector: (s) => (s === '.st-g' ? g : null) };
-  const panel = { classList: { contains: (c) => c === 'panel' }, clientHeight: 872 };
-  c.parentElement = { classList: { contains: () => false }, parentElement: panel, clientHeight: 159192 };
+  const root = { querySelector: (s) => (s === '.st-g' ? g : null), querySelectorAll: (sel) => g.querySelectorAll(sel) };
+  c.$ = { querySelector: (s) => (s === '.st-root' ? root : null) };
+  c._cur = () => [{ id: 'w_media', x: 0, y: 0, w: 4, h: 4 }];
+  c._gridRows = () => 10;
   c._scale();
-  assert.equal(set['--st-ch'], '65.60px', 'row height from fixed 10-row grid, not widget span');
+  assert.equal(set['--st-ch'], '64px', 'stable row from HG_ST_ROW when --hg-u0 unavailable in test');
   set['--st-ch'] = undefined;
   g.classList.contains = () => false;
   c._scale();
-  assert.equal(set['--st-ch'], '65.60px', 'preview uses the same fixed row height as edit');
+  assert.equal(set['--st-ch'], '64px', 'preview matches edit row height');
 });
 
 test('widgets mount through hgMakeCard with the registry config', async () => {

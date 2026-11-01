@@ -1,7 +1,7 @@
 /* ===================== STUDIO: swobodna siatka widżetów (HGGrid + HG_STUDIO_W), układ w HGL.data.studio ===================== */
 /* Siatka: 12 / 8 / 4 kolumny wg szerokości karty (HGGrid.bp). Wiersze dzielą wysokość panelu (min. 32 px), a --hg-u na kafelku jest wysokością komórki względem projektu (64 px + odstęp). lg zapisuje items, md / sm własne nadpisanie bps[bp].
    Treść rysowana poza render() (morph do .st-root), bo w trybie edycji HG_FREEZE wstrzymuje zwykłe przerysowanie kart.
-   Widżety: karty z hgMakeCard w gniazdach data-own (container-type:size), trzymane między aktualizacjami po id elementu. */
+   Wiersz siatki: --st-ch = 64×--hg-u0 (bez skalowania --hg-u per kafelek). Widżety: hgMakeCard w gniazdach data-own. */
 const HG_ST_ROW = 64, HG_ST_GAP = 24;
 /* stała wysokość siatki w wierszach (jak seed); zmniejszenie widżetu nie ściska całego panelu */
 const HG_STUDIO_GRID_ROWS = 10;
@@ -11,30 +11,31 @@ class HGStudioGrid extends HGBase {
   ents() { return []; }
   css() { return `
 .st-root{ position:relative; height:100%; min-height:0; }
-.st-g{ position:relative; display:grid; height:100%; min-height:0; align-content:start; grid-template-columns:repeat(var(--st-cols, 12), minmax(0, 1fr)); grid-template-rows:repeat(var(--st-rows, 1), var(--st-ch, 64px));
-  grid-auto-rows:var(--st-ch, 64px); gap:${HG_ST_GAP}px; }
+.st-g{ position:relative; display:grid; box-sizing:border-box; height:auto; min-height:100%; align-content:start; grid-template-columns:repeat(var(--st-cols, 12), minmax(0, 1fr)); grid-template-rows:repeat(var(--st-rows, 1), var(--st-ch, 83.2px));
+  grid-auto-rows:var(--st-ch, 83.2px); gap:${HG_ST_GAP}px; }
 /* edycja: wiersz zostaje taki jak w podglądzie. Kafelek „Dodaj” dokładany jest niżej i panel się przewija, zamiast ściskać resztę. */
 .st-root:has(.ed){ height:100%; min-height:0; }
-.st-g.ed{ height:100%; min-height:0; align-content:start; padding-bottom:76px; box-sizing:border-box; grid-template-rows:repeat(var(--st-rows, 1), var(--st-ch, 64px)); grid-auto-rows:var(--st-ch, 64px); }
-.st-g.ed .st-bg{ grid-template-rows:repeat(var(--st-rows, 1), var(--st-ch, 64px)); grid-auto-rows:var(--st-ch, 64px); }
-.st-w{ position:relative; min-width:0; min-height:0; z-index:1; border-radius:var(--r-lg); outline:none; }
-.st-k{ position:absolute; inset:0; container-type:size; }
-.st-k > *{ display:block; height:100%; min-height:0; }
-.st-bg{ display:grid; height:100%; grid-template-columns:repeat(var(--st-cols, 12), minmax(0, 1fr)); grid-template-rows:repeat(var(--st-rows, 1), var(--st-ch, 64px)); grid-auto-rows:var(--st-ch, 64px); gap:${HG_ST_GAP}px; z-index:0; pointer-events:none; opacity:.18; }
+.st-g.ed{ height:100%; max-height:100%; min-height:0; align-content:start; box-sizing:border-box; overflow:hidden; }
+.st-g.ed .st-bg{ height:auto; align-self:start; grid-template-rows:repeat(var(--st-rows, 1), var(--st-ch, 83.2px)); grid-auto-rows:var(--st-ch, 83.2px); }
+.st-w{ position:relative; min-width:0; min-height:0; max-height:100%; z-index:1; border-radius:var(--r-lg); outline:none; align-self:stretch; justify-self:stretch; overflow:hidden; }
+.st-k{ position:absolute; inset:0; container-type:size; overflow:hidden; }
+.st-k > *{ display:block; width:100%; height:100%; min-height:0; max-height:100%; box-sizing:border-box; }
+.st-k > hg-stack-card, .st-k > hg-grid-card{ height:auto; max-height:100%; align-self:start; overflow:auto; }
+.st-bg{ display:grid; height:100%; grid-template-columns:repeat(var(--st-cols, 12), minmax(0, 1fr)); grid-template-rows:repeat(var(--st-rows, 1), var(--st-ch, 83.2px)); grid-auto-rows:var(--st-ch, 83.2px); gap:${HG_ST_GAP}px; z-index:0; pointer-events:none; opacity:.18; }
 .st-bg i{ border:1.5px dashed currentColor; border-radius:var(--r-md); }
 .ed .st-k{ pointer-events:none; }
 .ed .st-w::after{ content:''; position:absolute; inset:0; border-radius:inherit; box-shadow:0 0 0 1.5px var(--hg-accent-soft); pointer-events:none; transition:box-shadow var(--hg-t-fast) var(--hg-ease-out); }
 .ed .st-w:focus-visible::after, .ed .st-w.st-drag::after{ box-shadow:0 0 0 2px var(--hg-accent); }
 .st-bar{ position:absolute; top:var(--s1); left:var(--s1); right:var(--s1); z-index:3; display:flex; align-items:center; gap:6px; pointer-events:none; }
 .st-bar > *, .st-rs{ pointer-events:auto; }
-.st-h, .st-m, .st-rs{ display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:var(--hg-radius-pill, 999px); flex:none;
+.st-h, .st-e, .st-m, .st-rs{ display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:var(--hg-radius-pill, 999px); flex:none;
   background:var(--hg-panel-flat, var(--hg-glass-bg)); box-shadow:var(--hg-edge, 0 0 0 transparent), var(--hg-shadow-lg, none); color:inherit; }
-.st-h ha-icon, .st-m ha-icon, .st-rs ha-icon{ width:18px; height:18px; }
+.st-h ha-icon, .st-e ha-icon, .st-m ha-icon, .st-rs ha-icon{ width:18px; height:18px; }
 .st-h{ cursor:grab; touch-action:none; }
 .st-n{ flex:1; min-width:0; font-size:var(--fs-sm); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; opacity:.8; }
 .st-rs{ position:absolute; right:var(--s1); bottom:var(--s1); z-index:3; cursor:nwse-resize; touch-action:none; }
-.st-h:focus-visible, .st-m:focus-visible, .st-rs:focus-visible, .st-add:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
-@media (pointer: coarse){ .st-h, .st-m, .st-rs{ width:var(--hg-btn-touch, 44px); height:var(--hg-btn-touch, 44px); } }
+.st-h:focus-visible, .st-e:focus-visible, .st-m:focus-visible, .st-rs:focus-visible, .st-add:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
+@media (pointer: coarse){ .st-h, .st-e, .st-m, .st-rs{ width:var(--hg-btn-touch, 44px); height:var(--hg-btn-touch, 44px); } }
 .st-drag{ z-index:5; cursor:grabbing; box-shadow:var(--hg-shadow-float, none); transition:none; }
 .st-gh{ z-index:0; border-radius:var(--r-lg); background:var(--hg-accent-faint); box-shadow:inset 0 0 0 2px var(--hg-accent-soft); pointer-events:none; }
 .st-add{ position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; min-width:0; min-height:0; border-radius:var(--r-lg);
@@ -54,8 +55,21 @@ class HGStudioGrid extends HGBase {
     if (this._once(this.$, 'st')) {
       this.$.addEventListener('pointerdown', (e) => this._down(e));
       this.$.addEventListener('keydown', (e) => this._key(e));
-      this.$.addEventListener('click', (e) => { const b = e.composedPath().find((n) => n.dataset && n.dataset.st); if (!b || !this._ed) return; e.stopPropagation();
-        if (b.dataset.st === 'menu') { const c = b.closest('.st-w'); if (c) this._menu(c.dataset.id, b); } else if (b.dataset.st === 'add') this._addMenu(b); });
+      this.$.addEventListener('click', (e) => {
+        if (!this._ed) return;
+        const b = e.composedPath().find((n) => n.dataset && n.dataset.st);
+        if (b) {
+          e.stopPropagation();
+          if (b.dataset.st === 'menu') { const c = b.closest('.st-w'); if (c) this._menu(c.dataset.id, b); }
+          else if (b.dataset.st === 'edit') { const c = b.closest('.st-w'); if (c) this._editWidget(c.dataset.id); }
+          else if (b.dataset.st === 'add') this._addMenu(b);
+          return;
+        }
+        const w = e.composedPath().find((n) => n.classList && n.classList.contains('st-w'));
+        if (w && !e.composedPath().some((n) => n.dataset && (n.dataset.st === 'drag' || n.dataset.st === 'size'))) {
+          e.preventDefault(); e.stopPropagation(); this._editWidget(w.dataset.id);
+        }
+      });
     }
     this._lay();
   }
@@ -108,31 +122,39 @@ class HGStudioGrid extends HGBase {
   _byId() { const L = this._layoutRoot(); return new Map(((L && L.items) || []).map((i) => [i.id, i])); }
   /* liczba wierszy siatki: minimum jak makieta; rośnie tylko gdy treść schodzi niżej */
   _gridRows(cur, add) {
-    const L = this._layoutRoot(), lg = (L && L.items) || [], ext = (a) => (a.length ? Math.max(...a.map((i) => i.y + i.h)) : 0);
-    return Math.max(HG_STUDIO_GRID_ROWS, ext(lg), ext(cur), add ? add.y + add.h : 0);
+    const L = this._layoutRoot(), ext = (a) => (a.length ? Math.max(...a.map((i) => i.y + i.h)) : 0);
+    const need = Math.max(ext(cur), add ? add.y + add.h : 0, 1);
+    if (this._edNow()) return need;
+    const lg = (L && L.items) || [];
+    return Math.max(HG_STUDIO_GRID_ROWS, ext(lg), need);
   }
-  _panelBoxH(rows) {
-    const p = this._panelEl(); if (!p) return 0;
-    let h = p.clientHeight;
-    if (!(h > 40 && h < 8000)) return 0;
+  _stCh(rows) {
+    const r = Math.max(1, rows || 1);
+    if (this._edNow()) {
+      const panel = this._panelEl();
+      if (panel && panel.clientHeight > 0) {
+        const ch = (panel.clientHeight - HG_ST_GAP * (r - 1)) / r;
+        if (ch >= 32) return ch.toFixed(2) + 'px';
+      }
+    }
     try {
-      const top = p.getBoundingClientRect().top, vh = (typeof window !== 'undefined' && window.innerHeight) || 0;
-      if (vh > 0) { const fill = Math.floor(vh - top - 12); if (fill > h) h = fill; }
+      const u0 = getComputedStyle(this).getPropertyValue('--hg-u0').trim();
+      if (u0) return `calc(${HG_ST_ROW} * ${u0})`;
     } catch (e) { /* brak DOM */ }
-    const rowsH = rows * HG_ST_ROW + Math.max(0, rows - 1) * HG_ST_GAP;
-    return Math.max(h, rowsH);
+    return `${HG_ST_ROW}px`;
   }
   _syncAreas(root) {
     const cur = this._cur();
     for (const el of root.querySelectorAll('.st-w')) {
       const it = cur.find((i) => i.id === el.dataset.id); if (!it) continue;
-      const ga = `${it.y + 1} / ${it.x + 1} / span ${it.h} / span ${it.w}`;
-      if (el.style.gridArea !== ga) el.style.gridArea = ga;
+      el.setAttribute('style', hgStArea(it));
       el.style.removeProperty('transform');
+      el.style.removeProperty('--hg-u');
     }
     const g = root.querySelector('.st-g'); if (!g) return;
     const rows = this._gridRows(cur, null);
     g.style.setProperty('--st-rows', String(rows));
+    g.style.setProperty('--st-ch', this._stCh(rows));
   }
   _name(t, it) { if (it && it.type === 'card') return (it.settings && it.settings.name) || t; const d = HG_STUDIO_W[t]; return d ? String(d.n) : t; }
   _gridHtml() {
@@ -146,6 +168,7 @@ class HGStudioGrid extends HGBase {
     const cell = (i) => { const t = by.get(i.id), nm = esc(this._name(t.type, t)), id = esc(i.id);
       return `<div class="st-w" data-key="w-${id}" data-id="${id}" style="${hgStArea(i)}"${ed ? ` tabindex="0" role="group" aria-label="${nm}" aria-describedby="st-kh"` : ''}><div class="st-k" data-own data-key="k-${id}"></div>`
         + (ed ? `<div class="st-bar"><button class="st-h" type="button" data-st="drag" data-no-swipe aria-label="${hgT('studio.move', { name: nm })}" title="${hgT('studio.move', { name: nm })}">${H.icon('mdi:drag')}</button><span class="st-n">${nm}</span>`
+          + `<button class="st-e" type="button" data-st="edit" aria-label="${hgT('studio.configure', { name: nm })}" title="${hgT('studio.configure', { name: nm })}">${H.icon('mdi:pencil-outline')}</button>`
           + `<button class="st-m" type="button" data-st="menu" aria-haspopup="menu" aria-label="${hgT('studio.menu', { name: nm })}" title="${hgT('studio.menu', { name: nm })}">${H.icon('mdi:dots-horizontal')}</button></div>`
           + `<button class="st-rs" type="button" data-st="size" data-no-swipe aria-label="${hgT('studio.resize', { name: nm })}" title="${hgT('studio.resize', { name: nm })}">${H.icon('mdi:resize-bottom-right')}</button>` : '') + '</div>'; };
     return `<div class="st-g${ed ? ' ed' : ''}" data-key="g" style="--st-cols:${cols};--st-rows:${rows}">`
@@ -156,31 +179,36 @@ class HGStudioGrid extends HGBase {
   }
   /* łatanie siatki (morph zostawia gniazda data-own z kartami) + montaż widżetów; w trakcie przeciągania bez zmian w DOM */
   _lay() {
-    this._ed = this._edNow(); this._watchEd();
+    const ed = this._ed = this._edNow(); this._watchEd();
     if (this._drag) return;
     const root = this.$ && this.$.querySelector && this.$.querySelector('.st-root'), html = this._gridHtml();
     if (!root) return;
-    if (html !== this._lh) { this._lh = html; hgMorph(root, html); }
+    const modeFlip = this._lastEd !== undefined && this._lastEd !== ed;
+    this._lastEd = ed;
+    if (html !== this._lh || modeFlip) {
+      this._lh = html;
+      if (modeFlip || !root.firstChild) root.innerHTML = html;
+      else hgMorph(root, html);
+    }
     this._syncAreas(root); this._mount(root); this._scaleSoon();
   }
-  /* wiersze już dzielą wysokość panelu; --hg-u kafelka = jego wysokość / wysokość z projektu, żeby treść (jednostka u) mieściła się w komórce */
   _scaleSoon() { if (this._scF) return; const run = () => { this._scF = 0; this._scale(); }; if (typeof requestAnimationFrame === 'function') this._scF = requestAnimationFrame(run); else run(); }
   _scale() {
-    const g = this.$ && this.$.querySelector && this.$.querySelector('.st-g'); if (!g || !g.querySelectorAll) return;
-    const cur = this._cur(), ed = g.classList.contains('ed');
+    const root = this.$ && this.$.querySelector && this.$.querySelector('.st-root');
+    const g = root && root.querySelector('.st-g'); if (!g) return;
+    const ed = g.classList.contains('ed');
     this._panelRoSync(!!ed);
-    const rows = parseInt(g.style.getPropertyValue('--st-rows'), 10) || this._gridRows(cur, null);
-    const box = this._panelBoxH(rows);
-    if (box && rows > 0) g.style.setProperty('--st-ch', Math.max(32, (box - HG_ST_GAP * (rows - 1)) / rows).toFixed(2) + 'px');
-    else g.style.removeProperty('--st-ch');
-    for (const el of g.querySelectorAll('.st-w')) {
-      const it = cur.find((i) => i.id === el.dataset.id); if (!it || !el.clientHeight || el.clientHeight > 8000) continue;
-      const dh = it.h * HG_ST_ROW + Math.max(0, it.h - 1) * HG_ST_GAP, u = Math.min(2, Math.max(0.65, el.clientHeight / dh)), v = u.toFixed(4) + 'px';
-      if (el.style.getPropertyValue('--hg-u') !== v) el.style.setProperty('--hg-u', v);
-    }
+    const cur = this._cur();
+    const rows = this._gridRows(cur, null);
+    g.style.setProperty('--st-ch', this._stCh(rows));
+    if (root) this._syncAreas(root);
   }
   _cfg(it) {
-    if (it.type === 'card') { const c = it.settings && it.settings.card; if (!c || !c.type) return null; const o = Object.assign({}, c); for (const k of Object.keys(o)) if (k.indexOf('nv_') === 0) delete o[k]; return o; }
+    if (it.type === 'card') {
+      const c = it.settings && it.settings.card; if (!c || !c.type) return null;
+      const o = typeof hgFromHA === 'function' && typeof hgCardClean === 'function' ? hgCardClean(hgFromHA(Object.assign({}, c))) : Object.assign({}, c);
+      for (const k of Object.keys(o)) if (k.indexOf('nv_') === 0) delete o[k]; return o;
+    }
     const d = HG_STUDIO_W[it.type]; if (!d) return null; const s = it.settings || {}; try { return Object.assign({ type: 'custom:' + d.card }, d.cfg(s.entity || null, s, this._hass)); } catch (e) { return null; }
   }
   _mount(root) {
@@ -237,13 +265,36 @@ class HGStudioGrid extends HGBase {
   _say(id) { const it = this._cur().find((i) => i.id === id), t = this._byId().get(id), el = this.$ && this.$.querySelector && this.$.querySelector('[data-st-live]');
     if (it && t && el) el.textContent = hgT('studio.pos', { name: this._name(t.type, t), x: it.x + 1, y: it.y + 1, w: it.w, h: it.h }); }
   _focus(id) { const c = this.$ && this.$.querySelector && this.$.querySelector(`.st-w[data-id="${id}"]`); if (c && c.focus) c.focus(); }
+  _editWidget(id) {
+    const page = this._pageHost(); if (!page || typeof page._eStudioWidgetEdit !== 'function' || !this._ed) return;
+    page._eStudioWidgetEdit(id, this);
+  }
+  _opEditSave(p) {
+    const L = this._layoutRoot(); if (!L || !p || !p.id) return;
+    const meta = this._byId().get(p.id), it0 = L.items.find((i) => i.id === p.id); if (!meta || !it0) return;
+    let settings;
+    if (meta.type === 'card') {
+      settings = Object.assign({}, it0.settings, { card: p.card, name: p.name != null ? p.name : (it0.settings && it0.settings.name) || '', icon: p.icon != null ? p.icon : (it0.settings && it0.settings.icon) || '' });
+    } else {
+      settings = Object.assign({}, it0.settings, hgStudioSettingsFromEdit(meta.type, p.card, p.v));
+      if (p.name != null) settings.name = p.name;
+      if (p.icon != null) settings.icon = p.icon;
+    }
+    const items = L.items.map((i) => (i.id === p.id ? Object.assign({}, i, { settings }) : i));
+    this._saveLayout(Object.assign({}, L, { items, custom: 1 }));
+    if (p.z) this._opSize(p.id, p.z);
+    this._kids && this._kids.delete(p.id);
+    this._lh = null; this._lay(); this._focus(p.id); this._say(p.id);
+  }
   async _menu(id, anchor) {
     const it = this._cur().find((i) => i.id === id), t = this._byId().get(id); if (!it || !t) return;
     const sz = (k) => { const p = this._preset(t.type, k); return !!p && p.w === it.w && p.h === it.h; };
-    const v = await hgOverlay.menu(anchor, [{ label: hgT('studio.size_s'), icon: 'mdi:size-s', value: 's', checked: sz('s') }, { label: hgT('studio.size_m'), icon: 'mdi:size-m', value: 'm', checked: sz('m') },
+    const v = await hgOverlay.menu(anchor, [{ label: hgT('studio.configure', { name: this._name(t.type, t) }), icon: 'mdi:pencil-outline', value: 'edit' }, '-',
+      { label: hgT('studio.size_s'), icon: 'mdi:size-s', value: 's', checked: sz('s') }, { label: hgT('studio.size_m'), icon: 'mdi:size-m', value: 'm', checked: sz('m') },
       { label: hgT('studio.size_l'), icon: 'mdi:size-l', value: 'l', checked: sz('l') }, '-',
       { label: hgT('studio.hide'), icon: 'mdi:eye-off-outline', value: 'hide' }, { label: hgT('studio.remove'), icon: 'mdi:delete-outline', value: 'remove', danger: true }]);
     if (!v || !this._ed) return;
+    if (v === 'edit') return this._editWidget(id);
     if (v === 'hide') return this._opHide(id);
     if (v === 'remove') return this._opRemove(id);
     this._opSize(id, v); this._focus(id); this._say(id);
@@ -253,6 +304,7 @@ class HGStudioGrid extends HGBase {
     const page = this._pageHost(); if (!page || typeof page._eGallery !== 'function' || !this._ed) return;
     const by = this._byId();
     page._stHid = this._cur().filter((i) => i.hidden && by.get(i.id)).map((i) => { const t = by.get(i.id); return { id: i.id, name: this._name(t.type, t), icon: (HG_STUDIO_W[t.type] && HG_STUDIO_W[t.type].i) || (t.settings && t.settings.icon) || 'mdi:eye-outline' }; });
+    page._stEdit = null;
     page._stAdd = (p) => { if (!this._ed || !p) return; const id = p.studio ? this._opAdd(p.studio) : p.show ? (this._opShow(p.show), p.show) : this._opAddCard(p); if (id) { this._focus(id); this._say(id); } };
     page._eGallery();
   }
@@ -265,7 +317,7 @@ class HGStudioGrid extends HGBase {
   _dragMove(dx, dy) {
     const D = this._drag; if (!D) return; const nx = D.next = this._dragCalc(D, dx, dy); if (!D.g) return;
     for (const c of D.g.querySelectorAll('.st-w')) { const p = nx.find((i) => i.id === c.dataset.id); if (!p) continue;
-      if (c === D.cell && D.mode === 'drag') { c.style.transform = `translate(${dx}px, ${dy}px)`; continue; } c.style.gridArea = hgStArea(p).slice(10); }
+      if (c === D.cell && D.mode === 'drag') { c.style.transform = `translate(${dx}px, ${dy}px)`; continue; } c.setAttribute('style', hgStArea(p)); }
     const me = nx.find((i) => i.id === D.id), gh = D.g.querySelector('.st-gh'); if (gh && me) { gh.hidden = false; gh.style.gridArea = hgStArea(me).slice(10); }
     const add = D.g.querySelector('.st-add'); if (add) add.style.visibility = 'hidden';
     D.g.style.setProperty('--st-rows', String(this._gridRows(nx.filter((i) => !i.hidden), null)));
@@ -298,6 +350,7 @@ class HGStudioGrid extends HGBase {
     const id = c.dataset.id, it = this._cur().find((i) => i.id === id); if (!it) return;
     const d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
     if (d) { e.preventDefault(); e.stopPropagation(); if (e.shiftKey) this._opResize(id, it.w + d[0], it.h + d[1]); else this._opMove(id, it.x + d[0], it.y + d[1]); this._focus(id); this._say(id); return; }
+    if (e.key === 'e' || e.key === 'E') { e.preventDefault(); e.stopPropagation(); this._editWidget(id); return; }
     if (e.key === 'Enter' || e.key === ' ' || e.key === 'ContextMenu' || (e.key === 'F10' && e.shiftKey)) { e.preventDefault(); e.stopPropagation(); this._menu(id, c.querySelector('[data-st=menu]') || c); }
   }
   getCardSize() { const c = this._cur().filter((i) => !i.hidden); return Math.max(1, Math.ceil(Math.max(1, ...c.map((i) => i.y + i.h)) * (HG_ST_ROW + HG_ST_GAP) / 50)); }

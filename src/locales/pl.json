@@ -3661,10 +3661,12 @@
   "studio": {
     "add_hint": "Przeciągnij i upuść",
     "add_widget": "Dodaj widżet",
+    "configure": "Konfiguruj: {name}",
+    "edit_unavailable": "Tego widżetu nie da się tu skonfigurować.",
     "empty_text": "Włącz tryb edycji i dodaj widżet.",
     "empty_title": "Na razie pusto",
     "hide": "Ukryj",
-    "kb_hint": "Strzałki przesuwają widżet, Shift ze strzałkami zmienia jego rozmiar, Enter otwiera menu.",
+    "kb_hint": "Strzałki przesuwają widżet, Shift ze strzałkami zmienia rozmiar, E konfiguruje, Enter otwiera menu.",
     "menu": "Opcje: {name}",
     "move": "Przesuń: {name}",
     "picker_description": "Swobodna siatka widżetów, które w trybie edycji przesuwasz i zmieniasz ich rozmiar.",
