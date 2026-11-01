@@ -468,7 +468,6 @@ const HGLookX = {
       <div class="lcv-f"><span>${hgT('oss.cv.icon')}</span><div class="lcv-ic">${IC.map((i) => `<button data-hge="lx-ci" data-i="${i}" aria-pressed="${c.i === i}" aria-label="${i}">${H.icon(i)}</button>`).join('')}<input data-cv="i" value="${H.esc(c.i || '')}" placeholder="mdi:…" autocomplete="off" aria-label="${hgT('oss.cv.custom_icon')}"></div></div>
       <label class="lcv-f"><span>${hgT('oss.cv.path')}</span><span class="lcv-p">/${H.esc(HG_DASH())}/<input data-cv="p" maxlength="32" value="${H.esc(c.p || '')}" placeholder="${hgT('oss.cv.path_placeholder')}" autocomplete="off" ${ed ? 'disabled' : ''}></span></label>
       <div class="lcv-f"><span>${hgT('oss.cv.layout')}</span><div class="lcv-l">${L.map(([k, l, i, d]) => `<button data-hge="lx-cl" data-l="${k}" aria-pressed="${(c.lay || 'grid') === k}">${H.icon(i)}<b>${l}</b><small>${d}</small></button>`).join('')}</div></div>
-      <div class="lcv-f"><span>${hgT('oss.cv.panel_width')}</span>${hgPwPick(c.pw || 'narrow', 'lx-cw')}<style>${HG_PW_CSS}</style></div>
       <div class="lcv-f"><span>${hgT('oss.cv.columns')}</span><div class="lcv-r">${num('cm', hgT('oss.cv.phone'), 1)}${num('ct', 'Tablet', 2)}${num('cd', hgT('oss.cv.desktop'), c.lay === 'panel' ? 2 : 3)}<label class="lcv-n"><span>${hgT('oss.cv.max_width')}</span><select data-cv="mw">${[['0', hgT('oss.cv.full_width')], ['960', '960 px'], ['1200', '1200 px'], ['1440', '1440 px']].map(([v, l]) => `<option value="${v}" ${String(c.mw || 0) === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label></div></div>
       ${c.err ? `<p class="lcv-e" role="alert">${H.esc(c.err)}</p>` : ''}
       <div class="lcv-a">${ed ? `<button class="lx-hbtn lcv-del" data-hge="lx-cd">${H.icon('mdi:trash-can-outline')}${c.del ? hgT('oss.cv.delete_confirm') : hgT('oss.cv.delete')}</button>` : ''}<button class="lx-hbtn" data-hge="lx-cx">${hgT('common.cancel')}</button><button class="lx-hbtn ok" data-hge="lx-cs2">${H.icon('mdi:check')}${ed ? hgT('common.save') : hgT('oss.cv.create')}</button></div></div>
@@ -521,12 +520,11 @@ const HGLookX = {
   async act(page, b, a) { const h = page._hass;
     if (a.startsWith('lx-c') && a !== 'lx-cs') { const slug = (x) => x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ł/g, 'l').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 32);
       if (a === 'lx-cn') { this.cv = { n: '', s: '', i: 'mdi:view-grid-outline', p: '', lay: 'grid', cm: 1, ct: 2, cd: 3, mw: 0 }; return page._eLook(); }
-      if (a === 'lx-ce') { const c = ((HGL.data.wiz || {}).custom || []).find((x) => x.p === b.dataset.v); if (c) this.cv = Object.assign({}, c, { old: c.p, pw: (HGL.data.pw || {})[c.p] || 'narrow' }); return page._eLook(); }
+      if (a === 'lx-ce') { const c = ((HGL.data.wiz || {}).custom || []).find((x) => x.p === b.dataset.v); if (c) this.cv = Object.assign({}, c, { old: c.p }); return page._eLook(); }
       this.cvSync(page); const c = this.cv; if (!c) return;
       if (a === 'lx-cx') { this.cv = null; return page._eLook(); }
       if (a === 'lx-ci') { c.i = b.dataset.i; return page._eLook(); }
       if (a === 'lx-cl') { c.lay = b.dataset.l; return page._eLook(); }
-      if (a === 'lx-cw') { c.pw = b.dataset.w; hgPwMark(b); if (c.old && page._config.view === c.old) { HGL.data.pw = Object.assign({}, HGL.data.pw, { [c.old]: c.pw }); page._panelGrid(page.getAttribute('mode')); } return; }
       const w = HGL.data.wiz = Object.assign({ ts: Date.now() }, HGL.data.wiz || {}), CU = (w.custom || []).slice(), cur = this.views();
       if (a === 'lx-cd') { if (!c.del) { c.del = 1; return page._eLook(); }
         w.custom = CU.filter((x) => x.p !== c.old); w.views = cur.order.filter((v) => cur.on.has(v) && v !== c.old && v !== 'dashboard'); w.ts = Date.now(); this.cv = null; this.pend = null; HGDraft.defer(page, { reload: true }); page._eToast(hgT('settings.applies_on_save')); return page._eLook(); }
@@ -534,7 +532,7 @@ const HGLookX = {
         c.err = !c.n ? hgT('oss.cv.err_name') : !c.p ? hgT('oss.cv.err_path') : taken.includes(c.p) ? hgT('oss.cv.err_path_taken', { path: c.p }) : !/^mdi:[a-z0-9-]+$/.test(c.i || 'mdi:x') ? hgT('oss.cv.err_icon') : '';
         if (c.err) return page._eLook();
         const rec = { p: c.p, n: c.n, ...(c.s ? { s: c.s.slice(0, 48) } : {}), i: c.i || 'mdi:view-grid-outline', lay: c.lay || 'grid', cm: +c.cm || 1, ct: +c.ct || 2, cd: +c.cd || 3, ...(+c.mw ? { mw: +c.mw } : {}) };
-        const j = CU.findIndex((x) => x.p === c.old); if (j >= 0) CU[j] = rec; else CU.push(rec); w.custom = CU; HGL.data.pw = Object.assign({}, HGL.data.pw, { [rec.p]: c.pw || 'narrow' });
+        const j = CU.findIndex((x) => x.p === c.old); if (j >= 0) CU[j] = rec; else CU.push(rec); w.custom = CU;
         const on = cur.order.filter((v) => cur.on.has(v) && v !== 'dashboard'); if (!c.old) on.push(rec.p); w.views = on; w.ts = Date.now(); this.cv = null; this.pend = null; HGDraft.defer(page, { reload: true }); page._eToast(hgT('settings.applies_on_save')); return page._eLook(); } }
     if (a === 'lx-hacs') { const p = HG_PKGS.find((x) => x.id === b.dataset.p); if (!p) return; this.hacsGo = Object.assign({}, this.hacsGo, { [p.id]: 1 }); if (!window.__hgDryRun) { if (hgHacsOpen(h, p.rid, p.repo)) page._editExit && page._editExit(false); } else page._eLook(); return; }
     if (a === 'lx-rf') { if (!window.__hgDryRun) location.reload(); return; }

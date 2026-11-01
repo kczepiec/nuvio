@@ -17,6 +17,9 @@ All notable changes to Nuvio are listed here, newest first. Versions follow [sem
 - Fixed: Studio edit mode measured the growing card, so each row swelled to thousands of pixels. Row height now comes from the panel.
 - Fixed: Studio glass uses stronger blur and separate light and dark tokens (widgets and chrome), so light mode no longer keeps dark frosted cards.
 - Fixed: Studio moves edit, Assist, messages, and notifications into the user menu; the rail active indicator uses a softer corner radius.
+- Changed: on desktop every view uses the Studio-style layout (full-width panel, rail and tabs aligned with the rail, rounded rail). The narrow/wide panel picker is removed from edit mode and custom views; older `pw` preferences are ignored.
+- Changed: Studio widget glass is more transparent with a stronger blur and no inset borders, closer to the mockup weather card.
+- Changed: Studio widget grid uses 24px gutters so cards breathe like the mockup.
 
 ### 2.31.0
 - Added: the header title and subtitle can show a live entity state with `{state:sensor.your_entity}`, for example a washer's status. The line disappears when the state is empty, `off`, `unavailable` or `unknown`, and the header updates when the entity changes.

@@ -181,7 +181,7 @@ test('edit row height comes from the panel, not the card that grows with the gri
   const panel = { classList: { contains: (c) => c === 'panel' }, clientHeight: 872 };
   c.parentElement = { classList: { contains: () => false }, parentElement: panel, clientHeight: 159192 };
   c._scale();
-  assert.equal(set['--st-ch'], '206.00px');
+  assert.equal(set['--st-ch'], '200.00px');
   set['--st-ch'] = undefined;
   g.classList.contains = () => false;
   c._scale();

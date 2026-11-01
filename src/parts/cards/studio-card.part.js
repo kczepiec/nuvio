@@ -2,7 +2,7 @@
 /* Siatka: 12 / 8 / 4 kolumny wg szerokości karty (HGGrid.bp). Wiersze dzielą wysokość panelu (min. 32 px), a --hg-u na kafelku jest wysokością komórki względem projektu (64 px + odstęp). lg zapisuje items, md / sm własne nadpisanie bps[bp].
    Treść rysowana poza render() (morph do .st-root), bo w trybie edycji HG_FREEZE wstrzymuje zwykłe przerysowanie kart.
    Widżety: karty z hgMakeCard w gniazdach data-own (container-type:size), trzymane między aktualizacjami po id elementu. */
-const HG_ST_ROW = 64, HG_ST_GAP = 16;
+const HG_ST_ROW = 64, HG_ST_GAP = 24;
 const hgStArea = (i) => `grid-area:${i.y + 1} / ${i.x + 1} / span ${i.h} / span ${i.w}`;
 class HGStudioGrid extends HGBase {
   static getStubConfig() { return {}; }

@@ -61,6 +61,11 @@ ha-card.glass > *{ flex-shrink:0; }
 @media (prefers-reduced-motion: reduce){ .xp, .xi > *, .xb i ha-icon{ transition:none; } }
 .mm.mx{ flex-wrap:wrap; }
 @container (max-width: 460px){ .mb .fl{ display:none; } .mb .sh{ display:inline; } }
+/* Studio: tekst z tokenów karty, kafelki trybów bez obrysu */
+:host-context([studio]) ha-card.glass{ color:var(--hg-card-fg, inherit); }
+:host-context([studio]) .hd .tt, :host-context([studio]) .num, :host-context([studio]) .mb, :host-context([studio]) .bw small{ color:inherit; }
+:host-context([studio]) .hd .tt span, :host-context([studio]) .lab, :host-context([studio]) .c1 .nm span{ color:var(--hg-t2, inherit); }
+:host-context([studio]) .mb i{ background:var(--hg-inner-bg); box-shadow:none; }
 /* wyłączona */
 .off .num{ color:#6A6E74; } .off .bar .tk{ background:rgba(0,0,0,.12); } .off .bar .kn{ box-shadow:0 0 0 1px rgba(0,0,0,.12); background:#E4E6E9; }
 /* ----- kompakt (strony pokoi) ----- */

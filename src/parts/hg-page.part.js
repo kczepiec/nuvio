@@ -173,7 +173,7 @@ class HGPage extends HTMLElement {
     this._config = Object.assign({
       view: 'dashboard',   /* brand / title / subtitle: domyślne zależne od języka w miejscu użycia (_paintTop, _paintHead) */
       user: {}, tabs: [], rail: [], hub: null, toolbar: true, back: { back: true, fallback: '/' },
-      panel: { columns: '1fr 1fr', rows: '150fr 92fr 48fr 152fr', areas: null, width: 438 }, cards: [], persons: [],
+      panel: { columns: '1fr 1fr', rows: '150fr 92fr 48fr 152fr', areas: null, width: 438, wide: true }, cards: [], persons: [],
       notifications_action: { notifications: true }, mail_action: { notifications: true },
       menu: [], storage_key: 'home-glass', zoom: { min: 0.8, max: 1.3, step: 0.1 },
     }, c);
@@ -389,8 +389,6 @@ class HGPage extends HTMLElement {
       else { let best = Infinity; for (let c = 0; c + s <= n; c++) { const t = Math.max(...H.slice(c, c + s)); if (t < best) { best = t; col = c; } } }
       const top = Math.max(...H.slice(col, col + s)); for (let c = col; c < col + s; c++) H[c] = top + k;
       w.style.gridColumn = `${col + 1} / span ${s}`; w.style.gridRow = `${top + 1} / span ${k}`; }); }
-  _pwSet() { const L = window.__hgL, m = (L && L.data && L.data.pw) || {}; return m[this._config.view] || null; }
-  _pwCur() { return this._pwSet() || (this._config.panel && this._config.panel.wide ? 'wide' : 'narrow'); }
   _panelGrid(mode) {
     const p = this._config.panel, el = this._panelEl;
     if (mode === 'phone') {
@@ -420,9 +418,8 @@ class HGPage extends HTMLElement {
       else if (mode !== 'phone' && span && !cc.area) w.style.gridColumn = `span ${span}`;
       else if (!cc.area || mode === 'phone') w.style.removeProperty('grid-column');
     });
-    /* szerokość panelu wybrana dla widoku (wąski / cała szerokość); wąski panel mieści najwyżej 2 kolumny */
-    const pw = this._pwSet(), wd = pw ? pw === 'wide' : !!p.wide;
-    if (pw === 'narrow' && mode === 'wide' && !p.areas) { const cs = el.style.gridTemplateColumns || '', m = /repeat\((\d+)/.exec(cs), n = m ? +m[1] : cs.split(/\s+/).filter(Boolean).length; if (n > 2) el.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))'; }
+    /* desktop: zawsze pełna szerokość (układ jak Studio); zapis pw w starych układach ignorowany */
+    const wd = mode === 'wide';
     { const cs = el.style.gridTemplateColumns || '', m = /^repeat\((\d+), minmax\(0(px)?, 1fr\)\)$/.exec(cs); if (m && mode !== 'phone' && !p.areas) el.style.setProperty('--hg-vcols-tpl', 'repeat(' + m[1] + ', minmax(0, 1fr))'); else el.style.removeProperty('--hg-vcols-tpl'); } /* „dense” dosuwa wąskie karty w dziury, ale tylko w układzie domyślnym: po zmianie kolejności karty stoją dokładnie w kolejności użytkownika (inaczej przeniesiona karta wracała na stare miejsce) */
     /* dodane komponenty (stos, siatka, karta YAML, #17): bez „dense”, bo szerokie kontenery przeskakiwały przed wcześniejsze karty; stoją w kolejności dodania i przeciągania */
     const ord = (() => { try { const sc = this._pageScope(); return !!sc && (HGL.get(sc).order.length > 0 || HGL.get(sc + ':tiles').added.length > 0); } catch (e) { return false; } })();
@@ -1084,14 +1081,13 @@ class HGPage extends HTMLElement {
 .page{ position:relative; z-index:1; }
 .logo{ width:22u; height:22u; border-radius:50%; background:var(--hg-accent); color:var(--hg-on-accent); display:inline-flex; align-items:center; justify-content:center; flex:none; box-shadow:var(--hg-sh-sm); }
 .logo ha-icon{ width:15u; height:15u; --mdc-icon-size:100%; }
-/* szeroki panel (Mapa, Kamery, Kalendarz): nagłówek i panel w normalnym przepływie (siatka: auto | 1fr) zamiast stałego top,
-   więc panel zawsze zaczyna się pod nagłówkiem, niezależnie od rozmiaru fontu i ekranu */
-:host([mode=wide][wide-panel]) .page{ display:grid; grid-template-columns: 86u minmax(0,1fr); grid-template-rows: auto minmax(0,1fr);
-  padding: 78u var(--s3) var(--s3) 0; box-sizing:border-box; }
-:host([mode=wide][wide-panel]) .head{ position:relative; left:auto; top:auto; grid-row:1; grid-column:1 / -1; margin-left:26u; max-width:none; }
-:host([mode=wide][wide-panel]) .head{ justify-self:start; width:max-content; max-width:calc(100% - 26u - 56px); }
-:host([mode=wide][wide-panel]) .panel{ position:relative; left:auto; right:auto; top:auto; bottom:auto; width:auto; grid-row:2; grid-column:2;
-  margin-top:max(24px, calc(var(--hg-u0) * 14)); min-height:0; align-self:stretch; }
+/* desktop: jedna kolumna, wcięcie pod szynę (56u + odstęp siatki widżetów); nagłówek i panel w siatce strony */
+:host([mode=wide][wide-panel]) .page{ display:grid; grid-template-columns:minmax(0,1fr); grid-template-rows:auto minmax(0,1fr);
+  padding:73u 18u 19u calc(56u + 24px); box-sizing:border-box; }
+:host([mode=wide][wide-panel]) .head{ position:relative; left:auto; top:auto; grid-row:1; grid-column:1; margin:0; max-width:none;
+  justify-self:start; width:max-content; max-width:calc(100% - 26u - 56px); }
+:host([mode=wide][wide-panel]) .panel{ position:relative; left:auto; right:auto; top:auto; bottom:auto; width:auto; max-width:100%;
+  grid-row:2; grid-column:1; margin-top:max(24px, calc(var(--hg-u0) * 14)); min-height:0; align-self:stretch; }
 :host([wide-panel]) .tools, :host([wide-panel]) .hub{ display:none; }
 :host([mode=wide][fit-panel]) .panel{ align-self:start; max-height:100%; overflow:auto; align-content:start; }
 :host([fit-panel]) .panel{ align-self:start; }
@@ -1303,9 +1299,11 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 /* ================= WIDE (desktop/landscape) – geometria referencji 912x597 ================= */
 :host([mode=wide]) .page{ height:100vh; height:100dvh; overflow:hidden; }
 :host([mode=wide]) .top{ position:absolute; left:20u; right:20u; top:20u; height:39u; }
-:host([mode=wide]) .tabs{ position:absolute; left:204u; top:0; }
+:host([mode=wide]) .tabs{ position:absolute; left:56u; top:0; }
 :host([mode=wide]) .head{ position:absolute; left:26u; top:78u; max-width:400u; }
-:host([mode=wide]) .rail{ position:absolute; left:16u; top:184u; }
+:host([mode=wide]) .rail{ position:absolute; left:16u; top:73u; bottom:19u; z-index:4; border-radius:18px; }
+:host([mode=wide]) .ri{ border-radius:10u; }
+:host([mode=wide]) .rind{ border-radius:10u; }
 :host([mode=wide]) .panel{ position:absolute; right:18u; top:73u; bottom:19u; width:calc(var(--k) * 438); }
 :host([mode=wide][scroll]) .panel{ overflow:auto; align-content:start; overscroll-behavior:contain; scrollbar-width:thin; scrollbar-color: rgba(0,0,0,.28) transparent; scroll-padding-bottom:var(--s3); }
 :host([mode=wide][scroll]) .panel::-webkit-scrollbar{ width:6px; } :host([mode=wide][scroll]) .panel::-webkit-scrollbar-track{ background:transparent; margin:var(--s3) 0; }
@@ -1317,38 +1315,28 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 :host([studio]) .head{ display:none; }
 :host([studio]) .brand > span:not(.logo){ display:none; }
 :host([studio]) .back{ display:none; }
-:host([studio]) .rail{ border-radius:18px; }
-:host([studio]) .ri{ border-radius:10u; }
-:host([studio]) .rind{ border-radius:10u; }
 :host([studio]) .right{ gap:12px; }
 :host([studio]) .right .cir{ display:none; }
 :host([studio]) .panel{ background:none; border:0; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; padding:0; }
-/* Studio: mocniejsze rozmycie na widżetach i chromie; jasny/ciemny osobno (data-hg-scheme na hoście) */
-:host([studio]){ --hg-glass-blur: 24px; --hg-glass-sat: 175%; --hg-glass-bri: 1.02;
+/* Studio: frosted glass jak mockup — mocny blur, mała krycie, bez obramowań; jasny/ciemny osobno */
+:host([studio]){ --hg-glass-blur: 38px; --hg-glass-sat: 185%; --hg-glass-bri: 1;
   --hg-card-bf: blur(calc(var(--hg-glass-blur) * var(--hg-bf, 1))) saturate(var(--hg-glass-sat)) brightness(var(--hg-glass-bri));
   --glass-bf: blur(calc(var(--hg-glass-blur) * var(--hg-bf, 1))) saturate(var(--hg-glass-sat)) brightness(var(--hg-glass-bri)); }
 :host([studio]) .tabs::after, :host([studio]) .rail::after, :host([studio]) .user::after{ -webkit-backdrop-filter: var(--hg-bfo, var(--glass-bf)); backdrop-filter: var(--hg-bfo, var(--glass-bf)); }
-:host([studio][data-hg-scheme=light]){ --hg-glass-bg: rgba(255,255,255,.42); --hg-glass-sheen: linear-gradient(155deg, rgba(255,255,255,.80) 0%, rgba(255,255,255,.28) 40%, rgba(255,255,255,0) 72%);
-  --hg-edge: inset 0 1px 0 rgba(255,255,255,.92), inset 0 0 0 1px rgba(255,255,255,.52); --hg-shadow-lg: 0 14px 44px rgba(16,24,40,.14);
-  --hg-card-fg: #12151a; --hg-t2: rgba(18,21,26,.58); --hg-inner-bg: rgba(255,255,255,.56); --hg-inner-bg-h: rgba(255,255,255,.76);
-  --hg-inner-hi: inset 0 1px 0 rgba(255,255,255,.90), inset 0 0 0 1px rgba(255,255,255,.36); --hg-chrome-bg: rgba(255,255,255,.48); --hg-chrome-fg: #12151a;
-  --hg-chrome-lite: rgba(255,255,255,.74); --hg-tile-bg: rgba(255,255,255,.58); }
-:host([studio][data-hg-scheme=dark]){ --hg-glass-bri: 1; --hg-glass-bg: rgba(10,14,20,.50); --hg-glass-sheen: linear-gradient(155deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,.06) 42%, rgba(255,255,255,0) 72%);
-  --hg-edge: inset 0 1px 0 rgba(255,255,255,.20), inset 0 0 0 1px rgba(255,255,255,.10); --hg-shadow-lg: 0 16px 48px rgba(0,0,0,.34);
-  --hg-card-fg: #fff; --hg-t2: rgba(255,255,255,.68); --hg-inner-bg: rgba(255,255,255,.10); --hg-inner-bg-h: rgba(255,255,255,.16);
-  --hg-inner-hi: inset 0 1px 0 rgba(255,255,255,.18), inset 0 0 0 1px rgba(255,255,255,.08); --hg-chrome-bg: rgba(12,16,22,.54); --hg-chrome-fg: #fff;
-  --hg-chrome-lite: rgba(255,255,255,.14); --hg-tile-bg: rgba(255,255,255,.12); }
+:host([studio][data-hg-scheme=light]){ --hg-glass-bg: rgba(255,255,255,.22); --hg-glass-lite: rgba(255,255,255,.22);
+  --hg-glass-sheen: linear-gradient(155deg, rgba(255,255,255,.38) 0%, rgba(255,255,255,.10) 44%, rgba(255,255,255,0) 72%);
+  --hg-edge: 0 0 0 transparent; --hg-inner-hi: none; --hg-shadow-lg: 0 22px 54px rgba(16,24,40,.11);
+  --hg-card-fg: #12151a; --hg-t2: rgba(18,21,26,.62); --hg-inner-bg: rgba(255,255,255,.34); --hg-inner-bg-h: rgba(255,255,255,.50);
+  --hg-chrome-bg: rgba(255,255,255,.34); --hg-chrome-fg: #12151a; --hg-chrome-lite: rgba(255,255,255,.58); --hg-tile-bg: rgba(255,255,255,.26); }
+:host([studio][data-hg-scheme=dark]){ --hg-glass-bg: rgba(6,8,12,.26); --hg-glass-lite: rgba(6,8,12,.26);
+  --hg-glass-sheen: linear-gradient(155deg, rgba(255,255,255,.14) 0%, rgba(255,255,255,.04) 42%, rgba(255,255,255,0) 72%);
+  --hg-edge: 0 0 0 transparent; --hg-inner-hi: none; --hg-shadow-lg: 0 26px 60px rgba(0,0,0,.26);
+  --hg-card-fg: #fff; --hg-t2: rgba(255,255,255,.72); --hg-inner-bg: rgba(255,255,255,.08); --hg-inner-bg-h: rgba(255,255,255,.14);
+  --hg-chrome-bg: rgba(10,14,20,.36); --hg-chrome-fg: #fff; --hg-chrome-lite: rgba(255,255,255,.12); --hg-tile-bg: rgba(255,255,255,.08); }
 :host([studio][data-hg-scheme=light]) .shade{ background: rgba(255,255,255,.18); }
 :host([studio]) .un{ display:none; }
-:host([studio][mode=wide]) .tabs{ left:56u; }
-:host([studio][mode=wide]) .rail{ top:73u; bottom:19u; z-index:4; }
-/* szyna kończy się na 56u (16+40). Osobna kolumna siatki zostawiała pusty pasek szerokości jednej kolumny widżetów.
-   Jedna kolumna, wcięcie = prawa krawędź szyny + ten sam odstęp co między widżetami (16 px). */
-:host([studio][mode=wide][wide-panel]) .page{ grid-template-columns:minmax(0,1fr); grid-template-rows:auto minmax(0,1fr); padding:73u 18u 19u calc(56u + 16px); }
-/* wąski panel jest absolutny (right:18u, stała szerokość): left dosuwa go do szyny i width:auto rozciąga do prawej krawędzi.
-   Szeroki panel jest jedyną kolumną strony (wcięcie pod szynę). To samo left przesuwało go drugi raz i ucinało prawą krawędź. */
-:host([studio][mode=wide]:not([wide-panel])) .panel{ left:70u; right:18u; width:auto; }
-:host([studio][mode=wide][wide-panel]) .panel{ position:relative; left:auto; right:auto; top:auto; bottom:auto; width:auto; max-width:100%; margin:0 !important; padding:0 !important; min-height:0; align-self:stretch; grid-column:1; grid-row:2; grid-template-rows:minmax(0,1fr) !important; grid-auto-rows:minmax(0,1fr) !important; }
+/* Studio: panel bez tła (szkło na widżetach); siatka strony jak reszta desktopu ([mode=wide][wide-panel]) */
+:host([studio][mode=wide][wide-panel]) .panel{ margin:0 !important; padding:0 !important; grid-template-rows:minmax(0,1fr) !important; grid-auto-rows:minmax(0,1fr) !important; }
 :host([studio]) .cw{ height:100%; min-height:0 !important; }
 /* edycja strony nie kiwa całej siatki i nie ściska jej do połowy wysokości: karta rośnie w dół, panel się przewija */
 :host([studio][editing]) .panel > .cw{ display:block; width:auto; animation:none; outline:none; }
@@ -1361,9 +1349,7 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 /* podskakuje tylko ikona i tylko 3 razy: ruch szklanego przycisku przeliczał jego rozmycie w każdej klatce (połowa klatek na słabszym tablecie) */
 :host([mode=wide][scroll]) .more ha-icon{ width:20px; height:20px; animation: hgmore 2.4s ease-in-out 3; }
 @media (prefers-reduced-motion: reduce){ :host([mode=wide][scroll]) .more ha-icon{ animation:none; } }
-:host([mode=wide][scroll]:not([wide-panel])) .more{ right:calc(18u + var(--k) * 219 - 18px); bottom:calc(19u + 10px); }
-:host([mode=wide][scroll][wide-panel]) .more{ left:calc(86u + (100% - 86u - var(--s3)) / 2 - 18px); bottom:calc(var(--s3) + 10px); }
-:host([studio][mode=wide][scroll][wide-panel]) .more{ left:calc(56u + 16px + (100% - 56u - 16px - 18u) / 2 - 18px); }
+:host([mode=wide][scroll][wide-panel]) .more{ left:calc(56u + 24px + (100% - 56u - 24px - 18u) / 2 - 18px); bottom:calc(var(--s3) + 10px); }
 
 @keyframes hgmore{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(3px); } }
 :host([mode=wide]) .tools{ position:absolute; left:151u; bottom:80u; }

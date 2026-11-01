@@ -523,22 +523,6 @@ const hgSpanZ = (sp) => (sp === 'full' ? 'l' : +sp >= 2 ? 'm' : 's');
 const hgSlotCands = (h, sl) => Object.keys(h.states).filter((e) => { const d = e.split('.')[0], s = h.states[e], r = (h.entities || {})[e];
   if (!sl.dom.includes(d) || (r && (r.hidden || r.entity_category))) return false; if (sl.dc && !sl.dc.includes(s.attributes.device_class)) return false; if (sl.num && !hgIsNum(h, e)) return false; if (sl.loc && s.attributes.latitude == null) return false; return true; })
   .sort((a, b) => (sl.pref ? ((sl.pref.indexOf(a.split('.')[0]) + 1 || 99) - (sl.pref.indexOf(b.split('.')[0]) + 1 || 99)) : 0) || H.name(h, a).localeCompare(H.name(h, b)));
-/* szerokość panelu widoku: wąski (kolumna po prawej) albo na całą szerokość; zapis w HGL.data.pw[widok] */
-const HG_PW_CSS = `.hg-pw{ display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px; } @media (max-width:520px){ .hg-pw{ grid-template-columns:1fr; } }
-.hg-pw button{ all:unset; box-sizing:border-box; cursor:pointer; display:flex; gap:10px; align-items:center; padding:10px; border-radius:14px; background:var(--hg-tile-bg, rgba(255,255,255,.08)); transition:box-shadow .15s ease, background .15s ease; }
-.hg-pw button:hover{ background:rgba(255,255,255,.12); } .hg-pw button:focus-visible{ box-shadow:0 0 0 2px var(--hg-accent); }
-.hg-pw button[aria-checked=true]{ box-shadow:inset 0 0 0 1.5px var(--hg-accent); }
-.hg-pw b{ display:block; font-size:13.5px; font-weight:600; } .hg-pw small{ display:block; font-size:11.5px; opacity:.66; line-height:1.3; margin-top:2px; }
-.hg-pwv{ flex:none; position:relative; width:64px; height:42px; border-radius:8px; overflow:hidden; background:linear-gradient(150deg, #3b4a5a, #1b232c); box-shadow:inset 0 0 0 1px rgba(255,255,255,.12); }
-.hg-pwv i{ position:absolute; left:5px; top:6px; width:5px; bottom:6px; border-radius:3px; background:rgba(255,255,255,.35); }
-.hg-pwv em{ position:absolute; left:14px; top:7px; width:18px; height:4px; border-radius:2px; background:rgba(255,255,255,.7); }
-.hg-pwv u{ position:absolute; border-radius:5px; background:rgba(255,255,255,.28); box-shadow:inset 0 0 0 1px rgba(255,255,255,.35); }
-.hg-pwv.narrow u{ right:5px; top:6px; bottom:6px; width:24px; } .hg-pwv.wide u{ left:14px; right:5px; top:15px; bottom:6px; }
-.hg-pw button[aria-checked=true] .hg-pwv u{ background:color-mix(in srgb, var(--hg-accent) 45%, rgba(255,255,255,.2)); }
-.hg-pwn{ font-size:11.5px; opacity:.6; margin:6px 0 0; }`;
-const hgPwPick = (cur, hge, extra = '') => `<div class="hg-pw" role="radiogroup" aria-label="${hgT('edit.panel_width')}">${[['narrow', hgT('edit.narrow_panel'), hgT('edit.right_column_left_side')], ['wide', hgT('edit.full_width_panel'), hgT('edit.like_the_rooms_view')]].map(([k, l, d]) => `<button type="button" role="radio" data-hge="${hge}" data-w="${k}"${extra} aria-checked="${cur === k}"><span class="hg-pwv ${k}" aria-hidden="true"><i></i><em></em><u></u></span><span><b>${l}</b><small>${d}</small></span></button>`).join('')}</div><p class="hg-pwn">${hgT('edit.on_phones_the_panel')}</p>`;
-const hgPwMark = (b) => { for (const x of b.parentElement.querySelectorAll('[role=radio]')) x.setAttribute('aria-checked', String(x === b)); };
-window.hgPwPick = hgPwPick; window.hgPwMark = hgPwMark; window.HG_PW_CSS = HG_PW_CSS;
 /* pełna konfiguracja komponentu: sloty → cfg(), pola opcji (v.o) i JSON zaawansowany (v.x, nadpisuje wszystko) */
 const hgOptVal = (o, val) => (val == null || val === '' ? undefined : o.t === 'num' ? (isFinite(+String(val).trim().replace(',', '.')) && String(val).trim() !== '' ? +String(val).trim().replace(',', '.') : undefined) : o.t === 'bool' ? !!val : o.t === 'nav' ? (/^https?:/.test(val) ? { url: val } : { navigate: val }) : o.t === 'list' ? String(val).split(',').map((x) => x.trim()).filter(Boolean) : val);
 const hgCompCfg = (C, v, h) => { v = v || {}; const b = C.cfg ? C.cfg(v, h) : {}, O = v.o || {};
@@ -803,7 +787,7 @@ const HG_COMP_EDIT = {
       <button class="hs-r hs-add" data-hge="hdvar"><span class="hs-i">${H.icon('mdi:cellphone-link')}</span><span class="hs-t"><b>${hgT('edit.shorter_versions_for_phone')}</b><small>${hgT('edit.optional_empty_fields_use')}</small></span></button>
       <div class="hs-fl"><span>${hgT('edit.head_title_size')}</span><div class="hd-szg">${[['wide', hgT('edit.desktop')], ['tablet', hgT('edit.tablet')], ['phone', hgT('edit.phone')]].map(([md, lb]) => { const cur = ((H0.sz || {})[md]) || 'm'; return `<div class="hd-szr"><small>${lb}</small><div class="hd-szseg" role="group">${[['s', 'S'], ['m', 'M'], ['l', 'L'], ['xl', 'XL']].map(([v, lv]) => `<button type="button" class="hd-szb" data-hge="hdtsz" data-mode="${md}" data-z="${v}" aria-pressed="${cur === v || (v === 'm' && !cur)}">${lv}</button>`).join('')}</div></div>`; }).join('')}</div></div>
       <div class="hd-v${H0.tm || H0.sm || H0.tt || H0.st ? ' on' : ''}">${fld('tt', hgT('edit.title_tablet'), hgT('edit.same_as_main'), HG_HEAD_LIM.t)}${fld('st', hgT('edit.subtitle_tablet'), hgT('edit.same_as_main'), HG_HEAD_LIM.s)}${fld('tm', hgT('edit.title_phone'), hgT('edit.same_as_main'), 22)}${fld('sm', hgT('edit.subtitle_phone'), hgT('edit.same_as_main'), 36)}</div>
-      ${this._panel ? `<div class="hs-fl"><span>${hgT('edit.panel_width')}</span>${hgPwPick(this._pwCur(), 'pw')}</div>` : ''}</div><style>${HG_PW_CSS}</style>
+      </div>
       <div class="hs-ac"><button class="hs-b2" data-hge="hdreset">${hgT('edit.restore_defaults')}</button><button class="hs-b" data-hge="hdok">${hgT('common.save')}</button></div></div>`;
     for (const i of S.querySelectorAll('input.hs-in')) i.addEventListener('input', () => this._eHeadPv());
     hgIcWire(S); this._eHeadPv(); },
@@ -1414,7 +1398,6 @@ const HG_EDIT = {
         this._eToast(hgT('edit.language_toast', { name: v ? (HGLang.LIST.find((x) => x[0] === v) || [v, v])[1] : hgT('edit.automatic') }));
         return Promise.resolve(this._eRefresh(true)).then(() => { if (this._editing) { this._eBar(); this._eLook(); } }); }); }
     if (a === 'headedit') return this._eHead();
-    if (a === 'pw') { const v = this._config.view; HGL.data.pw = Object.assign({}, HGL.data.pw, { [v]: b.dataset.w }); hgPwMark(b); this._panelGrid(this.getAttribute('mode')); HGL.save(this._hass); return; }
     if (a === 'hdok' || a === 'hdreset' || a === 'hdvar' || a === 'hdvis' || a === 'hdclock' || a === 'hdtsz') return this._eHeadAct(a, b);
     if (a.startsWith('lx-') && window.HGLookX) return HGLookX.act(this, b, a);
     if (a.startsWith('rx-') && window.HGRoomsX) return HGRoomsX.act(this, b, a);
