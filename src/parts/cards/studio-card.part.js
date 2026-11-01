@@ -62,7 +62,7 @@ class HGStudioGrid extends HGBase {
   connectedCallback() { super.connectedCallback(); this._lsub = this._lsub || (() => this._lay()); HGL.subs.add(this._lsub);
     if (!this._ro && typeof ResizeObserver !== 'undefined') this._ro = new ResizeObserver((es) => { this._width(es[0].contentRect.width); this._scale(); }); if (this._ro) this._ro.observe(this);
     this._watchEd(); }
-  disconnectedCallback() { HGL.subs.delete(this._lsub); if (this._scF && typeof cancelAnimationFrame === 'function') cancelAnimationFrame(this._scF); this._scF = 0; if (this._ro) this._ro.disconnect(); if (this._mo) { this._mo.disconnect(); this._mo = null; } }
+  disconnectedCallback() { HGL.subs.delete(this._lsub); if (this._scF && typeof cancelAnimationFrame === 'function') cancelAnimationFrame(this._scF); this._scF = 0; if (this._ro) this._ro.disconnect(); if (this._pro) { this._pro.disconnect(); this._pro = null; this._proEl = null; } if (this._mo) { this._mo.disconnect(); this._mo = null; } }
   /* pierwszy układ: raz, po wczytaniu HGL, z modelu domu; istniejący klucz studio nigdy nie jest nadpisywany (hgStudioEnsure) */
   _model(h) { return this._Mp || (this._Mp = Promise.resolve(typeof HGModel !== 'undefined' && h ? HGModel.load(h) : {}).then((M) => (this._M = M || {}), () => (this._M = {}))); }
   _seed(h) {
@@ -74,6 +74,15 @@ class HGStudioGrid extends HGBase {
   /* tryb edycji strony: HGL.editing; zmianę zgłasza atrybut editing na stronie (wejście) i HGL.notify (wyjście, Anuluj przywraca dane) */
   _edNow() { return !!HGL.editing; }
   _pageHost() { let n = this; for (let k = 0; k < 8 && n; k++) { const r = n.getRootNode && n.getRootNode(); n = r && r.host; if (n && typeof n._editEnter === 'function') return n; } return null; }
+  /* main.panel ma stałą wysokość; .cw w edycji rośnie z siatką i nie nadaje się do liczenia wiersza */
+  _panelEl() { for (let n = this.parentElement; n; n = n.parentElement) { if (n.classList && n.classList.contains('panel')) return n; } return null; }
+  _panelRoSync(ed) {
+    const p = ed ? this._panelEl() : null;
+    if (this._proEl === p) return;
+    if (this._pro) { this._pro.disconnect(); this._pro = null; }
+    this._proEl = p;
+    if (p && typeof ResizeObserver !== 'undefined') { this._pro = new ResizeObserver(() => this._scaleSoon()); this._pro.observe(p); }
+  }
   _watchEd() { if (this._mo || typeof MutationObserver === 'undefined') return; const p = this._pageHost(); if (!p) return;
     this._mo = new MutationObserver(() => this._lay()); this._mo.observe(p, { attributes: true, attributeFilter: ['editing'] }); }
   _width(w) { if (!(w > 0)) return; const b = HGGrid.bp(w); if (!this._bp || b.id !== this._bp.id) { this._bp = b; if (this._drag) this._dragEnd(false); this._lay(); } }
@@ -125,14 +134,16 @@ class HGStudioGrid extends HGBase {
   _scaleSoon() { if (this._scF) return; const run = () => { this._scF = 0; this._scale(); }; if (typeof requestAnimationFrame === 'function') this._scF = requestAnimationFrame(run); else run(); }
   _scale() {
     const g = this.$ && this.$.querySelector && this.$.querySelector('.st-g'); if (!g || !g.querySelectorAll) return;
-    const cur = this._cur();
-    if (g.classList.contains('ed')) {
-      const viewRows = Math.max(1, ...cur.filter((i) => !i.hidden).map((i) => i.y + i.h));
-      const box = this.parentElement ? this.parentElement.clientHeight : 0;
-      if (box > 40) g.style.setProperty('--st-ch', Math.max(32, (box - HG_ST_GAP * (viewRows - 1)) / viewRows).toFixed(2) + 'px');
-    }
+    const cur = this._cur(), ed = g.classList.contains('ed');
+    this._panelRoSync(ed);
+    if (ed) {
+      const by = this._byId(), vis = cur.filter((i) => { const t = by.get(i.id); return !i.hidden && t && (t.type === 'card' ? t.settings && t.settings.card : HG_STUDIO_W[t.type]); });
+      const viewRows = Math.max(1, ...vis.map((i) => i.y + i.h));
+      const box = (() => { const p = this._panelEl(); const h = p ? p.clientHeight : 0; return h > 40 && h < 8000 ? h : 0; })();
+      if (box) g.style.setProperty('--st-ch', Math.max(32, (box - HG_ST_GAP * (viewRows - 1)) / viewRows).toFixed(2) + 'px');
+    } else g.style.removeProperty('--st-ch');
     for (const el of g.querySelectorAll('.st-w')) {
-      const it = cur.find((i) => i.id === el.dataset.id); if (!it || !el.clientHeight) continue;
+      const it = cur.find((i) => i.id === el.dataset.id); if (!it || !el.clientHeight || el.clientHeight > 8000) continue;
       const dh = it.h * HG_ST_ROW + Math.max(0, it.h - 1) * HG_ST_GAP, u = Math.min(2, Math.max(0.65, el.clientHeight / dh)), v = u.toFixed(4) + 'px';
       if (el.style.getPropertyValue('--hg-u') !== v) el.style.setProperty('--hg-u', v);
     }

@@ -14,6 +14,7 @@ Tutaj zapisane są wszystkie istotne zmiany w Nuvio, od najnowszych. Wersje zgod
 - Naprawiono: siatka Studio dosuwa się do szyny, bez pustego pasa, a w edycji da się dodać te same komponenty co na innych widokach.
 - Naprawiono: Studio nie zostawia pustej kolumny siatki po lewej, a widżety skalują się do wysokości swojego pola.
 - Naprawiono: edycja Studio nie kiwa całej siatki i nie ściska widżetów, żeby zmieścić kafelek dodawania.
+- Naprawiono: edycja Studio mierzyła rosnącą kartę, więc każdy wiersz puchł do tysięcy pikseli. Wysokość wiersza bierze się z panelu.
 
 ### 2.31.0
 - Dodano: tytuł i podtytuł nagłówka mogą pokazywać stan encji na żywo wpisem `{state:sensor.twoja_encja}`, np. status pralki. Linia znika, gdy stan jest pusty, `off`, `unavailable` lub `unknown`, a nagłówek odświeża się przy zmianie encji.

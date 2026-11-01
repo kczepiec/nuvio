@@ -164,6 +164,30 @@ test('edit chrome only in edit mode; unknown widget types are skipped', async ()
   assert.match(h, /data-st="add" data-no-swipe aria-haspopup="menu" style="grid-area:8 \/ 10 \/ span 3 \/ span 3"/, 'add tile in the first free slot, as in the mockup');
 });
 
+test('edit row height comes from the panel, not the card that grows with the grid', () => {
+  const HGL = hgl({ studio: { v: 1, items: [
+    { id: 'w_media', type: 'media', x: 0, y: 0, w: 4, h: 4, settings: {} },
+    { id: 'w_weather', type: 'weather', x: 4, y: 0, w: 4, h: 4, settings: {} },
+  ], bps: {}, custom: 1 } });
+  const P = mk(HGL, { M }), c = new P.HGStudioGrid();
+  c._width(1440);
+  const set = {};
+  const g = {
+    classList: { contains: (x) => x === 'ed' },
+    style: { setProperty: (k, v) => { set[k] = v; }, removeProperty: (k) => { delete set[k]; }, getPropertyValue: () => '' },
+    querySelectorAll: () => [],
+  };
+  c.$ = { querySelector: (s) => (s === '.st-g' ? g : null) };
+  const panel = { classList: { contains: (c) => c === 'panel' }, clientHeight: 872 };
+  c.parentElement = { classList: { contains: () => false }, parentElement: panel, clientHeight: 159192 };
+  c._scale();
+  assert.equal(set['--st-ch'], '206.00px');
+  set['--st-ch'] = undefined;
+  g.classList.contains = () => false;
+  c._scale();
+  assert.equal(set['--st-ch'], undefined);
+});
+
 test('widgets mount through hgMakeCard with the registry config', async () => {
   const { P, c } = await seeded();
   const root = { querySelector: () => null, querySelectorAll: () => ['greeting', 'climate'].map((t) => ({ parentElement: { dataset: { id: 'w_' + t } } })) };
