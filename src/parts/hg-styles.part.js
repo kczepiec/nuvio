@@ -74,7 +74,7 @@ ha-card.glass{ position:relative; height:100%; min-height:var(--hg-min-h, 0px); 
 .hd{ display:flex; align-items:center; gap:var(--s1); min-height:20u; position:relative; z-index:2; }
 .hd .ic{ width:12u; height:12u; color:currentColor; flex:none; }
 .hd .tt{ font-size:var(--fs-md); font-weight:600; letter-spacing:-.005em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.hd .tt small{ font-size:var(--fs-xs); font-weight:400; color:#5A5E64; margin-left:4u; }
+.hd .tt small{ font-size:var(--fs-xs); font-weight:400; color:var(--hg-t2, #5A5E64); margin-left:4u; }
 .hd .sp{ flex:1; }
 /* wspólny wiersz listy: min. 44px, odstęp tokenowy, separator 1px między wierszami */
 .lr{ display:flex; align-items:center; gap:var(--s2); min-height:max(calc(var(--k) * 34), 44px); padding:var(--s1) 0; }

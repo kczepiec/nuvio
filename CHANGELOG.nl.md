@@ -15,6 +15,7 @@ Alle belangrijke wijzigingen in Nuvio staan hier, de nieuwste eerst. Versies vol
 - Opgelost: Studio heeft geen lege rasterkolom meer links, en widgets schalen mee met de hoogte van hun cel.
 - Opgelost: Studio-bewerken laat het raster niet meer wiebelen en knijpt widgets niet samen om de toevoegtegel te passen.
 - Opgelost: Studio-bewerken mat de groeiende kaart, waardoor elke rij tot duizenden pixels opzwol. De rijhoogte komt nu van het paneel.
+- Opgelost: Studio-glas heeft sterkerere blur en aparte tokens voor licht en donker (widgets en chrome), lichte modus houdt geen donkere kaarten meer vast.
 
 ### 2.31.0
 - Toegevoegd: de titel en ondertitel van de kop kunnen de actuele status van een entiteit tonen met `{state:sensor.jouw_entiteit}`, bijvoorbeeld de status van een wasmachine. De regel verdwijnt als de status leeg is, `off`, `unavailable` of `unknown`, en de kop werkt bij wanneer de entiteit verandert.

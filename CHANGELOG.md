@@ -15,6 +15,7 @@ All notable changes to Nuvio are listed here, newest first. Versions follow [sem
 - Fixed: Studio no longer keeps an empty grid column on the left, and widgets scale with the height of their cell.
 - Fixed: Studio edit mode no longer wobbles the whole grid or squeezes widgets to fit the add tile.
 - Fixed: Studio edit mode measured the growing card, so each row swelled to thousands of pixels. Row height now comes from the panel.
+- Fixed: Studio glass uses stronger blur and separate light and dark tokens (widgets and chrome), so light mode no longer keeps dark frosted cards.
 
 ### 2.31.0
 - Added: the header title and subtitle can show a live entity state with `{state:sensor.your_entity}`, for example a washer's status. The line disappears when the state is empty, `off`, `unavailable` or `unknown`, and the header updates when the entity changes.

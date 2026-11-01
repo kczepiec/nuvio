@@ -57,4 +57,7 @@ test('studio chrome is gated on cfg.studio; normal views render no chrome', () =
   assert.match(src, /:host\(\[studio\]\[editing\]\) \.cw\{[^}]*height:auto/, 'edit lets the studio card grow and scroll');
   const edit = readFileSync(new URL('../../src/parts/hg-edit.part.js', import.meta.url), 'utf8');
   assert.match(edit, /_config\.studio\) \{ this\._eBar\(\); return; \}/, 'page edit chrome stays off the studio grid');
+  assert.match(src, /_syncScheme\(\)/, 'scheme mirrored on page host for studio glass tokens');
+  assert.match(src, /:host\(\[studio\]\[data-hg-scheme=light\]\)/, 'studio light glass tokens');
+  assert.match(src, /:host\(\[studio\]\[data-hg-scheme=dark\]\)/, 'studio dark glass tokens');
 });

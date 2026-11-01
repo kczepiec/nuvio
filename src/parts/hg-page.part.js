@@ -186,12 +186,15 @@ class HGPage extends HTMLElement {
   /* tło panelu (#15): Wygląd > Tło panelu (app.pbg: false = bez tła wszędzie), wyjątek dla widoku (app.pbgv[widok] = 'on' | 'off'), panel_backdrop: false w YAML */
   _pbgSync() { const c = this._config; if (!c) return; const A = (window.__hgL && window.__hgL.data && window.__hgL.data.app) || {}, v = c.view && A.pbgv && A.pbgv[c.view];
     this.toggleAttribute('no-pbg', v === 'off' ? true : v === 'on' ? false : c.panel_backdrop === false || A.pbg === false); }
+  /* tokeny Studio (jasny/ciemny) są na :host([studio][data-hg-scheme=…]); html[data-hg-scheme] nie wchodzi do shadow DOM */
+  _syncScheme() { const v = document.documentElement.getAttribute('data-hg-scheme') === 'dark' ? 'dark' : 'light'; if (this.getAttribute('data-hg-scheme') !== v) this.setAttribute('data-hg-scheme', v); }
   set hass(h) {
     window.__hgHass = h; window.__hgPage = this;   /* język kart (hgCurLang) znany zanim karty dostaną hass; bieżąca strona dla poleceń z HA (#47) */
     if (window.HGWall) { try { HGWall.tick(h, this); } catch (e) { /* */ } }
     if (window.HGDeviceCmd) { try { HGDeviceCmd.tick(h); } catch (e) { /* */ } }   /* polecenia z automatyzacji: zdarzenie nuvio_command i encja input_text */
     if (window.HGAssistUI) { try { HGAssistUI.bind(h, this); } catch (e) { /* */ } }   /* okno Assist: hass dla rozmowy i skrót klawiszowy */   /* tryb tabletu ściennego: bezczynność i czujnik ruchu */
     if (typeof HGTheme !== 'undefined') HGTheme.pick(h);
+    this._syncScheme();
     // root ukryty (widoczny inny widok dashboardu): tylko zapamiętaj i przekaż dalej
     if (HGShell.root === this && this._hgHidden) { this._hgPend = h; HGShell.fwd(h); return; }
     const first = !this._hass, old = this._hass;
@@ -276,6 +279,9 @@ class HGPage extends HTMLElement {
     this.toggleAttribute('lite', hgLite());
     this._onPerf = this._onPerf || (() => { const l = hgLite(); if (l !== this.hasAttribute('lite')) { this.toggleAttribute('lite', l); if (this._built && !this._editing) this._build(); } });
     window.addEventListener('hg-perf', this._onPerf);
+    this._onScheme = this._onScheme || (() => { this._syncScheme(); if (this._config && this._config.studio) this._paintRail(true); });
+    window.addEventListener('hg-scheme', this._onScheme);
+    this._syncScheme();
     this._ro = new ResizeObserver(() => this._layout()); this._ro.observe(this);
     if (this._hass && !this._unsub) this._subscribe();
     this._layout();
@@ -287,7 +293,7 @@ class HGPage extends HTMLElement {
   disconnectedCallback() {
     clearTimeout(this._headT); this._headT = null;
     if (window.HGVLock && HGVLock.page === this && HGVLock.el) HGVLock.close();
-    HGL.subs.delete(this._hglSub); window.removeEventListener('hg-lang', this._onLang); window.removeEventListener('hg-perf', this._onPerf);
+    HGL.subs.delete(this._hglSub); window.removeEventListener('hg-lang', this._onLang); window.removeEventListener('hg-perf', this._onPerf); window.removeEventListener('hg-scheme', this._onScheme);
     if (this._editing) this._editExit(this._eDirty());   /* przejście do innego widoku / wstecz w trakcie edycji: zmiany zapisane, nie odrzucone */
     document.removeEventListener('keydown', this._sheetKey, true); document.removeEventListener('keydown', this._menuKey, true); this._menuOpen = false;
     if (this._config && this._config.redirect) return;
@@ -997,7 +1003,7 @@ class HGPage extends HTMLElement {
       case 'roomback': return go({ navigate: c.room_back || HG_P('rooms') });
       case 'roomsens': return this._roomSens(t);
       case 'sheetnav': { const m = (this._sheetItems || c.phone_nav.more)[i]; this._openSheet(false); return go(m.action); }
-      case 'scheme': try { localStorage.setItem('home-glass:scheme', HGTheme.dark ? 'light' : 'dark'); } catch (e) { /* */ } HGTheme.apply(!HGTheme.dark); return this._paintRail(true);
+      case 'scheme': try { localStorage.setItem('home-glass:scheme', HGTheme.dark ? 'light' : 'dark'); } catch (e) { /* */ } HGTheme.apply(!HGTheme.dark); this._syncScheme(); return this._paintRail(true);
       case 'railmore': return this._openSheet(this._sheetOpen ? false : 'rail');
       case 'edit': return this._editing ? this._editExit(true) : this._editEnter();
       case 'assist': return window.HGAssistUI && HGAssistUI.open(this, t);
@@ -1298,11 +1304,22 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 :host([studio]) .rail{ border-radius:18px; }
 :host([studio]) .right{ gap:12px; }
 :host([studio]) .panel{ background:none; border:0; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; padding:0; }
-/* widżety na zdjęciu: ciemna tafla jak w makiecie, biały tekst; inne widoki zostają przy swoim szkle */
-:host([studio]){ --hg-glass-bg: rgba(8,12,18,.52); --hg-glass-sheen: linear-gradient(155deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.05) 42%, rgba(255,255,255,0) 72%);
-  --hg-card-fg: #fff; --hg-t2: rgba(255,255,255,.68);
-  --hg-inner-bg: rgba(255,255,255,.08); --hg-inner-bg-h: rgba(255,255,255,.14);
-  --hg-inner-hi: inset 0 1px 0 rgba(255,255,255,.16), inset 0 0 0 1px rgba(255,255,255,.06); }
+/* Studio: mocniejsze rozmycie na widżetach i chromie; jasny/ciemny osobno (data-hg-scheme na hoście) */
+:host([studio]){ --hg-glass-blur: 24px; --hg-glass-sat: 175%; --hg-glass-bri: 1.02;
+  --hg-card-bf: blur(calc(var(--hg-glass-blur) * var(--hg-bf, 1))) saturate(var(--hg-glass-sat)) brightness(var(--hg-glass-bri));
+  --glass-bf: blur(calc(var(--hg-glass-blur) * var(--hg-bf, 1))) saturate(var(--hg-glass-sat)) brightness(var(--hg-glass-bri)); }
+:host([studio]) .tabs::after, :host([studio]) .rail::after, :host([studio]) .user::after{ -webkit-backdrop-filter: var(--hg-bfo, var(--glass-bf)); backdrop-filter: var(--hg-bfo, var(--glass-bf)); }
+:host([studio][data-hg-scheme=light]){ --hg-glass-bg: rgba(255,255,255,.42); --hg-glass-sheen: linear-gradient(155deg, rgba(255,255,255,.80) 0%, rgba(255,255,255,.28) 40%, rgba(255,255,255,0) 72%);
+  --hg-edge: inset 0 1px 0 rgba(255,255,255,.92), inset 0 0 0 1px rgba(255,255,255,.52); --hg-shadow-lg: 0 14px 44px rgba(16,24,40,.14);
+  --hg-card-fg: #12151a; --hg-t2: rgba(18,21,26,.58); --hg-inner-bg: rgba(255,255,255,.56); --hg-inner-bg-h: rgba(255,255,255,.76);
+  --hg-inner-hi: inset 0 1px 0 rgba(255,255,255,.90), inset 0 0 0 1px rgba(255,255,255,.36); --hg-chrome-bg: rgba(255,255,255,.48); --hg-chrome-fg: #12151a;
+  --hg-chrome-lite: rgba(255,255,255,.74); --hg-tile-bg: rgba(255,255,255,.58); }
+:host([studio][data-hg-scheme=dark]){ --hg-glass-bri: 1; --hg-glass-bg: rgba(10,14,20,.50); --hg-glass-sheen: linear-gradient(155deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,.06) 42%, rgba(255,255,255,0) 72%);
+  --hg-edge: inset 0 1px 0 rgba(255,255,255,.20), inset 0 0 0 1px rgba(255,255,255,.10); --hg-shadow-lg: 0 16px 48px rgba(0,0,0,.34);
+  --hg-card-fg: #fff; --hg-t2: rgba(255,255,255,.68); --hg-inner-bg: rgba(255,255,255,.10); --hg-inner-bg-h: rgba(255,255,255,.16);
+  --hg-inner-hi: inset 0 1px 0 rgba(255,255,255,.18), inset 0 0 0 1px rgba(255,255,255,.08); --hg-chrome-bg: rgba(12,16,22,.54); --hg-chrome-fg: #fff;
+  --hg-chrome-lite: rgba(255,255,255,.14); --hg-tile-bg: rgba(255,255,255,.12); }
+:host([studio][data-hg-scheme=light]) .shade{ background: rgba(255,255,255,.18); }
 :host([studio]) .un{ display:none; }
 :host([studio][mode=wide]) .tabs{ left:56u; }
 :host([studio][mode=wide]) .rail{ top:73u; bottom:19u; z-index:4; }
