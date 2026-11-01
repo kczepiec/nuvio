@@ -225,3 +225,9 @@ test('registration: all three cards appear in the picker', () => {
   const fs = await import('node:fs'), src = fs.readFileSync(new URL('../../src/parts/cards/media-card.part.js', import.meta.url), 'utf8');
   for (const re of [/@container \(max-height: 279px\)/, /@container \(max-height: 219px\)[^}]*\.np \.pb\{ display:none/, /@container \(max-height: 149px\)[^}]*\.np \.art/]) if (!re.test(src)) throw new Error('media-card: brak stopnia wysokosci ' + re);
 }
+
+test('climate: niski kafel (max-height 210px) ma stopień zmniejszający odstępy, żeby treść mieściła się w 4x3', async () => {
+  const { readFileSync } = await import('node:fs');
+  const src = readFileSync(new URL('../../src/parts/cards/studio-climate-card.part.js', import.meta.url), 'utf8');
+  assert.match(src, /@container \(max-height:210px\)\{[^}]*\.tv b\{[^}]*\}[^}]*\.sp2\{ margin-top:0; \}/);
+});

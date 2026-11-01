@@ -66,6 +66,7 @@ button.ck{ cursor:pointer; } button.ck:hover{ background:var(--hg-inner-bg-h); }
 .ck ha-icon{ width:14u; height:14u; flex:none; opacity:.75; } .ck b{ font-weight:600; } .ck span{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .compact .cp{ flex:1; display:flex; align-items:center; justify-content:space-between; gap:var(--s1); min-height:0; } .compact .tv b{ font-size:clamp(30px, 24cqi, 56px); }
 ha-card.glass.compact{ padding:var(--s2); }
+@container (max-height:210px){ .tv b{ font-size:clamp(34px, 13cqi, 54px); } .sp2{ margin-top:0; } .stp{ width:30u; height:30u; } }
 .stp{ width:34u; height:34u; border-radius:50%; display:grid; place-items:center; background:var(--hg-inner-bg); box-shadow:var(--hg-inner-hi); } .stp ha-icon{ width:16u; height:16u; } .stp[disabled]{ opacity:.35; } .stp:hover:not([disabled]){ background:var(--hg-inner-bg-h); }
 `);
   }
