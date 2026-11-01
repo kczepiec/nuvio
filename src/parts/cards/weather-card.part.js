@@ -26,7 +26,9 @@ class HGWeatherCard extends HGBase {
 ha-card.glass{ display:flex; flex-direction:column; justify-content:space-between; gap:6u; padding:var(--s2) var(--s3) var(--s2); min-width:0; overflow:hidden; container-type:inline-size; }
 .hd .tt{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 /* studio: ikona + temperatura, stan i max/min, N slotów godzinowych; stopnie: compact = ikona+temp, medium = + stan i max/min, expanded = + godziny */
-ha-card.sw{ justify-content:flex-start; gap:var(--s2); }
+ha-card.sw{ justify-content:flex-start; gap:var(--s2); 
+/* studio: pogoda leży na tle strony, bez mlecznej warstwy (sheen/lite/krawędź/blur kafla) */
+ha-card.sw{ --hg-glass-sheen:none; --hg-glass-lite:transparent; --hg-glass-bg:transparent; --hg-edge:0 0 0 transparent; --hg-card-sh:none; --hg-card-bf:none; --hg-card-under:none; background:transparent; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; text-shadow:0 1px 8px rgba(0,0,0,.28); }
 .sw .swt{ display:flex; align-items:center; gap:var(--s2); min-width:0; } .sw .swt img{ width:clamp(40px, 22cqi, 72px); height:clamp(40px, 22cqi, 72px); flex:none; }
 .sw .swn{ font-size:clamp(34px, 16cqi, 56px); font-weight:300; line-height:1; letter-spacing:-.04em; font-variant-numeric:tabular-nums; } .sw .swn sup{ font-size:.4em; font-weight:400; vertical-align:top; position:relative; top:.2em; margin-left:2px; }
 .sw .swc{ display:flex; flex-direction:column; gap:2u; min-width:0; flex:1; } .sw .swc b{ font-size:var(--fs-md); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .sw .swc span{ font-size:var(--fs-sm); color:var(--hg-t2, #4A4E54); font-variant-numeric:tabular-nums; }
