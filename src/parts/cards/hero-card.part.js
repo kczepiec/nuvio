@@ -12,15 +12,18 @@ ha-card.glass.hero{ min-height:0; max-height:100%; overflow:hidden; justify-cont
 .s{ font-size:var(--hg-fs-5, 24px); font-weight:var(--hg-fw-num, 300); letter-spacing:-.02em; line-height:1.15; margin:0; opacity:.92; }
 .st{ margin-top:6u; } .st .nv-pill{ background:color-mix(in srgb, black 28%, transparent); color:white; box-shadow:none; -webkit-backdrop-filter:var(--hg-bfo, blur(12px)); backdrop-filter:var(--hg-bfo, blur(12px)); }
 @container (max-width: 300px){ .t{ font-size:var(--hg-fs-5, 24px); } .s{ font-size:var(--hg-fs-3, 15px); } }
-@container (min-width: 560px){ .t{ font-size:56px; } .s{ font-size:32px; } }
+@container (min-width: 560px){ .t:not(.sg){ font-size:56px; } .t:not(.sg) ~ .s{ font-size:32px; } }
 /* studio: powitanie wg pory dnia + linia statusu z kropką; compact = mniejszy krój, expanded = duży nagłówek w dwóch wierszach */
 .stl{ display:flex; align-items:center; gap:8u; margin-top:10u; font-size:var(--hg-fs-3, 15px); font-weight:400; opacity:.95; min-width:0; }
 .stl span{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .dot{ flex:none; width:9u; height:9u; min-width:8px; min-height:8px; border-radius:50%; background:var(--hg-ok, #34C759); box-shadow:0 0 8px color-mix(in srgb, var(--hg-ok, #34C759) 70%, transparent); } .dot.warn{ background:var(--hg-warn, #FF9F0A); box-shadow:0 0 8px color-mix(in srgb, var(--hg-warn, #FF9F0A) 70%, transparent); }
 .l2{ white-space:nowrap; }
 @container (min-width: 460px){ .l2{ display:block; } .stl{ font-size:var(--hg-fs-4, 18px); } }
-@container (min-width: 340px){ .t.sg{ font-size:clamp(20px, min(12cqi, 22cqh), 64px); } }
-@container (min-width: 560px){ .t.sg{ font-size:64px; } }
+/* studio: rozmiary skalują się z szerokością ORAZ wysokością kafla (min z cqi i cqh), więc treść zawsze mieści się w kaflu; 64px tylko w wysokim kaflu */
+.t.sg{ font-size:clamp(16px, min(9cqi, 20cqh), 64px); }
+.t.sg ~ .s{ font-size:clamp(12px, min(5cqi, 11cqh), 32px); }
+.t.sg ~ .stl{ font-size:clamp(11px, min(4cqi, 9cqh), 18px); margin-top:min(10u, 3cqh); }
+@container (min-width: 460px){ .t.sg{ font-size:clamp(16px, min(9cqi, 13cqh), 64px); } }
 `); }
   _hour() { return new Date().getHours(); }
   /* ile rzeczy wymaga uwagi: odblokowane zamki, otwarte drzwi/okna/bramy, alarmy dymu/gazu/zalania, alarm wyzwolony */
