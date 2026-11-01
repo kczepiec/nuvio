@@ -180,6 +180,25 @@ const HG_BUILD = '__V__';
   }).catch((e) => console.error('Nuvio: could not load the bundle', e));
 })();
 """
+def v3_js():
+    """Lit runtime prepended to the legacy core so nuvio-light-card registers first.
+    Empty when v3/src/ha-entry.ts is absent, so a fixture tree of tools/ and src/ still builds."""
+    entry = os.path.join(R, 'v3', 'src', 'ha-entry.ts')
+    if not os.path.exists(entry): return ''
+    vite = os.path.join(R, 'v3', 'node_modules', 'vite', 'bin', 'vite.js')
+    node = shutil.which('node')
+    if not node or not os.path.exists(vite):
+        sys.exit('v3: install dependencies first (pnpm install in v3/)')
+    r = subprocess.run([node, vite, 'build'], cwd=os.path.join(R, 'v3'), env={**os.environ, 'NODE_ENV': 'production'})
+    if r.returncode: sys.exit('v3: vite build failed')
+    dist = os.path.join(R, 'v3', 'dist')
+    cands = [f for f in os.listdir(dist) if f.startswith('nuvio-v3') and f.endswith('.js')]
+    if len(cands) != 1: sys.exit('v3: expected one js bundle, got %s' % (cands,))
+    js = open(os.path.join(dist, cands[0]), encoding='utf-8').read()
+    js = re.sub(r'\n//# sourceMappingURL=\S+\s*$', '', js)
+    if re.search(r'(^|\n)\s*import[\s*{]', js): sys.exit('v3: bundle still imports a module; lit has to be inlined')
+    if 'nuvio-v3-runtime' not in js or 'nuvio-light-card' not in js: sys.exit('v3: bundle is missing the light card')
+    return js
 def minify(js):
     """esbuild (npm install, devDependency): spaces, comments and local names out of the code; strings (CSS, HTML) stay as written.
     Without esbuild the build still works, unminified. The file name hash is taken before this step, from the source."""
@@ -213,6 +232,13 @@ def main():
             js = js.replace(ph, json.dumps(val, ensure_ascii=False, separators=(',', ':')))
         left = i18n_compile.remaining_literals(js)
         if left: sys.exit('i18n: literal keys left in the bundle after compaction: ' + ', '.join(sorted(set(left))[:20]))
+        # v3 is already branded (nuvio-* tags) and has no hgT() calls, so it stays outside brand() and the i18n rewrite.
+        # It has to run first: hgReg skips customElements.define when the Lit card already owns nuvio-light-card.
+        v3 = v3_js()
+        if v3:
+            js = v3 + '\n' + js
+            mark, reg = js.find('nuvio-v3-runtime'), js.find("hgReg('nuvio-light-card'")
+            if mark < 0 or reg < 0 or mark > reg: sys.exit('v3: Lit card is not registered before the legacy light card')
         # hash after branding: a build-only change must also give a new content-hashed core name
         # the version is part of the hash: a release that only bumps package.json must still get a new core file name,
         # or browsers and HA's service worker keep serving the previous build's core under the same immutable URL

@@ -5,6 +5,7 @@
 All notable changes to Nuvio are listed here, newest first. Versions follow [semantic versioning](https://semver.org). The Polish changelog is in [CHANGELOG.pl.md](CHANGELOG.pl.md).
 
 ### Unreleased
+- Changed: 3.0.0-beta.1 draws the lighting card with the Lit runtime from `v3/`. The other cards and the saved layout stay as they are.
 - Added: **room photo** — camera button on each room in Settings → Rooms, row thumbnail, “Photo” shortcut on the Rooms view in edit mode; tile preview updates as soon as you pick a file (before “Save rooms”).
 - Fixed: Rooms tiles in dark mode and list view use theme text colours; metric labels no longer jump; hover ring follows the accent colour from Settings.
 - Fixed: Rooms grid in Studio matches the mockup layout (three columns on typical desktop width, blue tile highlight, Offline when there is no room data, no “Other” row in grid view). The Rooms view title stays hidden in Studio.

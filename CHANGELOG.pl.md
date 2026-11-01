@@ -5,6 +5,7 @@
 Tutaj zapisane są wszystkie istotne zmiany w Nuvio, od najnowszych. Wersje zgodne z [semantycznym wersjonowaniem](https://semver.org). Angielska lista zmian jest w [CHANGELOG.md](CHANGELOG.md).
 
 ### Unreleased
+- Zmienione: 3.0.0-beta.1 rysuje kartę oświetlenia runtime’em Lit z `v3/`. Pozostałe karty i zapisany układ zostają bez zmian.
 - Dodano: **zdjęcie pokoju** — przycisk aparatu na liście w Ustawienia → Pokoje, miniatura w wierszu, skrót „Zdjęcie” na widoku Pokoje w edycji; podgląd na kafelkach od razu po wyborze pliku (przed „Zapisz pokoje”).
 - Naprawiono: kafle **Pokoje** w ciemnym motywie i liście biorą kolory z motywu; etykiety metryk nie rozjeżdżają się; obwódka przy najechaniu używa koloru akcentu z Ustawień.
 - Naprawiono: siatka **Pokoje** w Studio jest bliżej makiety (trzy kolumny na typowej szerokości pulpitu, niebieska obwódka kafli, Offline bez danych pokoju, bez wiersza „Pozostałe” w siatce). Tytuł widoku Pokoje w Studio nadal jest ukryty.

@@ -1,0 +1,24 @@
+/* Aliasy na stronie 2.x. Nie ustawiają --hg-*: te zostają w theme_head.js i reagują na jasny/ciemny. */
+:root {
+  --nv-accent: var(--hg-accent, #63d71e);
+  --nv-accent-tx: var(--hg-accent-tx, #1a4607);
+  --nv-accent-faint: var(--hg-accent-faint, rgba(99, 215, 30, 0.1));
+  --nv-on-accent: var(--hg-on-accent, #0b0f0a);
+  --nv-ink: var(--hg-chrome-fg, #1c1c1e);
+  --nv-glass-bg: var(--hg-glass-bg, rgba(234, 238, 243, 0.66));
+  --nv-glass-sheen: var(--hg-glass-sheen, none);
+  --nv-edge: var(--hg-edge, none);
+  --nv-shadow-lg: var(--hg-shadow-lg, none);
+  --nv-radius: var(--hg-radius, 24px);
+  --nv-radius-in: var(--hg-radius-in, 16px);
+  --nv-radius-pill: var(--hg-radius-pill, 999px);
+  --nv-btn: var(--hg-btn, 40px);
+  --nv-btn-touch: var(--hg-btn-touch, 44px);
+  --nv-t-base: var(--hg-t-base, 200ms);
+  --nv-ease-out: var(--hg-ease-out, ease);
+  --nv-fs-2: var(--hg-fs-2, 13px);
+  --nv-fs-3: var(--hg-fs-3, 15px);
+  --nv-space-2: var(--s2, 16px);
+  --nv-space-3: var(--s3, 21px);
+  --nv-track: var(--r-md, 21px);
+}

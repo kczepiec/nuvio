@@ -5,6 +5,7 @@
 Toutes les modifications notables de Nuvio sont listées ici, des plus récentes aux plus anciennes. Les versions suivent le [versionnage sémantique](https://semver.org). Le journal des modifications en anglais se trouve dans [CHANGELOG.md](CHANGELOG.md), celui en polonais dans [CHANGELOG.pl.md](CHANGELOG.pl.md) et celui en néerlandais dans [CHANGELOG.nl.md](CHANGELOG.nl.md).
 
 ### Unreleased
+- Modifié : 3.0.0-beta.1 dessine la carte éclairage avec le runtime Lit de `v3/`. Les autres cartes et la disposition enregistrée restent inchangées.
 - Ajouté : **photo de pièce** — bouton appareil photo sur chaque pièce dans Réglages → Pièces, miniature dans la ligne, raccourci « Photo » sur la vue Pièces en mode édition ; l’aperçu sur les tuiles se met à jour dès le choix du fichier (avant « Enregistrer les pièces »).
 - Corrigé : tuiles **Pièces** en thème sombre et en liste suivent les couleurs du thème ; libellés des métriques alignés ; l’anneau au survol suit la couleur d’accent des Réglages.
 - Corrigé : la grille **Pièces** en Studio se rapproche de la maquette (trois colonnes sur la largeur bureau habituelle, surbrillance bleue des tuiles, Offline sans données de pièce, pas de ligne « Autres » en grille). Le titre de la vue Pièces reste masqué en Studio.

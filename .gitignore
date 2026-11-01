@@ -5,6 +5,8 @@ tests/out/
 .ha-test/
 node_modules/
 storybook-static/
+v3/dist/
+v3/storybook-static/
 dist/.*/
 .DS_Store
 docs/superpowers/*

@@ -1,0 +1,65 @@
+/* Podzbiór src/theme_head.js dla powierzchni v3.
+   Wartości zostają na --hg-*, nowe komponenty czytają --nv-*.
+   Ciemny schemat: atrybut data-hg-scheme=dark na <html>, jak w 2.x. */
+:root {
+  --hg-accent: #63d71e;
+  --hg-accent-hi: #9bf24a;
+  --hg-accent-lo: #3e9a10;
+  --hg-accent-soft: rgba(99, 215, 30, 0.22);
+  --hg-accent-faint: rgba(99, 215, 30, 0.1);
+  --hg-accent-tx: #1a4607;
+  --hg-on-accent: #0b0f0a;
+  --hg-scheme: light;
+  --hg-chrome-fg: #1c1c1e;
+  --hg-glass-bg: rgba(234, 238, 243, 0.66);
+  --hg-glass-sheen: linear-gradient(150deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.08) 45%, rgba(255, 255, 255, 0) 75%);
+  --hg-edge: inset 0 1px 0 rgba(255, 255, 255, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.34);
+  --hg-shadow-lg: 0 10px 32px rgba(20, 30, 40, 0.12);
+  --hg-radius: 24px;
+  --hg-radius-in: 16px;
+  --hg-radius-pill: 999px;
+  --hg-btn: 40px;
+  --hg-btn-touch: 44px;
+  --hg-t-fast: 120ms;
+  --hg-t-base: 200ms;
+  --hg-t-slow: 320ms;
+  --hg-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --hg-fs-1: 11px;
+  --hg-fs-2: 13px;
+  --hg-fs-3: 15px;
+  --s2: 16px;
+  --s3: 21px;
+  --r-md: 21px;
+
+  --nv-accent: var(--hg-accent);
+  --nv-accent-tx: var(--hg-accent-tx);
+  --nv-accent-faint: var(--hg-accent-faint);
+  --nv-on-accent: var(--hg-on-accent);
+  --nv-ink: var(--hg-chrome-fg);
+  --nv-glass-bg: var(--hg-glass-bg);
+  --nv-glass-sheen: var(--hg-glass-sheen);
+  --nv-edge: var(--hg-edge);
+  --nv-shadow-lg: var(--hg-shadow-lg);
+  --nv-radius: var(--hg-radius);
+  --nv-radius-in: var(--hg-radius-in);
+  --nv-radius-pill: var(--hg-radius-pill);
+  --nv-btn: var(--hg-btn);
+  --nv-btn-touch: var(--hg-btn-touch);
+  --nv-t-base: var(--hg-t-base);
+  --nv-ease-out: var(--hg-ease-out);
+  --nv-fs-2: var(--hg-fs-2);
+  --nv-fs-3: var(--hg-fs-3);
+  --nv-space-2: var(--s2);
+  --nv-space-3: var(--s3);
+  --nv-track: var(--r-md);
+}
+
+:root[data-hg-scheme='dark'] {
+  --hg-accent-tx: #9bf24a;
+  --hg-scheme: dark;
+  --hg-chrome-fg: #ffffff;
+  --hg-glass-bg: rgba(255, 255, 255, 0.13);
+  --hg-glass-sheen: linear-gradient(150deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 45%, rgba(255, 255, 255, 0) 75%);
+  --hg-edge: inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --hg-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.28);
+}

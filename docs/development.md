@@ -9,6 +9,7 @@ See [DESIGN.md](../DESIGN.md) for the UI rules every new feature must meet.
 
 ```bash
 npm install              # once: esbuild, used to minify the bundle
+(cd v3 && pnpm install)  # once: Lit runtime prepended to the core
 python3 tools/build.py   # -> dist/nuvio.js
 python3 tools/guard.py   # fails if any house-specific id slipped into dist, runs the i18n check
 ```
