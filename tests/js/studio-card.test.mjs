@@ -181,7 +181,7 @@ test('edit mode grid rows follow visible layout, not lg minimum', () => {
   const h2 = c._gridHtml();
   const m = /--st-rows:(\d+)/.exec(h2);
   assert.ok(m, 'rows var');
-  assert.ok(+m[1] < 10, 'edit drops empty lg tail rows');
+  assert.equal(+m[1], 10, 'edit keeps the same lg floor as preview (same layout in both modes)');
 });
 
 test('row height uses design unit (_stCh), same in edit and preview', () => {

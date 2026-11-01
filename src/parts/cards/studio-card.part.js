@@ -124,7 +124,6 @@ class HGStudioGrid extends HGBase {
   _gridRows(cur, add) {
     const L = this._layoutRoot(), ext = (a) => (a.length ? Math.max(...a.map((i) => i.y + i.h)) : 0);
     const need = Math.max(ext(cur), add ? add.y + add.h : 0, 1);
-    if (this._edNow()) return need;
     const lg = (L && L.items) || [];
     return Math.max(HG_STUDIO_GRID_ROWS, ext(lg), need);
   }
@@ -141,7 +140,7 @@ class HGStudioGrid extends HGBase {
     let ch = HG_ST_ROW * this._u0px();
     const panel = this._panelEl();
     if (panel && panel.clientHeight > 0) {
-      const avail = panel.clientHeight - (this._edNow() ? 12 : 0);
+      const avail = panel.clientHeight;
       const need = r * ch + HG_ST_GAP * (r - 1);
       if (need > avail) ch = Math.max(32, (avail - HG_ST_GAP * (r - 1)) / r);
     }
