@@ -35,6 +35,10 @@ ha-card.sw{ justify-content:flex-start; gap:var(--s2); }
 .sw .swc, .sw .swh{ display:none; }
 @container (min-width: 200px){ .sw .swc{ display:flex; } }
 @container (min-width: 280px){ .sw .swh{ display:grid; } }
+/* kafel Studio (.st-k, container-type:size) wyznacza wysokość: ha-card.sw nie jest kontenerem, więc zapytania wysokości trafiają w .st-k */
+@container (max-height: 190px){ .sw .swh{ display:none; } }
+@container (max-height: 130px){ ha-card.sw{ padding:6px var(--s2); gap:4px; } .sw .swt img{ width:clamp(40px, 22cqi, 56px); height:clamp(40px, 22cqi, 56px); } .sw .swn{ font-size:clamp(34px, 16cqi, 44px); } }
+@container (max-height: 90px){ .sw .swc{ display:none; } ha-card.sw{ padding:4px var(--s2); } }
 .hd .ic{ color:var(--hg-accent-tx); }
 .hdb{ display:flex; align-items:center; gap:var(--s1); min-width:0; flex:1; background:none; padding:0; color:inherit; text-align:left; cursor:pointer; }
 .now{ display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:var(--s1); min-width:0; }
