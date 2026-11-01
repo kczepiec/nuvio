@@ -1,7 +1,7 @@
 /* ===================== STUDIO: swobodna siatka widżetów (HGGrid + HG_STUDIO_W), układ w HGL.data.studio ===================== */
 /* Siatka: 12 / 8 / 4 kolumny wg szerokości karty (HGGrid.bp). Wiersze dzielą wysokość panelu (min. 32 px), a --hg-u na kafelku jest wysokością komórki względem projektu (64 px + odstęp). lg zapisuje items, md / sm własne nadpisanie bps[bp].
    Treść rysowana poza render() (morph do .st-root), bo w trybie edycji HG_FREEZE wstrzymuje zwykłe przerysowanie kart.
-   Wiersz siatki: --st-ch = 64×--hg-u0 (bez skalowania --hg-u per kafelek). Widżety: hgMakeCard w gniazdach data-own. */
+   Wiersz --st-ch: 64×u0, dopasowany do wysokości panelu; treść kafelka --hg-u (stosy bez tego skalowania). */
 const HG_ST_ROW = 64, HG_ST_GAP = 24;
 /* stała wysokość siatki w wierszach (jak seed); zmniejszenie widżetu nie ściska całego panelu */
 const HG_STUDIO_GRID_ROWS = 10;
@@ -15,7 +15,7 @@ class HGStudioGrid extends HGBase {
   grid-auto-rows:var(--st-ch, 83.2px); gap:${HG_ST_GAP}px; }
 /* edycja: wiersz zostaje taki jak w podglądzie. Kafelek „Dodaj” dokładany jest niżej i panel się przewija, zamiast ściskać resztę. */
 .st-root:has(.ed){ height:100%; min-height:0; }
-.st-g.ed{ height:100%; max-height:100%; min-height:0; align-content:start; box-sizing:border-box; overflow:hidden; }
+.st-g.ed{ height:auto; min-height:0; align-content:start; box-sizing:border-box; padding-bottom:12px; }
 .st-g.ed .st-bg{ height:auto; align-self:start; grid-template-rows:repeat(var(--st-rows, 1), var(--st-ch, 83.2px)); grid-auto-rows:var(--st-ch, 83.2px); }
 .st-w{ position:relative; min-width:0; min-height:0; max-height:100%; z-index:1; border-radius:var(--r-lg); outline:none; align-self:stretch; justify-self:stretch; overflow:hidden; }
 .st-k{ position:absolute; inset:0; container-type:size; overflow:hidden; }
@@ -128,42 +128,65 @@ class HGStudioGrid extends HGBase {
     const lg = (L && L.items) || [];
     return Math.max(HG_STUDIO_GRID_ROWS, ext(lg), need);
   }
+  _u0px() {
+    try {
+      const host = this._pageHost() || this, v = parseFloat(getComputedStyle(host).getPropertyValue('--hg-u0'));
+      if (v > 0) return v;
+    } catch (e) { /* brak DOM */ }
+    return 1.3;
+  }
+  /* wiersz siatki: projekt 64×u0, ewentualnie lekko zmniejszony żeby wszystkie wiersze zmieściły się w panelu (bez ucinania) */
   _stCh(rows) {
     const r = Math.max(1, rows || 1);
-    if (this._edNow()) {
-      const panel = this._panelEl();
-      if (panel && panel.clientHeight > 0) {
-        const ch = (panel.clientHeight - HG_ST_GAP * (r - 1)) / r;
-        if (ch >= 32) return ch.toFixed(2) + 'px';
-      }
+    let ch = HG_ST_ROW * this._u0px();
+    const panel = this._panelEl();
+    if (panel && panel.clientHeight > 0) {
+      const avail = panel.clientHeight - (this._edNow() ? 12 : 0);
+      const need = r * ch + HG_ST_GAP * (r - 1);
+      if (need > avail) ch = Math.max(32, (avail - HG_ST_GAP * (r - 1)) / r);
     }
-    try {
-      const u0 = getComputedStyle(this).getPropertyValue('--hg-u0').trim();
-      if (u0) return `calc(${HG_ST_ROW} * ${u0})`;
-    } catch (e) { /* brak DOM */ }
-    return `${HG_ST_ROW}px`;
+    return ch.toFixed(2) + 'px';
+  }
+  _tileU(el, it) {
+    if (!el.querySelector) return;
+    const inner = el.querySelector('.st-k > *');
+    if (inner && (inner.localName === 'hg-stack-card' || inner.localName === 'hg-grid-card')) {
+      el.style.removeProperty('--hg-u'); return;
+    }
+    const dh = it.h * HG_ST_ROW + Math.max(0, it.h - 1) * HG_ST_GAP;
+    if (!el.clientHeight || !dh || el.clientHeight > 8000) { el.style.removeProperty('--hg-u'); return; }
+    const u = Math.min(2, Math.max(0.65, el.clientHeight / dh));
+    el.style.setProperty('--hg-u', u.toFixed(4) + 'px');
+  }
+  _addPlace(vis) {
+    if (!this._edNow()) return null;
+    const cols = this._cols(); let add = null;
+    for (const w of [4, 3, 2]) { const p = HGGrid.place(vis, { id: '_add', w: Math.min(w, cols), h: 3 }, cols), a = p[p.length - 1]; if (!add || a.y < add.y) add = a; }
+    return add;
+  }
+  _visItems() {
+    const by = this._byId();
+    return this._cur().filter((i) => { const t = by.get(i.id); return !i.hidden && t && (t.type === 'card' ? t.settings && t.settings.card : HG_STUDIO_W[t.type]); });
   }
   _syncAreas(root) {
-    const cur = this._cur();
+    const cur = this._cur(), vis = this._visItems();
     for (const el of root.querySelectorAll('.st-w')) {
       const it = cur.find((i) => i.id === el.dataset.id); if (!it) continue;
       el.setAttribute('style', hgStArea(it));
       el.style.removeProperty('transform');
-      el.style.removeProperty('--hg-u');
     }
     const g = root.querySelector('.st-g'); if (!g) return;
-    const rows = this._gridRows(cur, null);
+    const rows = this._gridRows(vis, this._addPlace(vis));
     g.style.setProperty('--st-rows', String(rows));
     g.style.setProperty('--st-ch', this._stCh(rows));
   }
   _name(t, it) { if (it && it.type === 'card') return (it.settings && it.settings.name) || t; const d = HG_STUDIO_W[t]; return d ? String(d.n) : t; }
   _gridHtml() {
     const L = this._layoutRoot(), ed = this._ed = this._edNow(), cols = this._cols(), by = this._byId();
-    const vis = this._cur().filter((i) => { const t = by.get(i.id); return !i.hidden && t && (t.type === 'card' ? t.settings && t.settings.card : HG_STUDIO_W[t.type]); });
+    const vis = this._visItems();
     if ((!L && HGL.failed) || (L && !vis.length && !ed)) return `<div class="st-empty nv-empty"><b>${hgT('studio.empty_title')}</b><span>${hgT('studio.empty_text')}</span></div>`;
     if (!L) return '';
-    /* kafel „Dodaj widżet”: pierwsze wolne miejsce, najwyżej jak się da (szerokość 4, 3 albo 2 kolumny) */
-    let add = null; if (ed) for (const w of [4, 3, 2]) { const p = HGGrid.place(vis, { id: '_add', w: Math.min(w, cols), h: 3 }, cols), a = p[p.length - 1]; if (!add || a.y < add.y) add = a; }
+    const add = this._addPlace(vis);
     const rows = this._gridRows(vis, add), esc = H.esc;
     const cell = (i) => { const t = by.get(i.id), nm = esc(this._name(t.type, t)), id = esc(i.id);
       return `<div class="st-w" data-key="w-${id}" data-id="${id}" style="${hgStArea(i)}"${ed ? ` tabindex="0" role="group" aria-label="${nm}" aria-describedby="st-kh"` : ''}><div class="st-k" data-own data-key="k-${id}"></div>`
@@ -196,12 +219,14 @@ class HGStudioGrid extends HGBase {
   _scale() {
     const root = this.$ && this.$.querySelector && this.$.querySelector('.st-root');
     const g = root && root.querySelector('.st-g'); if (!g) return;
-    const ed = g.classList.contains('ed');
-    this._panelRoSync(!!ed);
-    const cur = this._cur();
-    const rows = this._gridRows(cur, null);
+    this._panelRoSync(true);
+    const cur = this._cur(), vis = this._visItems();
+    const rows = this._gridRows(vis, this._addPlace(vis));
     g.style.setProperty('--st-ch', this._stCh(rows));
-    if (root) this._syncAreas(root);
+    g.style.setProperty('--st-rows', String(rows));
+    for (const el of g.querySelectorAll('.st-w')) {
+      const it = cur.find((i) => i.id === el.dataset.id); if (it) this._tileU(el, it);
+    }
   }
   _cfg(it) {
     if (it.type === 'card') {

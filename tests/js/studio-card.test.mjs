@@ -194,18 +194,16 @@ test('row height uses design unit (_stCh), same in edit and preview', () => {
   const g = {
     classList: { contains: (x) => x === 'ed' },
     style: { setProperty: (k, v) => { set[k] = v; }, removeProperty: (k) => { delete set[k]; }, getPropertyValue: () => '' },
-    querySelectorAll: (sel) => (sel === '.st-w' ? [{ dataset: { id: 'w_media' }, setAttribute: () => {}, style: { removeProperty: () => {} } }] : []),
+    querySelectorAll: (sel) => (sel === '.st-w' ? [{ dataset: { id: 'w_media' }, setAttribute: () => {}, querySelector: () => null, style: { removeProperty: () => {}, setProperty: () => {} } }] : []),
   };
   const root = { querySelector: (s) => (s === '.st-g' ? g : null), querySelectorAll: (sel) => g.querySelectorAll(sel) };
   c.$ = { querySelector: (s) => (s === '.st-root' ? root : null) };
   c._cur = () => [{ id: 'w_media', x: 0, y: 0, w: 4, h: 4 }];
   c._gridRows = () => 10;
+  c._u0px = () => 1;
+  c._panelEl = () => null;
   c._scale();
-  assert.equal(set['--st-ch'], '64px', 'stable row from HG_ST_ROW when --hg-u0 unavailable in test');
-  set['--st-ch'] = undefined;
-  g.classList.contains = () => false;
-  c._scale();
-  assert.equal(set['--st-ch'], '64px', 'preview matches edit row height');
+  assert.equal(set['--st-ch'], '64.00px', 'design row from HG_ST_ROW × u0 when panel unknown');
 });
 
 test('widgets mount through hgMakeCard with the registry config', async () => {

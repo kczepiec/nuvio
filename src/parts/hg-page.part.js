@@ -1322,9 +1322,10 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 :host([studio][editing][mode=wide]) .panel{ grid-template-rows:minmax(0,1fr) !important; overflow:auto; height:100%; min-height:0; align-self:stretch !important; }
 :host([studio][editing]) .cw{ height:100%; min-height:0 !important; align-self:stretch; }
 :host([studio][editing]) .cw > *{ height:100%; min-height:0; }
-:host([studio][editing][mode=tablet]) .panel{ min-height:0; overflow:hidden; align-self:stretch; }
+:host([studio][editing][mode=tablet]) .panel{ min-height:0; overflow-y:auto; align-self:stretch; overscroll-behavior:contain; }
 :host([studio][editing][mode=tablet]) .rail{ align-self:stretch; }
-:host([studio][editing][mode=phone]) .panel{ min-height:0; overflow:hidden; }
+:host([studio][editing][mode=phone]) .panel{ min-height:0; overflow-y:auto; overscroll-behavior:contain; }
+:host([studio][mode=wide]) .panel{ overflow-y:auto; overscroll-behavior:contain; }
 :host([studio][mode=phone]) .sst, :host([studio][mode=phone]) .rth{ display:none; }
 :host([mode=wide][scroll]) .more:not([hidden]){ display:flex; position:absolute; z-index:5; width:36px; height:36px; border-radius:50%; align-items:center; justify-content:center;
   color: var(--hg-chrome-fg); }
