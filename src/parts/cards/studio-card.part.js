@@ -1,5 +1,5 @@
 /* ===================== STUDIO: swobodna siatka widżetów (HGGrid + HG_STUDIO_W), układ w HGL.data.studio ===================== */
-/* Siatka: 12 / 8 / 4 kolumny wg szerokości karty (HGGrid.bp), stały wiersz. lg zapisuje items, md / sm własne nadpisanie bps[bp].
+/* Siatka: 12 / 8 / 4 kolumny wg szerokości karty (HGGrid.bp). Wiersze dzielą wysokość panelu (min. 32 px), a --hg-u na kafelku jest wysokością komórki względem projektu (64 px + odstęp). lg zapisuje items, md / sm własne nadpisanie bps[bp].
    Treść rysowana poza render() (morph do .st-root), bo w trybie edycji HG_FREEZE wstrzymuje zwykłe przerysowanie kart.
    Widżety: karty z hgMakeCard w gniazdach data-own (container-type:size), trzymane między aktualizacjami po id elementu. */
 const HG_ST_ROW = 64, HG_ST_GAP = 16;
@@ -8,13 +8,13 @@ class HGStudioGrid extends HGBase {
   static getStubConfig() { return {}; }
   ents() { return []; }
   css() { return `
-.st-root{ position:relative; }
-.st-g{ position:relative; display:grid; grid-template-columns:repeat(var(--st-cols, 12), minmax(0, 1fr)); grid-template-rows:repeat(var(--st-rows, 1), ${HG_ST_ROW}px);
-  grid-auto-rows:${HG_ST_ROW}px; gap:${HG_ST_GAP}px; }
+.st-root{ position:relative; height:100%; min-height:0; }
+.st-g{ position:relative; display:grid; height:100%; min-height:0; grid-template-columns:repeat(var(--st-cols, 12), minmax(0, 1fr)); grid-template-rows:repeat(var(--st-rows, 1), minmax(32px, 1fr));
+  grid-auto-rows:minmax(32px, 1fr); gap:${HG_ST_GAP}px; }
 .st-w{ position:relative; min-width:0; min-height:0; z-index:1; border-radius:var(--r-lg); outline:none; }
 .st-k{ position:absolute; inset:0; container-type:size; }
-.st-k > *{ display:block; height:100%; }
-.st-bg{ display:grid; grid-template-columns:repeat(var(--st-cols, 12), minmax(0, 1fr)); grid-auto-rows:${HG_ST_ROW}px; gap:${HG_ST_GAP}px; z-index:0; pointer-events:none; opacity:.18; }
+.st-k > *{ display:block; height:100%; min-height:0; }
+.st-bg{ display:grid; height:100%; grid-template-columns:repeat(var(--st-cols, 12), minmax(0, 1fr)); grid-template-rows:repeat(var(--st-rows, 1), minmax(32px, 1fr)); gap:${HG_ST_GAP}px; z-index:0; pointer-events:none; opacity:.18; }
 .st-bg i{ border:1.5px dashed currentColor; border-radius:var(--r-md); }
 .ed .st-k{ pointer-events:none; }
 .ed .st-w::after{ content:''; position:absolute; inset:0; border-radius:inherit; box-shadow:0 0 0 1.5px var(--hg-accent-soft); pointer-events:none; transition:box-shadow var(--hg-t-fast) var(--hg-ease-out); }
@@ -56,9 +56,9 @@ class HGStudioGrid extends HGBase {
   set hass(h) { this._hass = h; window.__hgHass = h; if (typeof HGTheme !== 'undefined') HGTheme.pick(h); this._update(); this._seed(h); this._lay(); }
   get hass() { return this._hass; }
   connectedCallback() { super.connectedCallback(); this._lsub = this._lsub || (() => this._lay()); HGL.subs.add(this._lsub);
-    if (!this._ro && typeof ResizeObserver !== 'undefined') this._ro = new ResizeObserver((es) => this._width(es[0].contentRect.width)); if (this._ro) this._ro.observe(this);
+    if (!this._ro && typeof ResizeObserver !== 'undefined') this._ro = new ResizeObserver((es) => { this._width(es[0].contentRect.width); this._scale(); }); if (this._ro) this._ro.observe(this);
     this._watchEd(); }
-  disconnectedCallback() { HGL.subs.delete(this._lsub); if (this._ro) this._ro.disconnect(); if (this._mo) { this._mo.disconnect(); this._mo = null; } }
+  disconnectedCallback() { HGL.subs.delete(this._lsub); if (this._scF && typeof cancelAnimationFrame === 'function') cancelAnimationFrame(this._scF); this._scF = 0; if (this._ro) this._ro.disconnect(); if (this._mo) { this._mo.disconnect(); this._mo = null; } }
   /* pierwszy układ: raz, po wczytaniu HGL, z modelu domu; istniejący klucz studio nigdy nie jest nadpisywany (hgStudioEnsure) */
   _model(h) { return this._Mp || (this._Mp = Promise.resolve(typeof HGModel !== 'undefined' && h ? HGModel.load(h) : {}).then((M) => (this._M = M || {}), () => (this._M = {}))); }
   _seed(h) {
@@ -115,7 +115,18 @@ class HGStudioGrid extends HGBase {
     const root = this.$ && this.$.querySelector && this.$.querySelector('.st-root'), html = this._gridHtml();
     if (!root) return;
     if (html !== this._lh) { this._lh = html; hgMorph(root, html); }
-    this._mount(root);
+    this._mount(root); this._scaleSoon();
+  }
+  /* wiersze już dzielą wysokość panelu; --hg-u kafelka = jego wysokość / wysokość z projektu, żeby treść (jednostka u) mieściła się w komórce */
+  _scaleSoon() { if (this._scF) return; const run = () => { this._scF = 0; this._scale(); }; if (typeof requestAnimationFrame === 'function') this._scF = requestAnimationFrame(run); else run(); }
+  _scale() {
+    const g = this.$ && this.$.querySelector && this.$.querySelector('.st-g'); if (!g || !g.querySelectorAll) return;
+    const cur = this._cur();
+    for (const el of g.querySelectorAll('.st-w')) {
+      const it = cur.find((i) => i.id === el.dataset.id); if (!it || !el.clientHeight) continue;
+      const dh = it.h * HG_ST_ROW + Math.max(0, it.h - 1) * HG_ST_GAP, u = Math.min(2, Math.max(0.65, el.clientHeight / dh)), v = u.toFixed(4) + 'px';
+      if (el.style.getPropertyValue('--hg-u') !== v) el.style.setProperty('--hg-u', v);
+    }
   }
   _cfg(it) {
     if (it.type === 'card') { const c = it.settings && it.settings.card; if (!c || !c.type) return null; const o = Object.assign({}, c); for (const k of Object.keys(o)) if (k.indexOf('nv_') === 0) delete o[k]; return o; }
@@ -220,8 +231,10 @@ class HGStudioGrid extends HGBase {
     const b = e.composedPath().find((n) => n.dataset && (n.dataset.st === 'drag' || n.dataset.st === 'size')); if (!b) return;
     const cell = b.closest('.st-w'), g = cell && cell.parentElement; if (!g) return;
     e.preventDefault(); e.stopPropagation();
-    const cols = this._cols(), cw = (g.clientWidth - HG_ST_GAP * (cols - 1)) / cols;
-    const D = this._dragBegin(cell.dataset.id, b.dataset.st, { cw, ch: HG_ST_ROW, gap: HG_ST_GAP }, { cell, g }); if (!D) return;
+    const cols = this._cols(); let ch = HG_ST_ROW, gap = HG_ST_GAP, colGap = HG_ST_GAP;
+    try { const cs = getComputedStyle(g); const rg = parseFloat(cs.rowGap), cg = parseFloat(cs.columnGap), rh = parseFloat(String(cs.gridTemplateRows).split(' ')[0]); if (rg >= 0) gap = rg; if (cg >= 0) colGap = cg; if (rh > 0) ch = rh; } catch (x) { /* brak layoutu */ }
+    const cw = (g.clientWidth - colGap * (cols - 1)) / cols;
+    const D = this._dragBegin(cell.dataset.id, b.dataset.st, { cw, ch, gap }, { cell, g }); if (!D) return;
     cell.classList.add('st-drag'); try { b.setPointerCapture(e.pointerId); } catch (x) { /* bez przechwycenia: zdarzenia i tak dochodzą do uchwytu */ }
     const x0 = e.clientX, y0 = e.clientY, mv = (ev) => { if (this._drag === D) this._dragMove(ev.clientX - x0, ev.clientY - y0); };
     const end = (ev) => { for (const [t, f] of L) b.removeEventListener(t, f); if (this._drag === D) this._dragEnd(ev.type === 'pointerup'); };

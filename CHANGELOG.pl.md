@@ -12,6 +12,7 @@ Tutaj zapisane są wszystkie istotne zmiany w Nuvio, od najnowszych. Wersje zgod
 - Naprawiono: widżety Studio są bliżej makiety. Karty na zdjęciu mają ciemniejszą taflę i biały tekst, łuk klimatyzacji mieści się w karcie, słupki energii widać już w średnim rozmiarze, multimedia mają większą okładkę, włączone światła są indygo, a sceny leżą w jednym rzędzie.
 - Naprawiono: ramka Studio. Logo znów widać, szyna jest zaokrąglonym paskiem bez strzałki wstecz, a ikony w prawym górnym rogu mają odstęp. Wi-Fi i Bluetooth pokazują stan tabletu i otwierają encję; ikony baterii nie ma.
 - Naprawiono: siatka Studio dosuwa się do szyny, bez pustego pasa, a w edycji da się dodać te same komponenty co na innych widokach.
+- Naprawiono: Studio nie zostawia pustej kolumny siatki po lewej, a widżety skalują się do wysokości swojego pola.
 
 ### 2.31.0
 - Dodano: tytuł i podtytuł nagłówka mogą pokazywać stan encji na żywo wpisem `{state:sensor.twoja_encja}`, np. status pralki. Linia znika, gdy stan jest pusty, `off`, `unavailable` lub `unknown`, a nagłówek odświeża się przy zmianie encji.

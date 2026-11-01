@@ -21,12 +21,12 @@ ha-card.wrap{ container-type:inline-size; }
 .chip:hover{ background:var(--hg-inner-bg-h); }
 .chip ha-icon{ width:12u; height:12u; color:#8A8E94; }
 /* studio: nagłówek „Wszystkie”, do N żywych miniatur z nazwą i kropką stanu; stopnie: compact 1, medium 2, expanded 3+ */
-ha-card.st{ container-type:inline-size; display:flex; flex-direction:column; gap:var(--s2); padding:var(--s2); height:auto; }
+ha-card.st{ container-type:inline-size; display:flex; flex-direction:column; gap:var(--s2); padding:var(--s2); height:100%; min-height:0; }
 .st .sh{ display:flex; align-items:center; gap:var(--s1); min-width:0; font-weight:600; font-size:var(--fs-md); } .st .sh ha-icon{ width:20u; height:20u; color:inherit; }
 .st .sh .tt{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .st .va{ display:inline-flex; align-items:center; gap:4u; background:none; border:0; padding:0 2u; color:inherit; font:inherit; font-size:var(--fs-sm); font-weight:400; opacity:.8; cursor:pointer; } .st .va ha-icon{ width:16u; height:16u; }
-.st .ths{ display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0, 1fr); gap:var(--s1); }
-.st .th{ position:relative; display:block; min-width:0; aspect-ratio:16 / 10; padding:0; border:0; border-radius:var(--r-md); overflow:hidden; background:var(--hg-inner-bg); color:#fff; cursor:pointer; box-shadow:var(--hg-inner-hi); }
+.st .ths{ display:grid; flex:1; min-height:0; grid-auto-flow:column; grid-auto-columns:minmax(0, 1fr); gap:var(--s1); }
+.st .th{ position:relative; display:block; min-width:0; height:100%; min-height:0; aspect-ratio:auto; padding:0; border:0; border-radius:var(--r-md); overflow:hidden; background:var(--hg-inner-bg); color:#fff; cursor:pointer; box-shadow:var(--hg-inner-hi); }
 .st .th img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 .st .th .no{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; opacity:.6; } .st .th .no ha-icon{ width:28px; height:28px; }
 .st .th .nm{ position:absolute; left:8u; right:6u; bottom:6u; max-width:none; display:flex; align-items:center; gap:5u; padding:0; border-radius:0; font-size:var(--fs-sm); font-weight:500; background:none; text-shadow:0 1px 3px rgba(0,0,0,.85); }

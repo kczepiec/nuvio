@@ -1305,13 +1305,15 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
   --hg-inner-hi: inset 0 1px 0 rgba(255,255,255,.16), inset 0 0 0 1px rgba(255,255,255,.06); }
 :host([studio]) .un{ display:none; }
 :host([studio][mode=wide]) .tabs{ left:56u; }
-:host([studio][mode=wide]) .rail{ top:73u; bottom:19u; }
-/* szyna kończy się na 56u (16+40). Kolumna 86u zostawiała pusty pas, a padding 78u i margines panelu zsuwały siatkę w dół. */
-:host([studio][mode=wide][wide-panel]) .page{ grid-template-columns:58u minmax(0,1fr); padding:73u 18u 19u 0; }
+:host([studio][mode=wide]) .rail{ top:73u; bottom:19u; z-index:4; }
+/* szyna kończy się na 56u (16+40). Osobna kolumna siatki zostawiała pusty pasek szerokości jednej kolumny widżetów.
+   Jedna kolumna, wcięcie = prawa krawędź szyny + ten sam odstęp co między widżetami (16 px). */
+:host([studio][mode=wide][wide-panel]) .page{ grid-template-columns:minmax(0,1fr); grid-template-rows:auto minmax(0,1fr); padding:73u 18u 19u calc(56u + 16px); }
 /* wąski panel jest absolutny (right:18u, stała szerokość): left dosuwa go do szyny i width:auto rozciąga do prawej krawędzi.
-   Szeroki panel (studio ma panel.wide) stoi już w drugiej kolumnie siatki, za rynną szyny. To samo left przesuwało go jeszcze raz i ucinało prawą krawędź. */
+   Szeroki panel jest jedyną kolumną strony (wcięcie pod szynę). To samo left przesuwało go drugi raz i ucinało prawą krawędź. */
 :host([studio][mode=wide]:not([wide-panel])) .panel{ left:70u; right:18u; width:auto; }
-:host([studio][mode=wide][wide-panel]) .panel{ position:relative; left:auto; right:auto; top:auto; bottom:auto; width:auto; max-width:100%; margin-top:0; min-height:0; align-self:stretch; }
+:host([studio][mode=wide][wide-panel]) .panel{ position:relative; left:auto; right:auto; top:auto; bottom:auto; width:auto; max-width:100%; margin:0 !important; padding:0 !important; min-height:0; align-self:stretch; grid-column:1; grid-row:2; grid-template-rows:minmax(0,1fr) !important; grid-auto-rows:minmax(0,1fr) !important; }
+:host([studio]) .cw{ height:100%; min-height:0 !important; }
 :host([studio][mode=phone]) .sst, :host([studio][mode=phone]) .rth{ display:none; }
 :host([mode=wide][scroll]) .more:not([hidden]){ display:flex; position:absolute; z-index:5; width:36px; height:36px; border-radius:50%; align-items:center; justify-content:center;
   color: var(--hg-chrome-fg); }
@@ -1320,6 +1322,7 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 @media (prefers-reduced-motion: reduce){ :host([mode=wide][scroll]) .more ha-icon{ animation:none; } }
 :host([mode=wide][scroll]:not([wide-panel])) .more{ right:calc(18u + var(--k) * 219 - 18px); bottom:calc(19u + 10px); }
 :host([mode=wide][scroll][wide-panel]) .more{ left:calc(86u + (100% - 86u - var(--s3)) / 2 - 18px); bottom:calc(var(--s3) + 10px); }
+:host([studio][mode=wide][scroll][wide-panel]) .more{ left:calc(56u + 16px + (100% - 56u - 16px - 18u) / 2 - 18px); }
 
 @keyframes hgmore{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(3px); } }
 :host([mode=wide]) .tools{ position:absolute; left:151u; bottom:80u; }

@@ -12,6 +12,7 @@ All notable changes to Nuvio are listed here, newest first. Versions follow [sem
 - Fixed: Studio widgets sit closer to the mockup. Cards on the photo use darker glass and white text, the climate arc stays inside the card, energy bars show from the medium size, media uses a larger cover, lights-on is indigo, and scenes sit in one row.
 - Fixed: Studio chrome. The logo shows again, the rail is a rounded bar without the back arrow, and the top-right icons have more space. Wi-Fi and Bluetooth reflect the tablet state and open the entity; the battery icon is gone.
 - Fixed: the Studio grid sits against the rail instead of leaving a gutter, and edit mode adds the same components as the other views.
+- Fixed: Studio no longer keeps an empty grid column on the left, and widgets scale with the height of their cell.
 
 ### 2.31.0
 - Added: the header title and subtitle can show a live entity state with `{state:sensor.your_entity}`, for example a washer's status. The line disappears when the state is empty, `off`, `unavailable` or `unknown`, and the header updates when the entity changes.
