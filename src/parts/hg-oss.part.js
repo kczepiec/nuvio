@@ -91,7 +91,7 @@ const HGModel = {
     const areaOf = (e) => { const r = ents[e]; return r && (r.area_id || (r.device_id && devices[r.device_id] && devices[r.device_id].area_id)) || null; };
     const roomCount = {}; for (const e of all) { const a = areaOf(e); if (a) roomCount[a] = (roomCount[a] || 0) + 1; }
     return { areas, devices, ents, all, roomCount, weather: dom('weather').slice().sort((a, b) => ((+(hass.states[b].attributes.supported_features) & 3) ? 1 : 0) - ((+(hass.states[a].attributes.supported_features) & 3) ? 1 : 0))[0] || null, climate: dom('climate'), media: dom('media_player'), cams: dom('camera'), persons: dom('person'), trackers: dom('device_tracker'), zones: dom('zone'), calendars: dom('calendar'),
-      scenes: [...dom('scene'), ...dom('script')].slice(0, 6), power, vacuums: dom('vacuum'), alarm: dom('alarm_control_panel')[0] || null, sun: hass.states['sun.sun'] ? 'sun.sun' : null };
+      scenes: [...dom('scene'), ...dom('script')].slice(0, 6), power, vacuums: dom('vacuum'), robots: [...dom('vacuum'), ...dom('lawn_mower')], alarm: dom('alarm_control_panel')[0] || null, sun: hass.states['sun.sun'] ? 'sun.sun' : null };
   },
 };
 

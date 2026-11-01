@@ -43,14 +43,21 @@ test('hgGenerate: every view uses hg-studio-card; no separate studio tab', async
 
 test('hgStudioSeed: per-view first layouts', () => {
   const { hgStudioSeed } = mk(), h = hass(), M = model(h);
-  const en = Object.fromEntries(hgStudioSeed(M, h, 'energia').items.map((i) => [i.id, i.type]));
-  assert.equal(en.w_energy, 'energy');
-  assert.equal(en.w_scenes, 'scenes');
+  const en = hgStudioSeed(M, h, 'energia');
+  assert.equal(en.seedV, 2);
+  const byEn = Object.fromEntries(en.items.map((i) => [i.id, i]));
+  assert.equal(byEn.w_energy.type, 'energy');
+  assert.equal(byEn.w_energy.w, 8);
+  assert.equal(byEn.w_home.type, 'home');
+  assert.equal(byEn.w_scenes.type, 'scenes');
   const rooms = hgStudioSeed(M, h, 'rooms').items[0];
   assert.equal(rooms.type, 'card');
   assert.equal(rooms.settings.card.type, 'custom:hg-areas-card');
   const fam = hgStudioSeed(M, h, 'family').items;
-  assert.ok(fam.some((i) => i.settings && i.settings.card && i.settings.card.type === 'custom:hg-person-card'));
+  assert.ok(fam.some((i) => i.settings && i.settings.card && i.settings.card.type === 'custom:hg-people-card'));
+  const kam = hgStudioSeed(M, h, 'kamery').items.find((i) => i.id === 'w_cameras');
+  assert.deepEqual(kam.settings.entities, ['camera.front', 'camera.back']);
+  assert.equal(hgStudioSeed(M, h, 'siec').items.filter((i) => i.type === 'card').length, 4);
 });
 
 test('hgViewHas no longer lists studio as a separate view', () => {
@@ -61,7 +68,7 @@ test('hgViewHas no longer lists studio as a separate view', () => {
 
 test('seed: sizes, positions and entities from the model; missing entity gives hidden widget', () => {
   const { hgStudioSeed, HG_STUDIO_W } = mk(), h = hass(), L = hgStudioSeed(model(h), h);
-  assert.equal(L.v, 1); assert.equal(L.custom, 0);
+  assert.equal(L.v, 1); assert.equal(L.custom, 0); assert.equal(L.seedV, 2);
   const by = Object.fromEntries(L.items.map((i) => [i.type, i]));
   assert.deepEqual(Object.keys(by).sort(), Object.keys(HG_STUDIO_W).sort());
   assert.deepEqual([by.greeting.x, by.greeting.w, by.greeting.h, by.greeting.minW, by.greeting.maxH], [0, 5, 4, 3, 6]);
@@ -85,15 +92,19 @@ test('widget cfg builds card config', () => {
   assert.deepEqual([...HG_STUDIO_W.cameras.cfg('camera.front', {}).entities], ['camera.front']);
 });
 
-test('hgStudioEnsure seeds once per view into studios, never replaces, skips when not loaded or failed', () => {
+test('hgStudioEnsure seeds per view; seedV bump replaces stale layout, skips when current', () => {
   const { hgStudioEnsure, hgStudioGet } = mk(), h = hass(), M = model(h);
   const L = { loaded: true, failed: false, data: { s: {} } };
   assert.equal(hgStudioEnsure(L, M, h, 'dashboard'), true);
   const root = hgStudioGet(L.data, 'dashboard');
   assert.ok(root && root.items.length === 8);
-  root.custom = 1;
+  assert.equal(root.seedV, 2);
   assert.equal(hgStudioEnsure(L, M, h, 'dashboard'), false);
-  assert.equal(hgStudioGet(L.data, 'dashboard'), root);
+  root.seedV = 1;
+  root.custom = 1;
+  assert.equal(hgStudioEnsure(L, M, h, 'dashboard'), true);
+  assert.equal(hgStudioGet(L.data, 'dashboard').seedV, 2);
+  assert.equal(hgStudioGet(L.data, 'dashboard').custom, 0);
   const nl = { loaded: false, failed: false, data: { s: {} } }, fl = { loaded: true, failed: true, data: { s: {} } };
   assert.equal(hgStudioEnsure(nl, M, h, 'dashboard'), false); assert.equal(hgStudioGet(nl.data, 'dashboard'), null);
   assert.equal(hgStudioEnsure(fl, M, h, 'dashboard'), false); assert.equal(hgStudioGet(fl.data, 'dashboard'), null);

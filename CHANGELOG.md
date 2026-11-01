@@ -13,6 +13,7 @@ All notable changes to Nuvio are listed here, newest first. Versions follow [sem
 - Fixed: Studio chrome. The logo shows again, the rail is a rounded bar without the back arrow, and the top-right icons have more space. Wi-Fi and Bluetooth reflect the tablet state and open the entity; the battery icon is gone.
 - Fixed: on phones, Studio widgets stack in a single full-width column.
 - Fixed: the month calendar and agenda use larger, readable type (including in Studio, without tile scale shrinking the text).
+- Changed: fresh Studio layouts for Map, Cameras, Family, Energy and the Robots, Security and Network views (Nuvio widgets and cards only). Updating to seedV 2 replaces each view’s saved layout once.
 - Fixed: the Studio grid sits against the rail instead of leaving a gutter, and edit mode adds the same components as the other views.
 - Fixed: Studio no longer keeps an empty grid column on the left, and widgets scale with the height of their cell.
 - Fixed: Studio edit mode no longer wobbles the whole grid or squeezes widgets to fit the add tile.

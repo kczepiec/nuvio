@@ -13,6 +13,7 @@ Tutaj zapisane są wszystkie istotne zmiany w Nuvio, od najnowszych. Wersje zgod
 - Naprawiono: ramka Studio. Logo znów widać, szyna jest zaokrąglonym paskiem bez strzałki wstecz, a ikony w prawym górnym rogu mają odstęp. Wi-Fi i Bluetooth pokazują stan tabletu i otwierają encję; ikony baterii nie ma.
 - Naprawiono: na telefonie widżety Studio układają się w jednej kolumnie na pełną szerokość.
 - Naprawiono: kalendarz miesiąca i agenda mają większą, czytelną typografię (także w widoku Studio, bez ściskania skali kafelka).
+- Zmieniono: nowe układy Studio dla Mapy, Kamer, Rodziny, Energii oraz widoków Roboty, Bezpieczeństwo i Sieć (tylko widżety i karty Nuvio). Przy aktualizacji do seedV 2 zapisany układ widoku jest podmieniany.
 - Naprawiono: siatka Studio dosuwa się do szyny, bez pustego pasa, a w edycji da się dodać te same komponenty co na innych widokach.
 - Naprawiono: Studio nie zostawia pustej kolumny siatki po lewej, a widżety skalują się do wysokości swojego pola.
 - Naprawiono: edycja Studio nie kiwa całej siatki i nie ściska widżetów, żeby zmieścić kafelek dodawania.

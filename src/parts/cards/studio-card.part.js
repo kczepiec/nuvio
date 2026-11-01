@@ -151,7 +151,7 @@ class HGStudioGrid extends HGBase {
   _tileU(el, it) {
     if (!el.querySelector) return;
     const inner = el.querySelector('.st-k > *');
-    if (inner && /^(hg|nuvio)-(stack|grid|month|agenda)-card$/.test(inner.localName)) {
+    if (inner && /^(hg|nuvio)-(stack|grid|month|agenda|map|robots|alarm|net|sensors|people|openings)-card$/.test(inner.localName)) {
       el.style.removeProperty('--hg-u'); return;
     }
     const dh = it.h * HG_ST_ROW + Math.max(0, it.h - 1) * HG_ST_GAP;
