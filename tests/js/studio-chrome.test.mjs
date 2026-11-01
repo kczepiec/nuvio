@@ -71,6 +71,8 @@ test('studio chrome is gated on _studioUI; room_head and studio:false opt out', 
   assert.doesNotMatch(src, /:host\(\[mode=wide\]:not\(\[scroll\]\)\) \.panel[^}]*height:auto/, 'desktop panel keeps grid height so edit/add is not clipped');
   assert.match(edit, /data-hge="stadd"/, 'studio edit bar can open component gallery');
   assert.match(edit, /_eStudioEditSync\(/, 'studio grid refreshes when layout edit toggles');
+  const sedit = readFileSync(new URL('../../src/parts/studio/edit.part.js', import.meta.url), 'utf8');
+  assert.match(sedit, /_eStudioEditSync\(on\) \{/, 'studio edit sync lives in studio/edit.part.js');
   assert.match(src, /_stMenuActs\(/, 'studio quick actions live in the user menu');
   assert.match(src, /_topQuickActs\(nCount, this\._studioUI\(c\)\)/, 'studio UI hides top quick-action buttons');
   assert.match(src, /:host\(\[mode=wide\]\) \.rind\{ border-radius:10u/, 'desktop rail active pill is rounded square');
