@@ -27,45 +27,49 @@ class HGAreasCard extends HGBase {
 @container (min-width: 580px){ .grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); } }
 @container (min-width: 900px){ .grid{ grid-template-columns:repeat(3, minmax(0, 1fr)); } .grid.cols2{ grid-template-columns:repeat(2, minmax(0, 1fr)); } }
 .grid.cols1{ grid-template-columns:minmax(0, 1fr) !important; }
-.tile{ position:relative; display:flex; flex-direction:column; justify-content:space-between; min-width:0; box-sizing:border-box; aspect-ratio:465 / 285; min-height:230px; container-type:size; padding:5cqh 4.5cqi; border-radius:28px; overflow:hidden; cursor:pointer;
-  background:#12161c; border:0; color:#fff; text-align:left; text-shadow:0 1px 8px rgba(0,0,0,.5); transition: box-shadow .25s; -webkit-tap-highlight-color:transparent; touch-action:manipulation; outline:none;
+.tile{ position:relative; display:flex; flex-direction:column; justify-content:space-between; min-width:0; box-sizing:border-box; aspect-ratio:465 / 285; min-height:230px; padding:18px 20px 16px; border-radius:28px; overflow:hidden; cursor:pointer;
+  background:#0a0c10; border:0; color:#fff; text-align:left; text-shadow:0 1px 8px rgba(0,0,0,.5); transition: box-shadow var(--hg-t-base, .2s) var(--hg-ease-out, ease-out); -webkit-tap-highlight-color:transparent; touch-action:manipulation; outline:none;
   -webkit-backdrop-filter:none; backdrop-filter:none; box-shadow:0 14px 36px rgba(0,0,0,.34); }
-.tile .ph{ position:absolute; inset:0; width:auto; height:auto; border-radius:inherit; background:#12161c center/cover no-repeat; }
+.tile .ph{ position:absolute; inset:0; width:auto; height:auto; border-radius:inherit; background:#0a0c10 center/cover no-repeat; }
 .tile .sh{ position:absolute; inset:0; border-radius:inherit; background:linear-gradient(180deg, rgba(6,10,16,.62) 0%, rgba(6,10,16,.02) 34%, rgba(6,10,16,.16) 58%, rgba(6,10,16,.82) 100%); }
-.tile.nop .ph{ background:linear-gradient(165deg, #3a4556 0%, #1b222b 62%, #12161c 100%); }
-.tile.nop .sh{ background:linear-gradient(180deg, rgba(0,0,0,.16) 0%, rgba(0,0,0,.46) 100%); }
+.tile.nop .ph{ background:linear-gradient(165deg, rgba(42,50,62,.98) 0%, rgba(20,26,34,.98) 55%, #0a0c10 100%); }
+.tile.nop .sh{ background:linear-gradient(180deg, rgba(0,0,0,.22) 0%, rgba(0,0,0,.52) 100%); }
 .tile:active{ transform: scale(.98); }
-.tile:focus-visible{ box-shadow: 0 0 0 2px rgba(72, 145, 255, .95), 0 0 28px rgba(72, 145, 255, .38); }
+.tile:focus-visible{ box-shadow: 0 0 0 2px var(--hg-accent), 0 0 24px var(--hg-accent-soft, var(--hg-accent-glow)); }
 .tile::after{ content:none; }
-@media (hover:hover) and (pointer:fine){ .tile:hover{ transform:none; box-shadow: 0 0 0 2px rgba(72, 145, 255, .95), 0 0 28px rgba(72, 145, 255, .38); } }
+@media (hover:hover) and (pointer:fine){ .tile:hover{ transform:none; box-shadow: 0 0 0 2px var(--hg-accent), 0 0 24px var(--hg-accent-soft, var(--hg-accent-glow)); } }
 .tile *{ pointer-events:none; } .tile button, .tile button *{ pointer-events:auto; } .tile button ha-icon{ pointer-events:none; }
-.hd{ position:relative; z-index:1; display:flex; align-items:center; gap:12px; min-width:0; }
+.hd{ position:relative; z-index:1; display:flex; align-items:flex-start; gap:12px; min-width:0; }
 .hd .ic{ flex:none; display:flex; align-items:center; justify-content:center; width:28px; height:28px; min-width:28px; color:#fff; } .hd .ic ha-icon{ --mdc-icon-size:28px; width:28px; height:28px; }
 .tx{ flex:1; min-width:0; }
-.nm{ display:block; font-size:clamp(14px, 7cqh, 22px); font-weight:600; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.stt{ display:flex; align-items:center; gap:6px; font-size:clamp(12px, 4.4cqh, 14px); color:rgba(255,255,255,.85); line-height:1.3; }
+.nm{ display:block; font-size:clamp(16px, 1.55vw, 22px); font-weight:600; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.stt{ display:flex; align-items:center; gap:6px; margin-top:2px; font-size:13px; color:rgba(255,255,255,.85); line-height:1.3; }
 .sd{ width:7px; height:7px; border-radius:50%; flex:none; background:#9AA0A6; } .stt.on .sd{ background:#34C759; }
-.cv{ flex:none; display:flex; color:rgba(255,255,255,.85); } .cv ha-icon{ width:clamp(18px, 8cqh, 26px); height:clamp(18px, 8cqh, 26px); --mdc-icon-size:clamp(18px, 8cqh, 26px); }
-.mx{ position:relative; z-index:1; display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:2cqi; }
-.mc{ display:flex; flex-direction:column; align-items:flex-start; min-width:0; padding:0; margin:0; border:0; background:none; color:#fff; font:inherit; text-align:left; cursor:pointer; }
-.mc.na{ opacity:.4; }
-.mv{ display:flex; align-items:center; gap:6px; font-size:clamp(14px, 7cqh, 22px); font-weight:300; line-height:1.2; white-space:nowrap; font-variant-numeric:tabular-nums; }
-.mv ha-icon{ --mdc-icon-size:clamp(16px, 6cqh, 22px); width:clamp(16px, 6cqh, 22px); height:clamp(16px, 6cqh, 22px); flex:none; }
-.mv.lt ha-icon{ color:var(--hg-accent); }
-.mk{ font-size:clamp(12px, 4.2cqh, 13px); color:rgba(255,255,255,.75); line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
-/* wariant listy: niski wiersz z miniaturą */
+.cv{ flex:none; display:flex; margin-top:2px; color:rgba(255,255,255,.85); } .cv ha-icon{ width:22px; height:22px; --mdc-icon-size:22px; }
+.mx{ position:relative; z-index:1; display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:10px; align-items:end; }
+.mc{ display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-end; gap:2px; min-width:0; padding:0; margin:0; border:0; background:none; color:#fff; font:inherit; text-align:left; cursor:pointer; }
+.mc.na{ opacity:.45; }
+.mv{ display:flex; align-items:center; gap:6px; max-width:100%; font-size:clamp(15px, 1.35vw, 20px); font-weight:300; line-height:1.15; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.mv ha-icon{ --mdc-icon-size:18px; width:18px; height:18px; flex:none; opacity:.95; }
+.mv.lt ha-icon{ color:var(--hg-accent); opacity:1; }
+.mk{ font-size:12px; color:rgba(255,255,255,.72); line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; min-height:15px; }
+.mk:empty{ visibility:hidden; }
+/* wariant listy: niski wiersz z miniaturą (kolory z motywu HA / tokenów Nuvio, nie na sztywno jasne) */
 .grid.list{ grid-template-columns:minmax(0, 1fr) !important; gap:var(--s1); }
-.grid.list .tile{ aspect-ratio:auto; min-height:0; height:72px; container-type:normal; flex-direction:row; align-items:center; gap:14px; padding:0 14px 0 0; color:#1E2023; text-shadow:none;
+.grid.list .tile{ aspect-ratio:auto; min-height:0; height:72px; flex-direction:row; align-items:center; gap:14px; padding:0 14px 0 0; color:var(--primary-text-color, var(--hg-card-fg, #1E2023)); text-shadow:none;
   background:var(--hg-glass-lite, var(--hg-glass-bg)); box-shadow:var(--hg-edge, 0 0 0 transparent), var(--hg-card-sh, var(--hg-shadow-lg, 0 6px 20px var(--hg-glass-sh)));
   -webkit-backdrop-filter:var(--hg-bfo, blur(calc(var(--hg-glass-blur, 38px) * var(--hg-bf, 1)))); backdrop-filter:var(--hg-bfo, blur(calc(var(--hg-glass-blur, 38px) * var(--hg-bf, 1)))); }
+.grid.list .tile:focus-visible, .grid.list .tile:hover{ box-shadow:var(--hg-edge, 0 0 0 transparent), 0 0 0 2px var(--hg-accent), var(--hg-card-sh, var(--hg-shadow-lg)); }
 .grid.list .tile .ph{ position:relative; inset:auto; flex:none; width:72px; height:72px; align-self:stretch; }
-.grid.list .tile .sh{ display:none; } .grid.list .tile.nop .ph{ background:linear-gradient(160deg, #3a4556, #1b222b); } .grid.list .stt, .grid.list .mk, .grid.list .cv{ color:#4A4E54; } .grid.list .mc{ color:#1E2023; }
+.grid.list .tile .sh{ display:none; } .grid.list .tile.nop .ph{ background:linear-gradient(160deg, rgba(42,50,62,.95), rgba(20,26,34,.98)); }
+.grid.list .stt, .grid.list .mk, .grid.list .cv{ color:var(--secondary-text-color, var(--hg-t2, rgba(0,0,0,.55))); }
+.grid.list .mc{ color:inherit; }
 .grid.list .hd{ display:contents; } .grid.list .tx{ flex:1; } .grid.list .ic{ display:none; } .grid.list .nm{ font-size:16px; }
-.grid.list .mx{ display:flex; gap:18px; flex:none; } .grid.list .mk{ display:none; } .grid.list .mv{ font-size:16px; } .grid.list .mv ha-icon{ width:18px; height:18px; --mdc-icon-size:18px; }
+.grid.list .mx{ display:flex; gap:18px; flex:none; align-items:center; } .grid.list .mk{ display:none; } .grid.list .mv{ font-size:16px; } .grid.list .mv ha-icon{ width:18px; height:18px; --mdc-icon-size:18px; }
 .grid.list .cv{ order:3; }
-.oth{ display:flex; flex-wrap:wrap; align-items:center; gap:var(--s1); margin-top:var(--s2); font-size:var(--fs-sm); color:#4A4E54; }
-.oth b{ font-weight:600; color:#2A2D31; margin-right:2u; display:inline-flex; align-items:center; height:32px; padding:0 var(--s2); border-radius:var(--r-md); background:var(--hg-glass-lite, var(--hg-glass-bg)); }
-.oth button{ display:inline-flex; align-items:center; gap:6px; height:40px; padding:0 var(--s2) 0 10px; border-radius:var(--r-md); background:var(--hg-glass-lite, var(--hg-glass-bg)); border:1px solid var(--hg-glass-bd); color:#2A2D31; font-size:var(--fs-sm); font-weight:600; cursor:pointer; -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition: background .2s, color .2s; }
+.oth{ display:flex; flex-wrap:wrap; align-items:center; gap:var(--s1); margin-top:var(--s2); font-size:var(--fs-sm); color:var(--secondary-text-color, var(--hg-t2, #4A4E54)); }
+.oth b{ font-weight:600; color:var(--primary-text-color, var(--hg-card-fg, #2A2D31)); margin-right:2u; display:inline-flex; align-items:center; height:32px; padding:0 var(--s2); border-radius:var(--r-md); background:var(--hg-glass-lite, var(--hg-glass-bg)); }
+.oth button{ display:inline-flex; align-items:center; gap:6px; height:40px; padding:0 var(--s2) 0 10px; border-radius:var(--r-md); background:var(--hg-glass-lite, var(--hg-glass-bg)); border:1px solid var(--hg-glass-bd, transparent); color:var(--primary-text-color, var(--hg-card-fg, #2A2D31)); font-size:var(--fs-sm); font-weight:600; cursor:pointer; -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition: background .2s, color .2s; }
 .oth button ha-icon{ width:20px; height:20px; pointer-events:none; } .oth button span{ pointer-events:none; }
 .oth button.on{ background:var(--hg-accent); border-color:transparent; color:var(--hg-on-accent); }
 .oth button:disabled{ opacity:.5; cursor:default; }
@@ -99,7 +103,8 @@ class HGAreasCard extends HGBase {
       const offline = dead || (env.t == null && env.u == null && !okL.length && !ci);
       const mcol = (ico, v, cap, extra = '', tag = 'div', attr = '') => `<${tag} class="mc ${v == null ? 'na' : ''} ${extra}" ${attr}><span class="mv ${extra}">${H.icon(ico)}${v == null ? '—' : v}</span><span class="mk">${cap}</span></${tag}>`;
       const lcol = okL.length ? mcol(on ? 'mdi:lightbulb-on' : 'mdi:lightbulb-outline', on, hgT('cards.areas.lights_label'), 'lt', 'button', `type="button" data-act="lights" data-a="${H.esc(a.id)}" aria-pressed="${!!on}" aria-label="${H.esc(on ? hgT('cards.areas.lights_turn_off_aria', { name: a.name }) : hgT('cards.areas.lights_turn_on_aria', { name: a.name }))}"`) : mcol('mdi:lightbulb-outline', null, hgT('cards.areas.lights_label'));
-      const mx = `<div class="mx">${mcol('mdi:thermometer', env.t != null ? H.fmt(env.t, 1) + '°C' : null, tg != null ? hgT('cards.areas.target', { value: H.fmt(tg, 1) }) : '&nbsp;')}${mcol('mdi:water-outline', env.u != null ? H.pct(H.fmt(env.u, 0)) : null, hgT('cards.areas.humidity_label'))}${lcol}</div>`;
+      const tgt = tg != null ? hgT('cards.areas.target', { value: H.fmt(tg, 1) }) : '';
+      const mx = `<div class="mx">${mcol('mdi:thermometer', env.t != null ? H.fmt(env.t, 1) + '°C' : null, tgt)}${mcol('mdi:water-outline', env.u != null ? H.pct(H.fmt(env.u, 0)) : null, hgT('cards.areas.humidity_label'))}${lcol}</div>`;
       const pic = a.picture ? `style="background-image:url('${H.cssUrl(a.picture)}')"` : '';
       const al = [a.name, ...env.txt, on ? hgT('cards.areas.lights_on_count', { count: on }) : '', prs.length ? (prOn ? (occ ? hgT('cards.areas.state_presence') : hgT('common.state_motion')) : '') : '', ci ? cla : ''].filter(Boolean).join(', ');
       tiles.push(`<div class="tile lift ${on ? 'lit' : ''} ${a.picture ? '' : 'nop'}" data-hgk="${H.esc(a.id)}" role="button" tabindex="0" data-act="open" data-a="${H.esc(a.id)}" aria-label="${H.esc(al)}">

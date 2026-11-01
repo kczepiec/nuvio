@@ -15,3 +15,7 @@ test('config columns trafia do klasy siatki, karty mają aspect-ratio 465/285', 
   assert.match(src, /\.grid\.cols1\{/);
   assert.match(src, /aspect-ratio:465 \/ 285/);
 });
+test('obwódka kafli używa akcentu z motywu', () => {
+  assert.match(src, /box-shadow: 0 0 0 2px var\(--hg-accent\)/);
+  assert.doesNotMatch(src, /145, 255/);
+});
