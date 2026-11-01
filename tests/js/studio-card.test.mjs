@@ -214,3 +214,30 @@ test('widgets mount through hgMakeCard with the registry config', async () => {
   assert.equal(P.made[1].entity, 'climate.salon');
   c._mount(root); assert.equal(P.made.length, 2, 'children reused across renders');
 });
+
+test('registry: every min fits inside def and max, and is large enough for content (>= 3 rows for dense cards)', async () => {
+  const { P } = await seeded();
+  for (const [t, w] of Object.entries(P.HG_STUDIO_W)) {
+    assert.ok(w.min.w <= w.def.w && w.min.h <= w.def.h, t + ': min <= def');
+    assert.ok(w.def.w <= w.max.w && w.def.h <= w.max.h, t + ': def <= max');
+    assert.ok(w.min.w >= 2 && w.min.h >= 2, t + ': min floor');
+  }
+  for (const t of ['home', 'media', 'cameras', 'energy']) assert.ok(P.HG_STUDIO_W[t].min.h >= 3 && P.HG_STUDIO_W[t].min.w >= 3, t + ': dense card min 3x3');
+});
+
+test('row height scales with panel height and never drops below 32px', async () => {
+  const { c } = await seeded();
+  c._u0px = () => 1;
+  const ch = (h) => { c._panelEl = () => ({ clientHeight: h }); return parseFloat(c._stCh(8)); };
+  assert.equal(ch(5000), 64, 'tall panel keeps design row');
+  assert.ok(ch(500) < ch(600) && ch(600) < 64, 'shorter panel shrinks the row');
+  assert.equal(ch(50), 32, 'floor');
+});
+
+test('tile --hg-u follows cell height', async () => {
+  const { c } = await seeded();
+  const mkEl = (h) => { const s = {}; return { s, clientHeight: h, querySelector: () => null, style: { setProperty: (k, v) => { s[k] = v; }, removeProperty: (k) => { delete s[k]; } } }; };
+  const dh = 3 * 64 + 2 * 24, a = mkEl(dh / 2), b = mkEl(dh);
+  c._tileU(a, { h: 3 }); c._tileU(b, { h: 3 });
+  assert.equal(b.s['--hg-u'], '1.0000px'); assert.equal(a.s['--hg-u'], '0.6500px');
+});
