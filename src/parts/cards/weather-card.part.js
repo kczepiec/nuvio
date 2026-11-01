@@ -26,7 +26,7 @@ class HGWeatherCard extends HGBase {
 ha-card.glass{ display:flex; flex-direction:column; justify-content:space-between; gap:6u; padding:var(--s2) var(--s3) var(--s2); min-width:0; overflow:hidden; container-type:inline-size; }
 .hd .tt{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 /* studio: ikona + temperatura, stan i max/min, N slotów godzinowych; stopnie: compact = ikona+temp, medium = + stan i max/min, expanded = + godziny */
-ha-card.sw{ justify-content:flex-start; gap:var(--s2); 
+ha-card.sw{ justify-content:flex-start; gap:var(--s2); }
 /* studio: pogoda leży na tle strony, bez mlecznej warstwy (sheen/lite/krawędź/blur kafla) */
 ha-card.sw{ --hg-glass-sheen:none; --hg-glass-lite:transparent; --hg-glass-bg:transparent; --hg-edge:0 0 0 transparent; --hg-card-sh:none; --hg-card-bf:none; --hg-card-under:none; background:transparent; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; text-shadow:0 1px 8px rgba(0,0,0,.28); }
 .sw .swt{ display:flex; align-items:center; gap:var(--s2); min-width:0; } .sw .swt img{ width:clamp(40px, 22cqi, 72px); height:clamp(40px, 22cqi, 72px); flex:none; }

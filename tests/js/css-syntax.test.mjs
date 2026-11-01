@@ -13,6 +13,16 @@ test('no declarations after a closed CSS rule ("}; prop:")', () => {
   });
   assert.deepEqual(bad, []);
 });
+/* Rule opened at the start of a CSS line ("sel{ decl;") but not closed on that line, followed by a comment or another rule: the browser swallows the next rule (beta 23, weather glow) */
+test('no unclosed one-line CSS rule before the next rule or comment', () => {
+  const bad = [];
+  for (const f of files(dir)) { const L = readFileSync(f, 'utf8').split('\n');
+    L.forEach((l, i) => { const s = strip(l), nx = L[i + 1] || '', n = nx.trim();
+      /* kontynuacja reguły ma wcięcie; niezamknięta reguła jednoliniowa ma następną regułę lub komentarz od początku linii */
+      if (/^(?:ha-card|[.#:@*\[])[^`{}]*\{[^{}]*;\s*$/.test(s) && !/^\s/.test(nx) && (/^\/\*/.test(n) || /^(?:ha-card|[.#:@*\[])[^`{}]*\{/.test(n))) bad.push(f.pathname.split('/src/')[1] + ':' + (i + 1));
+    }); }
+  assert.deepEqual(bad, []);
+});
 test('wall clock: the next event row keeps full opacity (#34)', () => {
   const s = readFileSync(new URL('hg-wall.part.js', dir), 'utf8');
   assert.match(s, /\.nw-e li\.nx \.nw-et, \.nw-k li\.nx \.nw-et\{ opacity:1; \}/);
