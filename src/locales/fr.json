@@ -2482,6 +2482,8 @@
     "phone_label_default": "par défaut",
     "price": "Prix",
     "remove": "Retirer",
+    "room_photo": "Photo",
+    "room_photo_hint": "Sur la tuile de la pièce. Vide : la photo de la pièce dans Home Assistant.",
     "save_header": "Enregistrer l’en-tête",
     "save_rooms": "Enregistrer les pièces",
     "save_views": "Enregistrer les vues",

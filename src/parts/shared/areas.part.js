@@ -49,6 +49,8 @@ const HGAreas = {
     for (const [from, to] of Object.entries(merge)) { const a = areasReg[from]; if (a && byId[to]) byId[to].strip.push(a.name); }
     for (const v of cfg.virtual || []) add(v.id, v.name, v.icon, true);
     for (const v of cfg.virtual || []) for (const e of v.entities || []) if (!assign[e]) assign[e] = v.id;
+    const pics = cfg.pictures || {};
+    for (const a of list) { const p = pics[a.id]; if (typeof p === 'string' && p) a.picture = p; }
     const un = [], rHide = cfg.room_hide || {};
     for (const e of Object.keys(h.states)) {
       const dom = e.slice(0, e.indexOf('.')), r = reg[e];

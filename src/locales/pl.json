@@ -2520,6 +2520,8 @@
     "phone_label_default": "domyślna",
     "price": "Cena",
     "remove": "Usuń",
+    "room_photo": "Zdjęcie",
+    "room_photo_hint": "Na kaflu pokoju. Puste zostawia zdjęcie obszaru z Home Assistant.",
     "save_header": "Zapisz nagłówek",
     "save_rooms": "Zapisz pokoje",
     "save_views": "Zapisz widoki",

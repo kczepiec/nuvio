@@ -2444,6 +2444,8 @@
     "phone_label_default": "standaard",
     "price": "Prijs",
     "remove": "Verwijderen",
+    "room_photo": "Foto",
+    "room_photo_hint": "Op de kamertegel. Leeg laat de foto van het Home Assistant-gebied staan.",
     "save_header": "Koptekst opslaan",
     "save_rooms": "Kamers opslaan",
     "save_views": "Weergaven opslaan",

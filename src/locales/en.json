@@ -2444,6 +2444,8 @@
     "phone_label_default": "default",
     "price": "Price",
     "remove": "Remove",
+    "room_photo": "Photo",
+    "room_photo_hint": "On the room tile. Empty keeps the Home Assistant area picture.",
     "save_header": "Save header",
     "save_rooms": "Save rooms",
     "save_views": "Save views",

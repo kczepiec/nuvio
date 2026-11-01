@@ -5,6 +5,7 @@
 All notable changes to Nuvio are listed here, newest first. Versions follow [semantic versioning](https://semver.org). The Polish changelog is in [CHANGELOG.pl.md](CHANGELOG.pl.md).
 
 ### Unreleased
+- Fixed: Rooms grid in Studio matches the mockup layout (three columns on typical desktop width, blue tile highlight, Offline when there is no room data, no “Other” row in grid view). The Rooms view title stays hidden in Studio.
 - Added: opt-in **Studio view** (beta), off by default and switched on in **Settings > Views**. It has a mockup-style frame (full-height rail with a light/dark toggle, pill tabs, optional Wi-Fi, Bluetooth and battery icons from a wall tablet, date and time) and a free 2D widget grid of 12 columns (8 on tablets, 4 on phones). In edit mode widgets can be dragged, resized, hidden and added with the "Add widget" tile; other widgets move aside and compact, and every widget has its own minimum and maximum size. The first layout is seeded from your entities, each screen width keeps its own layout, and a saved layout is never regenerated. It is included in the layout backup.
 - Added: new **climate**, **energy** and **home** widgets (also in the card picker) that switch between compact, medium and expanded layouts based on their own size.
 - Added: Studio modes for the greeting, weather, media, cameras and scenes cards (`studio` option; existing configs render unchanged).

@@ -14,7 +14,7 @@ function mk() {
     HTMLElement: El, customElements: { get() {}, define() {} }, matchMedia: stub(), requestAnimationFrame: () => 0, setInterval: () => 0, MutationObserver: class { observe() {} },
     CustomEvent, Event, fetch: () => Promise.reject(new Error('offline')), getComputedStyle: stub(), hgDom: (e) => String(e || '').split('.')[0],
     HGL: { subs: new Set(), data: { s: {}, wiz: {} }, get: () => ({ hidden: [], added: [], order: [], conf: {}, size: {} }), sort: (l) => l, szc: () => '' } };
-  return loadParts(['hg-i18n.part.js', 'hg-select.part.js', 'hg-oss.part.js', 'hg-core.part.js', 'hg-styles.part.js', 'shared/areas.part.js', 'shared/climate-modes.part.js', 'cards/areas-card.part.js'], g, ['HGAreasCard'], { EN, MANIFEST: [{ code: 'en', name: 'English', locale: 'en-GB', file: null }], text: [['import.meta.url', 'undefined']] });
+  return loadParts(['hg-i18n.part.js', 'hg-select.part.js', 'hg-oss.part.js', 'hg-core.part.js', 'hg-styles.part.js', 'shared/areas.part.js', 'shared/climate-modes.part.js', 'cards/areas-card.part.js'], g, ['HGAreasCard', 'HGL'], { EN, MANIFEST: [{ code: 'en', name: 'English', locale: 'en-GB', file: null }], text: [['import.meta.url', 'undefined']] });
 }
 const st = (id, state, attributes = {}) => ({ entity_id: id, state, attributes });
 const hass = (over = {}) => ({
@@ -43,4 +43,18 @@ test('room tile: Offline when every entity is unavailable, no picture falls back
 test('layout list adds the list class', () => {
   assert.match(card({ layout: 'list' }).render(), /class="grid list cols/);
   assert.doesNotMatch(card().render(), /class="grid list cols/);
+});
+test('grid view hides the Other shortcuts row', () => {
+  assert.doesNotMatch(card().render(), /class="oth"/);
+});
+test('room photo from Wygląd overrides the HA area picture', () => {
+  const { HGAreasCard: C, HGL } = mk();
+  HGL.data.wiz.areas = { pictures: { salon: '/local/salon.webp', sypialnia: '/local/bed.webp' } };
+  const c = new C(); c._config = c.defaults(); c._hass = hass();
+  const out = c.render();
+  assert.match(out, /\/local\/salon\.webp/);
+  assert.doesNotMatch(out, /\/api\/img\/salon\.jpg/);
+  const syp = out.slice(out.indexOf('data-hgk="sypialnia"'));
+  assert.match(syp, /\/local\/bed\.webp/);
+  assert.doesNotMatch(syp, /class="tile lift\s+ nop"/);
 });
