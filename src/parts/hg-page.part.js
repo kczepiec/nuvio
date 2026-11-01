@@ -750,6 +750,24 @@ class HGPage extends HTMLElement {
     return `<div class="sst">${this._stLink(o.wifi, 'wf')}${this._stLink(o.bt, 'bt')}`
       + `<time class="sdt">${H.esc(d.toLocaleDateString(lang, { weekday: 'short', month: 'short', day: 'numeric' }))}&nbsp; ${H.esc(d.toLocaleTimeString(lang, Object.assign({ hour: '2-digit', minute: '2-digit' }, tf === '12' ? { hour12: true } : tf === '24' ? { hour12: false } : {})))}</time></div>`;
   }
+  /* Studio: edycja, Assist, poczta i powiadomienia w menu użytkownika, nie obok avatara */
+  _stMenuActs(nCount) {
+    if (!this._config || !this._config.studio) return '';
+    const bits = [];
+    if (this._canEdit()) bits.push(`<button role="menuitem" data-act="edit" aria-pressed="${!!this._editing}">${H.icon(this._editing ? 'mdi:check' : 'mdi:pencil')}<span>${H.esc(this._editing ? hgT('page.finish_editing_layout') : hgT('page.edit_layout'))}</span></button>`);
+    if (window.HGAssistUI && HGAssistUI.get().button) bits.push(`<button role="menuitem" data-act="assist">${H.icon('mdi:microphone-message')}<span>${H.esc(hgT('page.assist_a'))}</span></button>`);
+    bits.push(`<button role="menuitem" data-act="mail">${H.icon('mdi:email')}<span>${H.esc(hgT('page.messages'))}</span></button>`);
+    const nb = nCount > 9 ? '9+' : nCount;
+    bits.push(`<button role="menuitem" data-act="bell">${H.icon('mdi:bell')}<span>${H.esc(nCount ? H.lv(hgT('common.notifications'), nb) : hgT('common.notifications'))}</span></button>`);
+    return bits.length ? bits.join('') + '<div class="msep" role="separator"></div>' : '';
+  }
+  _topQuickActs(nCount, studio) {
+    if (studio) return '';
+    return `${this._canEdit() ? `<button class="cir ed ${this._editing ? 'on' : ''}" data-act="edit" aria-pressed="${!!this._editing}" aria-label="${this._editing ? hgT('page.finish_editing_layout') : hgT('page.edit_layout')}" title="${this._editing ? hgT('common.done') : hgT('page.edit_layout')}">${H.icon(this._editing ? 'mdi:check' : 'mdi:pencil')}</button>` : ''}`
+      + `${window.HGAssistUI && HGAssistUI.get().button ? `<button class="cir as" data-act="assist" aria-haspopup="dialog" aria-keyshortcuts="A" aria-label="${hgT('page.assist_voice_assistant_a')}" title="${hgT('page.assist_a')}">${H.icon('mdi:microphone-message')}</button>` : ''}`
+      + `<button class="cir" data-act="mail" aria-label="${hgT('page.messages')}" title="${hgT('page.messages_and_notifications')}">${H.icon('mdi:email')}</button>`
+      + `<button class="cir" data-act="bell" aria-label="${hgT('common.notifications')} (${nCount})" title="${H.lv(hgT('common.notifications'), nCount)}">${H.icon('mdi:bell')}${nCount ? `<i class="nb">${nCount > 9 ? '9+' : nCount}</i>` : ''}</button>`;
+  }
   _paintTop(force) {
     if (!this._built || !this._hass) return;
     const c = this._config, ui = this._userInfo(), brand = c.brand ?? hgT('page.home');
@@ -768,10 +786,7 @@ class HGPage extends HTMLElement {
       <button class="brand" data-act="nav" data-i="0" aria-label="${H.esc(brand)}">${HG_LOGO}<span>${H.esc(brand)}</span></button>
       <div class="tabs" role="tablist">${tabs.map((t, i) => `<button role="tab" aria-selected="${!!t.act}" class="tab ${t.act ? 'act' : ''}" data-act="nav" data-i="${i}" title="${H.esc(t.label)}" aria-label="${H.esc(t.label)}">${t.icon ? H.icon(t.icon) : ''}<span class="tl">${H.esc(t.label)}</span>${t.b ? `<sup class="nb" aria-label="${hgT('page.active_count', { count: t.b })}">${t.b > 9 ? '9+' : t.b}</sup>` : ''}</button>`).join('')}<i class="ind" aria-hidden="true"></i></div>
       <div class="right">
-        ${this._canEdit() ? `<button class="cir ed ${this._editing ? 'on' : ''}" data-act="edit" aria-pressed="${!!this._editing}" aria-label="${this._editing ? hgT('page.finish_editing_layout') : hgT('page.edit_layout')}" title="${this._editing ? hgT('common.done') : hgT('page.edit_layout')}">${H.icon(this._editing ? 'mdi:check' : 'mdi:pencil')}</button>` : ''}
-        ${window.HGAssistUI && HGAssistUI.get().button ? `<button class="cir as" data-act="assist" aria-haspopup="dialog" aria-keyshortcuts="A" aria-label="${hgT('page.assist_voice_assistant_a')}" title="${hgT('page.assist_a')}">${H.icon('mdi:microphone-message')}</button>` : ''}
-        <button class="cir" data-act="mail" aria-label="${hgT('page.messages')}" title="${hgT('page.messages_and_notifications')}">${H.icon('mdi:email')}</button>
-        <button class="cir" data-act="bell" aria-label="${hgT('common.notifications')} (${nCount})" title="${H.lv(hgT('common.notifications'), nCount)}">${H.icon('mdi:bell')}${nCount ? `<i class="nb">${nCount > 9 ? '9+' : nCount}</i>` : ''}</button>
+        ${this._topQuickActs(nCount, c.studio)}
         ${c.studio ? this._stChrome() : ''}
         <div class="user">
           <button class="uin" data-act="profile" aria-label="${hgT('page.profile')}" title="${hgT('page.profile')}">${av}<span class="un"><b>${H.esc(ui.full)}</b><small>${H.esc(ui.handle)}</small></span></button>
@@ -849,7 +864,7 @@ class HGPage extends HTMLElement {
     if (!this._menuOpen || !this._menuEl) { L.innerHTML = ''; L.removeAttribute('open'); document.removeEventListener('keydown', this._menuKey, true); return; }
     const c = this._config, b = this._menuEl.getBoundingClientRect();
     L.setAttribute('open', '');
-    L.innerHTML = `<div class="menu" role="menu" style="top:${Math.round(b.bottom + 6)}px;right:${Math.max(8, Math.round(innerWidth - b.right))}px">${c.menu.map((m, i) => `<button role="menuitem" data-act="menuitem" data-i="${i}">${hgMenuIcon(m)}<span>${H.esc(m.label)}</span></button>`).join('')}${this._langItem()}${this._lockItem()}${this._kmItem()}${this._updFoot()}</div>`;
+    L.innerHTML = `<div class="menu" role="menu" style="top:${Math.round(b.bottom + 6)}px;right:${Math.max(8, Math.round(innerWidth - b.right))}px">${this._stMenuActs(Object.keys(this._notif).length)}${c.menu.map((m, i) => `<button role="menuitem" data-act="menuitem" data-i="${i}">${hgMenuIcon(m)}<span>${H.esc(m.label)}</span></button>`).join('')}${this._langItem()}${this._lockItem()}${this._kmItem()}${this._updFoot()}</div>`;
     this._menuKey = this._menuKey || ((e) => { if (e.key === 'Escape' && this._menuOpen && !hgsOpen.size) { e.preventDefault(); this._menuOpen = false; this._paintTop(true); } });
     document.addEventListener('keydown', this._menuKey, true);
   }
@@ -1005,10 +1020,10 @@ class HGPage extends HTMLElement {
       case 'sheetnav': { const m = (this._sheetItems || c.phone_nav.more)[i]; this._openSheet(false); return go(m.action); }
       case 'scheme': try { localStorage.setItem('home-glass:scheme', HGTheme.dark ? 'light' : 'dark'); } catch (e) { /* */ } HGTheme.apply(!HGTheme.dark); this._syncScheme(); return this._paintRail(true);
       case 'railmore': return this._openSheet(this._sheetOpen ? false : 'rail');
-      case 'edit': return this._editing ? this._editExit(true) : this._editEnter();
-      case 'assist': return window.HGAssistUI && HGAssistUI.open(this, t);
-      case 'mail': return go(c.mail_action);
-      case 'bell': return go(c.notifications_action);
+      case 'edit': if (this._menuOpen) { this._menuOpen = false; this._paintMenu(); } return this._editing ? this._editExit(true) : this._editEnter();
+      case 'assist': if (this._menuOpen) { this._menuOpen = false; this._paintMenu(); } return window.HGAssistUI && HGAssistUI.open(this, t);
+      case 'mail': if (this._menuOpen) { this._menuOpen = false; this._paintMenu(); } return go(c.mail_action);
+      case 'bell': if (this._menuOpen) { this._menuOpen = false; this._paintMenu(); } return go(c.notifications_action);
       case 'stent': return t.dataset.e && H.fire(this, 'hass-more-info', { entityId: t.dataset.e });
       case 'pmore': { const el = this._panelEl; return el && el.scrollBy({ top: Math.round(el.clientHeight * 0.8), behavior: 'smooth' }); }
       case 'profile': return go(c.user.action || { navigate: '/profile' });
@@ -1126,6 +1141,7 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 .menu{ position:absolute; right:0; top:calc(100% + 6px); min-width:200px; padding:6px; border-radius:16px; z-index:20; color:#1F2125; }
 .menu button{ display:flex; align-items:center; gap:10px; width:100%; min-height:44px; padding:0 12px; border-radius:10px; font-size:14px; text-align:left; }
 .menu button:hover{ background:rgba(0,0,0,.06); } .menu ha-icon, .menu button > svg{ width:18px; height:18px; flex:none; }
+.menu .msep{ height:0; margin:6px 0; border-top:1px solid rgba(127,127,127,.18); }
 .mfoot{ display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin:6px -6px -6px; padding:9px 14px 11px; border-top:1px solid rgba(127,127,127,.18); font-size:11.5px; }
 .mver{ opacity:.55; font-variant-numeric:tabular-nums; letter-spacing:.01em; }
 .menu button.mupd{ width:auto; min-height:28px; height:28px; padding:0 11px 0 8px; gap:6px; border-radius:14px; background:var(--hg-accent); color:var(--hg-on-accent, #111); font-size:12px; font-weight:600; }
@@ -1302,7 +1318,10 @@ button:focus-visible{ outline:2px solid var(--hg-accent); outline-offset:2px; }
 :host([studio]) .brand > span:not(.logo){ display:none; }
 :host([studio]) .back{ display:none; }
 :host([studio]) .rail{ border-radius:18px; }
+:host([studio]) .ri{ border-radius:10u; }
+:host([studio]) .rind{ border-radius:10u; }
 :host([studio]) .right{ gap:12px; }
+:host([studio]) .right .cir{ display:none; }
 :host([studio]) .panel{ background:none; border:0; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; padding:0; }
 /* Studio: mocniejsze rozmycie na widżetach i chromie; jasny/ciemny osobno (data-hg-scheme na hoście) */
 :host([studio]){ --hg-glass-blur: 24px; --hg-glass-sat: 175%; --hg-glass-bri: 1.02;

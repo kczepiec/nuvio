@@ -60,4 +60,7 @@ test('studio chrome is gated on cfg.studio; normal views render no chrome', () =
   assert.match(src, /_syncScheme\(\)/, 'scheme mirrored on page host for studio glass tokens');
   assert.match(src, /:host\(\[studio\]\[data-hg-scheme=light\]\)/, 'studio light glass tokens');
   assert.match(src, /:host\(\[studio\]\[data-hg-scheme=dark\]\)/, 'studio dark glass tokens');
+  assert.match(src, /_stMenuActs\(/, 'studio quick actions live in the user menu');
+  assert.match(src, /_topQuickActs\(nCount, c\.studio\)/, 'studio hides top quick-action buttons');
+  assert.match(src, /:host\(\[studio\]\) \.rind\{ border-radius:10u/, 'studio rail active pill is rounded square');
 });
