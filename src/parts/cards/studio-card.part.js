@@ -154,7 +154,7 @@ class HGStudioGrid extends HGBase {
     }
     const dh = it.h * HG_ST_ROW + Math.max(0, it.h - 1) * HG_ST_GAP;
     if (!el.clientHeight || !dh || el.clientHeight > 8000) { el.style.removeProperty('--hg-u'); return; }
-    const u = Math.min(2, Math.max(0.65, el.clientHeight / dh));
+    const u = Math.min(2, Math.max(0.8, el.clientHeight / dh));
     el.style.setProperty('--hg-u', u.toFixed(4) + 'px');
   }
   _addPlace(vis) {

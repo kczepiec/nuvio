@@ -239,7 +239,7 @@ test('tile --hg-u follows cell height', async () => {
   const mkEl = (h) => { const s = {}; return { s, clientHeight: h, querySelector: () => null, style: { setProperty: (k, v) => { s[k] = v; }, removeProperty: (k) => { delete s[k]; } } }; };
   const dh = 3 * 64 + 2 * 24, a = mkEl(dh / 2), b = mkEl(dh);
   c._tileU(a, { h: 3 }); c._tileU(b, { h: 3 });
-  assert.equal(b.s['--hg-u'], '1.0000px'); assert.equal(a.s['--hg-u'], '0.6500px');
+  assert.equal(b.s['--hg-u'], '1.0000px'); assert.equal(a.s['--hg-u'], '0.8000px');
 });
 
 test('tile --hg-u is not set on stack/grid containers, for both hg-* and branded nuvio-* tags', async () => {

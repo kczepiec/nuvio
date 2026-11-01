@@ -17,7 +17,7 @@ ha-card.hero.img{ background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,
 .dot{ flex:none; width:9u; height:9u; min-width:8px; min-height:8px; border-radius:50%; background:var(--hg-ok, #34C759); box-shadow:0 0 8px color-mix(in srgb, var(--hg-ok, #34C759) 70%, transparent); } .dot.warn{ background:var(--hg-warn, #FF9F0A); box-shadow:0 0 8px color-mix(in srgb, var(--hg-warn, #FF9F0A) 70%, transparent); }
 .l2{ white-space:nowrap; }
 @container (min-width: 460px){ .l2{ display:block; } .stl{ font-size:var(--hg-fs-4, 18px); } }
-@container (min-width: 340px){ .t.sg{ font-size:clamp(40px, 12cqi, 64px); } }
+@container (min-width: 340px){ .t.sg{ font-size:clamp(20px, min(12cqi, 22cqh), 64px); } }
 @container (min-width: 560px){ .t.sg{ font-size:64px; } }
 `); }
   _hour() { return new Date().getHours(); }

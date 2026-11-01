@@ -48,7 +48,9 @@ ha-card:not(.h) .bd, ha-card.nw .bd{ flex:1 0 auto; }   /* Safari: podstawa 0% p
   /* poziom zagnieżdżenia: ile kontenerów Nuvio jest nad tą kartą (+1) */
   depth() { let d = 1, n = this; for (let k = 0; k < 12 && n; k++) { const r = n.getRootNode && n.getRootNode(), host = r && r.host; if (!host) break; if (host instanceof HGStackCard) d++; n = host; } return d; }
   /* stos poziomy przechodzi w pion poniżej wrap_below (px); szerokość z ResizeObserver, bo container query nie przyjmuje zmiennej */
-  _narrowSet(w) { const c = this._config; if (!c) return; const nw = c.direction === 'horizontal' && w > 0 && w < (+c.wrap_below || 0); if (nw !== !!this._nw) { this._nw = nw; this._animNext = true; this.rerender(); } }
+  /* w kaflu Studio stos poziomy zostaje poziomy (dzieci dzielą szerokość), bez zamiany na pion i przewijania */
+  _inStudioTile() { const p = this.parentElement; return !!(p && p.classList && p.classList.contains('st-k')); }
+  _narrowSet(w) { const c = this._config; if (!c) return; const nw = c.direction === 'horizontal' && w > 0 && w < (+c.wrap_below || 0) && !this._inStudioTile(); if (nw !== !!this._nw) { this._nw = nw; this._animNext = true; this.rerender(); } }
   connectedCallback() { super.connectedCallback(); if (!this._ro && typeof ResizeObserver !== 'undefined') this._ro = new ResizeObserver((es) => this._narrowSet(es[0].contentRect.width)); if (this._ro) this._ro.observe(this); }
   disconnectedCallback() { if (this._ro) this._ro.disconnect(); }
   _extraSig() { return [this._nw]; }
